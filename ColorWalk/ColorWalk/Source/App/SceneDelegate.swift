@@ -10,6 +10,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    private var appCoordinator: AppCoordinator?
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -17,10 +18,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
-                
-            window = UIWindow(windowScene: windowScene)
-            window?.rootViewController = ViewController()
-            window?.makeKeyAndVisible()
+
+        let win = UIWindow(windowScene: windowScene)
+        win.makeKeyAndVisible()
+        window = win
+
+        let appCoordinator = AppCoordinator(window: win)
+        appCoordinator.start()
+        self.appCoordinator = appCoordinator
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
