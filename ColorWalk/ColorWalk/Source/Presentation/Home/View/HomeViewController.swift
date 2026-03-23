@@ -113,7 +113,7 @@ final class HomeViewController: BaseViewController {
 
         paginationView.setup(count: allCards.count)
         carouselView.configure(cards: allCards, currentIndex: 0)
-        titleLabel.setLetterSpacing(-0.5)
+        titleLabel.setKern(-0.5)
     }
 
     // MARK: - setupConstraints
@@ -213,17 +213,3 @@ final class HomeViewController: BaseViewController {
     }
 }
 
-// MARK: - UILabel Extension
-
-extension UILabel {
-    func setLetterSpacing(_ spacing: CGFloat) {
-        guard let text = self.text else { return }
-        let attributed = NSMutableAttributedString(string: text)
-        attributed.addAttribute(
-            .kern,
-            value: spacing,
-            range: NSRange(location: 0, length: text.count)
-        )
-        self.attributedText = attributed
-    }
-}

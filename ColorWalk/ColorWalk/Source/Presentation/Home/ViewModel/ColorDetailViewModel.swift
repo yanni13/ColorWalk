@@ -17,10 +17,9 @@ final class ColorDetailViewModel: ViewModelType {
 
     struct Output {
         let currentCard: Driver<ColorCard>
-        let pageText:    Driver<String>   // "1 / 9"
+        let pageText: Driver<String>   // "1 / 9"
     }
 
-    // Coordinator가 설정하는 콜백
     var onBack: (() -> Void)?
 
     private let cards: [ColorCard]

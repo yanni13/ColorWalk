@@ -24,12 +24,19 @@ final class ColorDetailViewController: BaseViewController {
         return iv
     }()
 
-    private let gradientOverlayView = UIView()
-    private let gradientLayer = CAGradientLayer()
+    private let gradientOverlayView = GradientView(
+        colors: [
+            .clear,
+            .clear,
+            UIColor(white: 0, alpha: 0.733),
+            UIColor(white: 0, alpha: 0.867)
+        ],
+        locations: [0, 0.4, 0.75, 1.0]
+    )
 
     // MARK: - UI: Top Controls
-    private let backButton = DetailGlassButton(icon: "chevron.left")
-    private let shareButton = DetailGlassButton(icon: "square.and.arrow.up")
+    private let backButton  = GlassPillButton(icon: "chevron.left")
+    private let shareButton = GlassPillButton(icon: "square.and.arrow.up")
 
     private let pageCounterView: UIView = {
         let v = UIView()
@@ -37,15 +44,7 @@ final class ColorDetailViewController: BaseViewController {
         v.clipsToBounds = true
         return v
     }()
-    private let pageCounterBlur: UIVisualEffectView = {
-        let v = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterialDark))
-        return v
-    }()
-    private let pageCounterDim: UIView = {
-        let v = UIView()
-        v.backgroundColor = UIColor.white.withAlphaComponent(0.082)
-        return v
-    }()
+    private let pageCounterGlass = GlassView(dimStyle: .light, cornerRadius: 14)
     private let pageCounterLabel: UILabel = {
         let l = UILabel()
         l.font = UIFont(name: "Pretendard-Medium", size: 12)
@@ -55,13 +54,7 @@ final class ColorDetailViewController: BaseViewController {
     }()
 
     // MARK: - UI: Bottom Info
-    private let colorDotView: UIView = {
-        let v = UIView()
-        v.layer.cornerRadius = 8
-        v.layer.borderWidth = 2
-        v.layer.borderColor = UIColor.white.cgColor
-        return v
-    }()
+    private let colorDotView = ColorDotView(size: 16, borderColor: .white, borderWidth: 2)
 
     private let colorNameLabel: UILabel = {
         let l = UILabel()
@@ -125,31 +118,12 @@ final class ColorDetailViewController: BaseViewController {
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        gradientLayer.frame = gradientOverlayView.bounds
-    }
-
     // MARK: - setupViews
 
     override func setupViews() {
         view.backgroundColor = .black
 
-        // Gradient setup (f9RNW: transparent → #000000DD, top→bottom)
-        gradientLayer.colors = [
-            UIColor.clear.cgColor,
-            UIColor.clear.cgColor,
-            UIColor(white: 0, alpha: 0.733).cgColor,  // #000000BB
-            UIColor(white: 0, alpha: 0.867).cgColor   // #000000DD
-        ]
-        gradientLayer.locations = [0, 0.4, 0.75, 1.0]
-        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
-        gradientLayer.endPoint   = CGPoint(x: 0.5, y: 1)
-        gradientOverlayView.layer.addSublayer(gradientLayer)
-
-        // Counter blur layers
-        pageCounterView.addSubview(pageCounterBlur)
-        pageCounterView.addSubview(pageCounterDim)
+        pageCounterView.addSubview(pageCounterGlass)
         pageCounterView.addSubview(pageCounterLabel)
 
         [backgroundImageView, gradientOverlayView,
@@ -166,7 +140,7 @@ final class ColorDetailViewController: BaseViewController {
         backgroundImageView.snp.makeConstraints { $0.edges.equalToSuperview() }
         gradientOverlayView.snp.makeConstraints { $0.edges.equalToSuperview() }
 
-        // Top controls — y:58 in 852pt design
+        // Top controls
         backButton.snp.makeConstraints {
             $0.width.height.equalTo(44)
             $0.leading.equalToSuperview().offset(20)
@@ -183,16 +157,14 @@ final class ColorDetailViewController: BaseViewController {
             $0.centerX.equalToSuperview()
             $0.centerY.equalTo(backButton)
         }
-        pageCounterBlur.snp.makeConstraints { $0.edges.equalToSuperview() }
-        pageCounterDim.snp.makeConstraints { $0.edges.equalToSuperview() }
+        pageCounterGlass.snp.makeConstraints { $0.edges.equalToSuperview() }
         pageCounterLabel.snp.makeConstraints { $0.edges.equalToSuperview() }
 
-        // Bottom info — positions from f9RNW (852pt screen)
+        // Bottom info
         colorNameRow.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(24)
-            $0.bottom.equalToSuperview().inset(182)  // 852 - 670 = 182
+            $0.bottom.equalToSuperview().inset(182)
         }
-        colorDotView.snp.makeConstraints { $0.width.height.equalTo(16) }
 
         hexCodeLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(24)
@@ -203,7 +175,7 @@ final class ColorDetailViewController: BaseViewController {
             $0.top.equalTo(hexCodeLabel.snp.bottom).offset(8)
         }
 
-        // Swipe hint chevron — right edge, vertically centered
+        // Swipe hint chevron
         swipeChevron.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(12)
             $0.centerY.equalToSuperview()
@@ -254,48 +226,17 @@ final class ColorDetailViewController: BaseViewController {
     // MARK: - Configure
 
     private func configure(card: ColorCard) {
-        // 이미지 크로스페이드
         if let url = card.imageURL {
             backgroundImageView.kf.setImage(with: url, options: [.transition(.fade(0.25))])
         }
 
-        colorDotView.backgroundColor = card.dotColor
+        colorDotView.setColor(card.dotColor)
 
         let nameAttr = NSMutableAttributedString(string: card.colorName)
         nameAttr.addAttribute(.kern, value: -0.5, range: NSRange(location: 0, length: card.colorName.count))
         colorNameLabel.attributedText = nameAttr
 
         hexCodeLabel.text = card.hexColor
-        metaLabel.text    = "\(card.captureDate) · \(card.locationName)"
+        metaLabel.text = "\(card.captureDate) · \(card.locationName)"
     }
-}
-
-// MARK: - DetailGlassButton
-
-private final class DetailGlassButton: UIButton {
-
-    init(icon: String) {
-        super.init(frame: .zero)
-        layer.cornerRadius = 22
-        clipsToBounds = true
-
-        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterialDark))
-        let dimView = UIView()
-        dimView.backgroundColor = UIColor.white.withAlphaComponent(0.082)  // #FFFFFF15
-
-        let iconView = UIImageView()
-        iconView.image = UIImage(systemName: icon)?
-            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 18, weight: .medium))
-        iconView.tintColor = .white
-        iconView.contentMode = .scaleAspectFit
-        iconView.isUserInteractionEnabled = false
-
-        [blurView, dimView, iconView].forEach { addSubview($0) }
-
-        blurView.snp.makeConstraints { $0.edges.equalToSuperview() }
-        dimView.snp.makeConstraints  { $0.edges.equalToSuperview() }
-        iconView.snp.makeConstraints { $0.center.equalToSuperview(); $0.width.height.equalTo(22) }
-    }
-
-    required init?(coder: NSCoder) { fatalError() }
 }
