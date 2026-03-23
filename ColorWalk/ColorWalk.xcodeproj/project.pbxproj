@@ -8,11 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		D82CC0892F710D6100211DB3 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = D82CC0882F710D6100211DB3 /* .gitignore */; };
+		D82CC09E2F71136D00211DB3 /* AtomicDesign.md in Resources */ = {isa = PBXBuildFile; fileRef = D82CC09D2F71136D00211DB3 /* AtomicDesign.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		D82CC0702F710D1B00211DB3 /* ColorWalk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ColorWalk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D82CC0882F710D6100211DB3 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		D82CC09D2F71136D00211DB3 /* AtomicDesign.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = AtomicDesign.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -50,6 +52,7 @@
 		D82CC0672F710D1B00211DB3 = {
 			isa = PBXGroup;
 			children = (
+				D82CC09D2F71136D00211DB3 /* AtomicDesign.md */,
 				D82CC0882F710D6100211DB3 /* .gitignore */,
 				D82CC0722F710D1B00211DB3 /* ColorWalk */,
 				D82CC0712F710D1B00211DB3 /* Products */,
@@ -129,6 +132,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D82CC0892F710D6100211DB3 /* .gitignore in Resources */,
+				D82CC09E2F71136D00211DB3 /* AtomicDesign.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
