@@ -16,6 +16,8 @@
 		D82CC51C2F73D0E800211DB3 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D82CC51B2F73D0E700211DB3 /* WidgetKit.framework */; };
 		D82CC51E2F73D0E800211DB3 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D82CC51D2F73D0E800211DB3 /* SwiftUI.framework */; };
 		D82CC52F2F73D0E900211DB3 /* ColorWalkWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D82CC5192F73D0E700211DB3 /* ColorWalkWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D82CC62A2F74336000211DB3 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D82CC6292F74336000211DB3 /* RealmSwift */; };
+		D82CC62B2F74339300211DB3 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D82CC6292F74336000211DB3 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +40,17 @@
 				D82CC52F2F73D0E900211DB3 /* ColorWalkWidgetExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D82CC62C2F74339300211DB3 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				D82CC62B2F74339300211DB3 /* RealmSwift in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -92,6 +105,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D82CC62A2F74336000211DB3 /* RealmSwift in Frameworks */,
 				D82CC0DA2F711D7D00211DB3 /* Kingfisher in Frameworks */,
 				D82CC0D22F711D2B00211DB3 /* SnapKit in Frameworks */,
 				D82CC0CF2F711D1D00211DB3 /* RxSwift in Frameworks */,
@@ -152,6 +166,7 @@
 				D82CC06D2F710D1B00211DB3 /* Frameworks */,
 				D82CC06E2F710D1B00211DB3 /* Resources */,
 				D82CC5342F73D0E900211DB3 /* Embed Foundation Extensions */,
+				D82CC62C2F74339300211DB3 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -167,6 +182,7 @@
 				D82CC0CE2F711D1D00211DB3 /* RxSwift */,
 				D82CC0D12F711D2B00211DB3 /* SnapKit */,
 				D82CC0D92F711D7D00211DB3 /* Kingfisher */,
+				D82CC6292F74336000211DB3 /* RealmSwift */,
 			);
 			productName = ColorWalk;
 			productReference = D82CC0702F710D1B00211DB3 /* ColorWalk.app */;
@@ -225,6 +241,7 @@
 				D82CC0CB2F711D1D00211DB3 /* XCRemoteSwiftPackageReference "RxSwift" */,
 				D82CC0D02F711D2B00211DB3 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				D82CC0D82F711D7D00211DB3 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				D82CC6262F74336000211DB3 /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D82CC0712F710D1B00211DB3 /* Products */;
@@ -598,6 +615,14 @@
 				minimumVersion = 8.8.0;
 			};
 		};
+		D82CC6262F74336000211DB3 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 20.0.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -620,6 +645,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D82CC0D82F711D7D00211DB3 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		D82CC6292F74336000211DB3 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D82CC6262F74336000211DB3 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

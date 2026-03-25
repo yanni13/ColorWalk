@@ -53,6 +53,9 @@ final class MainTabBarController: UITabBarController {
         // 지도
         let mapNav = UINavigationController()
         mapNav.isNavigationBarHidden = true
+        let mapCoordinator = MapCoordinator(navigationController: mapNav)
+        coordinators.append(mapCoordinator)
+        mapCoordinator.start()
         mapNav.tabBarItem = UITabBarItem(
             title: "지도",
             image: UIImage(systemName: "mappin.and.ellipse"),
