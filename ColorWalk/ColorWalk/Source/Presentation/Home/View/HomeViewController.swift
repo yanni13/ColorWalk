@@ -12,11 +12,14 @@ final class HomeViewController: BaseViewController {
 
     // MARK: - Properties
     private let viewModel: HomeViewModel
-    var allCards: [ColorCard] = ColorCard.mockCards
+    private var cards: [ColorCard] = []
+
+    var allCards: [ColorCard] { cards }
     var onCardTap: ((Int) -> Void)?
     var onMissionTap: (() -> Void)?
 
     // MARK: - UI: Header
+
     private let titleLabel: UILabel = {
         let l = UILabel()
         l.text = "ColorWalk"
@@ -135,6 +138,21 @@ final class HomeViewController: BaseViewController {
         return s
     }()
 
+    // MARK: - UI: Collection View
+
+    private lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumLineSpacing = 16
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.backgroundColor = .clear
+        cv.showsVerticalScrollIndicator = false
+        cv.register(ColorCardCell.self, forCellWithReuseIdentifier: ColorCardCell.reuseID)
+        cv.dataSource = self
+        cv.delegate = self
+        return cv
+    }()
+
     // MARK: - Init
 
     init(viewModel: HomeViewModel) {
@@ -157,6 +175,9 @@ final class HomeViewController: BaseViewController {
 
         view.addSubview(emptyStateStack)
         emptyCircleView.addSubview(cameraIconView)
+
+        view.addSubview(collectionView)
+        collectionView.isHidden = true
     }
 
     // MARK: - setupConstraints
@@ -198,6 +219,12 @@ final class HomeViewController: BaseViewController {
             $0.center.equalToSuperview()
             $0.width.height.equalTo(48)
         }
+
+        collectionView.snp.makeConstraints {
+            $0.top.equalTo(headerRow.snp.bottom).offset(12)
+            $0.leading.trailing.equalToSuperview()
+            $0.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
     }
 
     // MARK: - bind
@@ -208,5 +235,57 @@ final class HomeViewController: BaseViewController {
                 self?.onMissionTap?()
             })
             .disposed(by: disposeBag)
+
+        ColorCardStore.shared.cards
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] newCards in
+                guard let self else { return }
+                self.cards = newCards
+                let isEmpty = newCards.isEmpty
+                self.emptyStateStack.isHidden = !isEmpty
+                self.collectionView.isHidden = isEmpty
+                self.collectionView.reloadData()
+            })
+            .disposed(by: disposeBag)
+    }
+}
+
+// MARK: - UICollectionViewDataSource & DelegateFlowLayout
+
+extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        cards.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: ColorCardCell.reuseID,
+            for: indexPath
+        ) as! ColorCardCell
+        cell.configure(with: cards[indexPath.item])
+        return cell
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+        let width = collectionView.bounds.width - 48
+        let height = width * (420.0 / 345.0)
+        return CGSize(width: width, height: height)
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        insetForSectionAt section: Int
+    ) -> UIEdgeInsets {
+        UIEdgeInsets(top: 8, left: 24, bottom: 24, right: 24)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        onCardTap?(indexPath.item)
     }
 }

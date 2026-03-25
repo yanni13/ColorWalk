@@ -124,6 +124,8 @@ final class GalleryColorPopupView: UIView {
 
     // MARK: - Configure
     func configure(color: UIColor, hex: String, match: Int) {
+        let canCollect = match >= 60
+
         let emoji: String
         let title: String
 
@@ -140,6 +142,14 @@ final class GalleryColorPopupView: UIView {
 
         emojiLabel.text = emoji
         titleLabel.text = title
-        descLabel.text = "검출 색상: \(hex)\n미션 일치율 \(match)%  · 이대로 수집할까요?"
+
+        if canCollect {
+            descLabel.text = "검출 색상: \(hex)\n미션 일치율 \(match)%  · 이대로 수집할까요?"
+        } else {
+            descLabel.text = "검출 색상: \(hex)\n일치율 \(match)% · 60% 이상이어야 수집할 수 있어요"
+        }
+
+        collectButton.isEnabled = canCollect
+        collectButton.alpha = canCollect ? 1.0 : 0.35
     }
 }

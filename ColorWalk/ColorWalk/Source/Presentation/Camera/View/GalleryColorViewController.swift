@@ -185,8 +185,9 @@ final class GalleryColorViewController: UIViewController {
             self?.dismissPopupAnimated()
         }
         popup.onCollect = { [weak self] in
+            guard match >= 60 else { return }
             self?.dismissPopupAnimated { [weak self] in
-                self?.showCollectSuccess(color: color, hex: hex)
+                self?.showCollectSuccess(color: color, hex: hex, match: match)
             }
         }
 
@@ -214,23 +215,33 @@ final class GalleryColorViewController: UIViewController {
     }
 
     // MARK: - Collect Success
-    private func showCollectSuccess(color: UIColor, hex: String) {
+    private func showCollectSuccess(color: UIColor, hex: String, match: Int) {
+        let card = ColorCard(
+            id: UUID().uuidString,
+            imageURL: nil,
+            capturedImage: image,
+            colorName: hex,
+            hexColor: hex,
+            dotColor: color,
+            locationName: "갤러리",
+            captureDate: Self.currentDateString(),
+            matchPercentage: match,
+            missionCurrent: 0,
+            missionTotal: 9
+        )
+        ColorCardStore.shared.add(card)
+
         let toast = UIView()
         toast.backgroundColor = UIColor(hex: "#1A1A1A").withAlphaComponent(0.85)
         toast.layer.cornerRadius = 20
         view.addSubview(toast)
 
         let label = UILabel()
-        label.text = "✓  색상 수집 완료!"
+        label.text = "✓  색상 수집 완료! (\(match)%)"
         label.font = UIFont(name: "Pretendard-SemiBold", size: 14)
         label.textColor = .white
         toast.addSubview(label)
         label.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 12, left: 20, bottom: 12, right: 20)) }
-
-        let colorDot = UIView()
-        colorDot.backgroundColor = color
-        colorDot.layer.cornerRadius = 6
-        toast.addSubview(colorDot)
 
         toast.snp.makeConstraints {
             $0.centerX.equalToSuperview()
@@ -245,9 +256,16 @@ final class GalleryColorViewController: UIViewController {
         }
         UIView.animate(withDuration: 0.3, delay: 1.8) {
             toast.alpha = 0
-        } completion: { _ in
+        } completion: { [weak self] _ in
             toast.removeFromSuperview()
+            self?.dismiss(animated: true)
         }
+    }
+
+    private static func currentDateString() -> String {
+        let fmt = DateFormatter()
+        fmt.dateFormat = "yyyy.MM.dd"
+        return fmt.string(from: Date())
     }
 
     // MARK: - Color Helpers

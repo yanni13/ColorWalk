@@ -341,15 +341,79 @@ final class CameraViewController: BaseViewController {
         UIView.animate(withDuration: 0.08, animations: { flash.alpha = 0.85 }) { _ in
             UIView.animate(withDuration: 0.15, animations: { flash.alpha = 0 }) { _ in
                 flash.removeFromSuperview()
-                self.saveCurrentFrame()
+                self.captureAndSave()
             }
         }
     }
 
-    private func saveCurrentFrame() {
+    private func captureAndSave() {
         guard let img = previewView.image else { return }
         thumbnailButton.setImage(img, for: .normal)
         thumbnailButton.imageView?.contentMode = .scaleAspectFill
+
+        let match = viewModel.matchPercent.value
+        if match >= 60 {
+            let card = ColorCard(
+                id: UUID().uuidString,
+                imageURL: nil,
+                capturedImage: img,
+                colorName: viewModel.detectedHex.value,
+                hexColor: viewModel.detectedHex.value,
+                dotColor: viewModel.detectedColor.value,
+                locationName: "현재 위치",
+                captureDate: Self.currentDateString(),
+                matchPercentage: match,
+                missionCurrent: 0,
+                missionTotal: 9
+            )
+            ColorCardStore.shared.add(card)
+            showCaptureToast(success: true, match: match)
+        } else {
+            showCaptureToast(success: false, match: match)
+        }
+    }
+
+    private func showCaptureToast(success: Bool, match: Int) {
+        let toast = UIView()
+        toast.backgroundColor = (success
+            ? UIColor(hex: "#1A1A1A")
+            : UIColor(hex: "#FF3B30")
+        ).withAlphaComponent(0.88)
+        toast.layer.cornerRadius = 20
+        view.addSubview(toast)
+
+        let label = UILabel()
+        label.text = success
+            ? "✓  색상 수집 완료! (\(match)%)"
+            : "✗  일치율 \(match)% · 60% 이상이어야 수집 가능해요"
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 14) ?? .systemFont(ofSize: 14, weight: .semibold)
+        label.textColor = .white
+        toast.addSubview(label)
+        label.snp.makeConstraints {
+            $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 12, left: 20, bottom: 12, right: 20))
+        }
+        toast.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(shutterButton.snp.top).offset(-24)
+        }
+        toast.alpha = 0
+        toast.transform = CGAffineTransform(translationX: 0, y: 8)
+
+        UIView.animate(withDuration: 0.3) {
+            toast.alpha = 1
+            toast.transform = .identity
+        }
+        UIView.animate(withDuration: 0.3, delay: 1.8) {
+            toast.alpha = 0
+        } completion: { _ in
+            toast.removeFromSuperview()
+        }
+    }
+
+    private static func currentDateString() -> String {
+        let fmt = DateFormatter()
+        fmt.dateFormat = "yyyy.MM.dd"
+        return fmt.string(from: Date())
     }
 
     // MARK: - Dynamic Island

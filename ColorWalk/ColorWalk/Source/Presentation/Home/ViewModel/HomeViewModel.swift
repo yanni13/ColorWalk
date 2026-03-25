@@ -10,6 +10,7 @@ import RxCocoa
 struct ColorCard {
     let id: String
     let imageURL: URL?
+    let capturedImage: UIImage?
     let colorName: String
     let hexColor: String
     let dotColor: UIColor
@@ -26,6 +27,7 @@ extension ColorCard {
         ColorCard(
             id: "1",
             imageURL: URL(string: "https://images.unsplash.com/photo-1683652584550-5fdbc14762bf?w=1080"),
+            capturedImage: nil,
             colorName: "Sunset Pink",
             hexColor: "#FF7EB3",
             dotColor: UIColor(hex: "#FF7EB3"),
@@ -38,6 +40,7 @@ extension ColorCard {
         ColorCard(
             id: "2",
             imageURL: URL(string: "https://images.unsplash.com/photo-1634596570024-00e86e21f876?w=1080"),
+            capturedImage: nil,
             colorName: "Ocean Blue",
             hexColor: "#3182F6",
             dotColor: UIColor(hex: "#3182F6"),
@@ -50,6 +53,7 @@ extension ColorCard {
         ColorCard(
             id: "3",
             imageURL: URL(string: "https://images.unsplash.com/photo-1561495391-457141312761?w=1080"),
+            capturedImage: nil,
             colorName: "Forest Green",
             hexColor: "#34C759",
             dotColor: UIColor(hex: "#34C759"),
@@ -62,6 +66,7 @@ extension ColorCard {
         ColorCard(
             id: "4",
             imageURL: URL(string: "https://images.unsplash.com/photo-1561495391-457141312761?w=1080"),
+            capturedImage: nil,
             colorName: "Golden Hour",
             hexColor: "#FF9500",
             dotColor: UIColor(hex: "#FF9500"),
@@ -74,6 +79,7 @@ extension ColorCard {
         ColorCard(
             id: "5",
             imageURL: URL(string: "https://images.unsplash.com/photo-1634596570024-00e86e21f876?w=1080"),
+            capturedImage: nil,
             colorName: "Lavender Mist",
             hexColor: "#BF5AF2",
             dotColor: UIColor(hex: "#BF5AF2"),
