@@ -8,6 +8,7 @@ import AVFoundation
 import SnapKit
 import RxSwift
 import RxCocoa
+import PhotosUI
 
 final class CameraViewController: BaseViewController {
 
@@ -49,13 +50,11 @@ final class CameraViewController: BaseViewController {
         return l
     }()
 
-    private let shareButton: UIButton = {
+    // MrN1v → "Done" 버튼으로 교체
+    private let doneButton: UIButton = {
         let b = UIButton(type: .system)
-        b.setImage(
-            UIImage(systemName: "square.and.arrow.up")?
-                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)),
-            for: .normal
-        )
+        b.setTitle("Done", for: .normal)
+        b.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 16) ?? .systemFont(ofSize: 16, weight: .semibold)
         b.tintColor = .white
         return b
     }()
@@ -147,7 +146,7 @@ final class CameraViewController: BaseViewController {
         view.addSubview(navBar)
         navBar.addSubview(backButton)
         navBar.addSubview(navTitleLabel)
-        navBar.addSubview(shareButton)
+        navBar.addSubview(doneButton)
 
         view.addSubview(crosshairView)
         view.addSubview(colorPillView)
@@ -182,10 +181,9 @@ final class CameraViewController: BaseViewController {
         navTitleLabel.snp.makeConstraints {
             $0.center.equalToSuperview()
         }
-        shareButton.snp.makeConstraints {
+        doneButton.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(20)
             $0.centerY.equalToSuperview()
-            $0.width.height.equalTo(24)
         }
 
         // Viewfinder
@@ -245,11 +243,23 @@ final class CameraViewController: BaseViewController {
 
     override func bind() {
         // Navigation: 홈 탭으로 복귀 + 탭바 복구
+        let exitAction: () -> Void = { [weak self] in
+            self?.tabBarController?.tabBar.isHidden = false
+            self?.tabBarController?.selectedIndex = 0
+        }
+
         backButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                self?.tabBarController?.tabBar.isHidden = false
-                self?.tabBarController?.selectedIndex = 0
-            })
+            .subscribe(onNext: { exitAction() })
+            .disposed(by: disposeBag)
+
+        // Done 버튼 (MrN1v 교체) — 카메라 종료
+        doneButton.rx.tap
+            .subscribe(onNext: { exitAction() })
+            .disposed(by: disposeBag)
+
+        // 갤러리 버튼 (gJyRv) — 사진 가져오기
+        thumbnailButton.rx.tap
+            .subscribe(onNext: { [weak self] in self?.openPhotoPicker() })
             .disposed(by: disposeBag)
 
         flipButton.rx.tap
@@ -355,4 +365,37 @@ final class CameraViewController: BaseViewController {
         )
     }
 
+    // MARK: - Gallery (gJyRv)
+
+    private func openPhotoPicker() {
+        var config = PHPickerConfiguration()
+        config.selectionLimit = 1
+        config.filter = .images
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+
+}
+
+// MARK: - PHPickerViewControllerDelegate
+
+extension CameraViewController: PHPickerViewControllerDelegate {
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+        guard let provider = results.first?.itemProvider,
+              provider.canLoadObject(ofClass: UIImage.self) else { return }
+
+        provider.loadObject(ofClass: UIImage.self) { [weak self] obj, _ in
+            DispatchQueue.main.async {
+                guard let self, let image = obj as? UIImage else { return }
+                let galleryVC = GalleryColorViewController(
+                    image: image,
+                    missionColor: self.viewModel.missionColor.value,
+                    missionHex:   self.viewModel.detectedHex.value
+                )
+                self.present(galleryVC, animated: true)
+            }
+        }
+    }
 }
