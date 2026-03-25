@@ -20,7 +20,16 @@ final class HomeCoordinator: Coordinator {
             guard let self, let vc = viewController else { return }
             self.showDetail(cards: vc.allCards, startIndex: index)
         }
+        viewController.onMissionTap = { [weak self] in
+            self?.showMission()
+        }
         navigationController.setViewControllers([viewController], animated: false)
+    }
+
+    private func showMission() {
+        let viewModel = MissionHomeViewModel()
+        let vc = MissionHomeViewController(viewModel: viewModel)
+        navigationController.pushViewController(vc, animated: true)
     }
 
     private func showDetail(cards: [ColorCard], startIndex: Int) {

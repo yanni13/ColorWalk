@@ -32,6 +32,9 @@ final class MainTabBarController: UITabBarController {
         // 촬영
         let cameraNav = UINavigationController()
         cameraNav.isNavigationBarHidden = true
+        let cameraCoordinator = CameraCoordinator(navigationController: cameraNav)
+        coordinators.append(cameraCoordinator)
+        cameraCoordinator.start()
         cameraNav.tabBarItem = UITabBarItem(
             title: "촬영",
             image: UIImage(systemName: "camera"),

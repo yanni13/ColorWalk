@@ -1,0 +1,358 @@
+//
+//  CameraViewController.swift
+//  ColorWalk
+//
+
+import UIKit
+import AVFoundation
+import SnapKit
+import RxSwift
+import RxCocoa
+
+final class CameraViewController: BaseViewController {
+
+    // MARK: - Callbacks
+    var onBack: (() -> Void)?
+
+    // MARK: - ViewModel
+    private let viewModel = CameraViewModel()
+
+    // MARK: - Preview
+    private let previewView: UIImageView = {
+        let iv = UIImageView()
+        iv.contentMode = .scaleAspectFill
+        iv.clipsToBounds = true
+        iv.backgroundColor = .black
+        return iv
+    }()
+
+    // MARK: - Navigation Bar
+    private let navBar = UIView()
+
+    private let backButton: UIButton = {
+        let b = UIButton(type: .system)
+        b.setImage(
+            UIImage(systemName: "chevron.left")?
+                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)),
+            for: .normal
+        )
+        b.tintColor = .white
+        return b
+    }()
+
+    private let navTitleLabel: UILabel = {
+        let l = UILabel()
+        l.text = "색상 촬영"
+        l.font = UIFont(name: "Pretendard-Bold", size: 17) ?? .boldSystemFont(ofSize: 17)
+        l.textColor = .white
+        l.textAlignment = .center
+        return l
+    }()
+
+    private let shareButton: UIButton = {
+        let b = UIButton(type: .system)
+        b.setImage(
+            UIImage(systemName: "square.and.arrow.up")?
+                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)),
+            for: .normal
+        )
+        b.tintColor = .white
+        return b
+    }()
+
+    // MARK: - Viewfinder
+    private let crosshairView = CrosshairView()
+    private let colorPillView = ColorDetectPillView()
+
+    // MARK: - Filter Strip
+    private let filterStrip = CameraFilterStripView()
+
+    // MARK: - Bottom Controls
+    private let missionPill: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor.white.withAlphaComponent(0.12)
+        v.layer.cornerRadius = 19
+        return v
+    }()
+
+    private let missionIcon: UIImageView = {
+        let iv = UIImageView()
+        iv.image = UIImage(systemName: "scope")?
+            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 12, weight: .regular))
+        iv.tintColor = .white
+        iv.contentMode = .scaleAspectFit
+        return iv
+    }()
+
+    private let missionLabel: UILabel = {
+        let l = UILabel()
+        l.font = UIFont(name: "Pretendard-Regular", size: 13) ?? .systemFont(ofSize: 13)
+        l.textColor = .white
+        l.text = "오늘의 미션: Sky Blue를 찾아보세요"
+        return l
+    }()
+
+    // Thumbnail (last captured photo preview)
+    private let thumbnailButton: UIButton = {
+        let b = UIButton(type: .custom)
+        b.backgroundColor = UIColor(hex: "#2B2B2B")
+        b.layer.cornerRadius = 10
+        b.layer.borderWidth = 1.5
+        b.layer.borderColor = UIColor.white.withAlphaComponent(0.3).cgColor
+        b.clipsToBounds = true
+        return b
+    }()
+
+    // Shutter
+    private let shutterButton: UIButton = {
+        let b = UIButton(type: .custom)
+        b.backgroundColor = .clear
+        b.layer.cornerRadius = 36
+        b.layer.borderWidth = 3
+        b.layer.borderColor = UIColor.white.cgColor
+
+        let inner = UIView()
+        inner.isUserInteractionEnabled = false
+        inner.backgroundColor = .white
+        inner.layer.cornerRadius = 28
+        b.addSubview(inner)
+        inner.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.width.height.equalTo(56)
+        }
+        return b
+    }()
+
+    // Flip camera
+    private let flipButton: UIButton = {
+        let b = UIButton(type: .system)
+        b.setImage(
+            UIImage(systemName: "arrow.triangle.2.circlepath.camera")?
+                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)),
+            for: .normal
+        )
+        b.tintColor = .white
+        b.backgroundColor = UIColor.white.withAlphaComponent(0.15)
+        b.layer.cornerRadius = 24
+        return b
+    }()
+
+
+    // MARK: - setupViews
+
+    override func setupViews() {
+        view.backgroundColor = .black
+
+        view.addSubview(previewView)
+        view.addSubview(navBar)
+        navBar.addSubview(backButton)
+        navBar.addSubview(navTitleLabel)
+        navBar.addSubview(shareButton)
+
+        view.addSubview(crosshairView)
+        view.addSubview(colorPillView)
+        view.addSubview(filterStrip)
+
+        view.addSubview(missionPill)
+        missionPill.addSubview(missionIcon)
+        missionPill.addSubview(missionLabel)
+
+        view.addSubview(thumbnailButton)
+        view.addSubview(shutterButton)
+        view.addSubview(flipButton)
+
+        requestPermissionAndSetup()
+    }
+
+    // MARK: - setupConstraints
+
+    override func setupConstraints() {
+        previewView.snp.makeConstraints { $0.edges.equalToSuperview() }
+
+        navBar.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(56)
+        }
+        backButton.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(20)
+            $0.centerY.equalToSuperview()
+            $0.width.height.equalTo(24)
+        }
+        navTitleLabel.snp.makeConstraints {
+            $0.center.equalToSuperview()
+        }
+        shareButton.snp.makeConstraints {
+            $0.trailing.equalToSuperview().inset(20)
+            $0.centerY.equalToSuperview()
+            $0.width.height.equalTo(24)
+        }
+
+        // Viewfinder
+        crosshairView.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.width.height.equalTo(100)
+        }
+        colorPillView.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.top.equalTo(crosshairView.snp.bottom).offset(20)
+            $0.height.equalTo(38)
+        }
+
+        // Bottom: shutter centered, thumbnail left, flip right
+        shutterButton.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(28)
+            $0.width.height.equalTo(72)
+        }
+        thumbnailButton.snp.makeConstraints {
+            $0.centerY.equalTo(shutterButton)
+            $0.trailing.equalTo(shutterButton.snp.leading).offset(-32)
+            $0.width.height.equalTo(48)
+        }
+        flipButton.snp.makeConstraints {
+            $0.centerY.equalTo(shutterButton)
+            $0.leading.equalTo(shutterButton.snp.trailing).offset(32)
+            $0.width.height.equalTo(48)
+        }
+
+        // Mission pill
+        missionPill.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(shutterButton.snp.top).offset(-24)
+            $0.height.equalTo(39)
+        }
+        missionIcon.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(16)
+            $0.centerY.equalToSuperview()
+            $0.width.height.equalTo(16)
+        }
+        missionLabel.snp.makeConstraints {
+            $0.leading.equalTo(missionIcon.snp.trailing).offset(8)
+            $0.trailing.equalToSuperview().inset(16)
+            $0.centerY.equalToSuperview()
+        }
+
+        // Filter strip above mission pill
+        filterStrip.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview()
+            $0.bottom.equalTo(missionPill.snp.top).offset(-14)
+            $0.height.equalTo(36)
+        }
+    }
+
+    // MARK: - bind
+
+    override func bind() {
+        // Navigation: 홈 탭으로 복귀 + 탭바 복구
+        backButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                self?.tabBarController?.tabBar.isHidden = false
+                self?.tabBarController?.selectedIndex = 0
+            })
+            .disposed(by: disposeBag)
+
+        flipButton.rx.tap
+            .subscribe(onNext: { [weak self] in self?.viewModel.flipCamera() })
+            .disposed(by: disposeBag)
+
+        shutterButton.rx.tap
+            .subscribe(onNext: { [weak self] in self?.animateShutter() })
+            .disposed(by: disposeBag)
+
+        // Filter selection
+        filterStrip.selectedFilter
+            .subscribe(onNext: { [weak self] f in self?.viewModel.setFilter(f) })
+            .disposed(by: disposeBag)
+
+        // Preview frames
+        viewModel.previewImage
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] img in self?.previewView.image = img })
+            .disposed(by: disposeBag)
+
+        // Color pill 업데이트
+        Observable.combineLatest(viewModel.detectedColor, viewModel.detectedHex, viewModel.matchPercent)
+            .throttle(.milliseconds(100), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] color, hex, match in
+                self?.colorPillView.update(color: color, hex: hex, match: match)
+            })
+            .disposed(by: disposeBag)
+
+        // Dynamic Island 업데이트 (1초마다 — 과도한 업데이트 방지)
+        Observable.combineLatest(viewModel.detectedColor, viewModel.detectedHex, viewModel.matchPercent)
+            .throttle(.seconds(1), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] color, hex, match in
+                guard #available(iOS 16.1, *) else { return }
+                ColorActivityManager.shared.update(color: color, hex: hex, match: match)
+            })
+            .disposed(by: disposeBag)
+
+        // Mission label
+        viewModel.missionName
+            .subscribe(onNext: { [weak self] name in
+                self?.missionLabel.text = "오늘의 미션: \(name)를 찾아보세요"
+            })
+            .disposed(by: disposeBag)
+    }
+
+    // MARK: - Lifecycle
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.tabBar.isHidden = true
+        viewModel.startSession()
+        startDynamicIsland()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
+        viewModel.stopSession()
+        if #available(iOS 16.1, *) { ColorActivityManager.shared.stop() }
+    }
+
+    // MARK: - Camera Permission
+
+    private func requestPermissionAndSetup() {
+        AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
+            guard granted else { return }
+            self?.viewModel.setupSession()
+        }
+    }
+
+    // MARK: - Shutter Animation
+
+    private func animateShutter() {
+        let flash = UIView(frame: view.bounds)
+        flash.backgroundColor = .white
+        flash.alpha = 0
+        view.addSubview(flash)
+        UIView.animate(withDuration: 0.08, animations: { flash.alpha = 0.85 }) { _ in
+            UIView.animate(withDuration: 0.15, animations: { flash.alpha = 0 }) { _ in
+                flash.removeFromSuperview()
+                self.saveCurrentFrame()
+            }
+        }
+    }
+
+    private func saveCurrentFrame() {
+        guard let img = previewView.image else { return }
+        thumbnailButton.setImage(img, for: .normal)
+        thumbnailButton.imageView?.contentMode = .scaleAspectFill
+    }
+
+    // MARK: - Dynamic Island
+
+    private func startDynamicIsland() {
+        guard #available(iOS 16.1, *) else { return }
+        ColorActivityManager.shared.start(
+            missionName: viewModel.missionName.value,
+            missionHex:  "#5B8DEF",
+            color: viewModel.detectedColor.value,
+            hex:   viewModel.detectedHex.value,
+            match: viewModel.matchPercent.value
+        )
+    }
+
+}

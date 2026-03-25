@@ -13,81 +13,127 @@ final class HomeViewController: BaseViewController {
     // MARK: - Properties
     private let viewModel: HomeViewModel
     var allCards: [ColorCard] = ColorCard.mockCards
-    private var currentIndex: Int = 0
     var onCardTap: ((Int) -> Void)?
-
-    // MARK: - UI: Scroll
-    private let scrollView: UIScrollView = {
-        let s = UIScrollView()
-        s.showsVerticalScrollIndicator = false
-        s.showsHorizontalScrollIndicator = false
-        return s
-    }()
-    private let contentView = UIView()
+    var onMissionTap: (() -> Void)?
 
     // MARK: - UI: Header
     private let titleLabel: UILabel = {
         let l = UILabel()
-        l.text = "Gallery"
-        l.font = UIFont(name: "Pretendard-Bold", size: 32)
+        l.text = "ColorWalk"
+        l.font = UIFont(name: "Pretendard-Bold", size: 28)
         l.textColor = UIColor(hex: "#191F28")
         return l
     }()
 
-    private let searchButton: UIButton = {
-        let b = UIButton(type: .system)
-        b.setImage(
-            UIImage(systemName: "magnifyingglass")?
-                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 18, weight: .regular)),
-            for: .normal
-        )
-        b.tintColor = UIColor(hex: "#6B7684")
-        return b
-    }()
-
-    private let filterButton: UIButton = {
-        let b = UIButton(type: .system)
-        b.setImage(
-            UIImage(systemName: "slider.horizontal.3")?
-                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 18, weight: .regular)),
-            for: .normal
-        )
-        b.tintColor = UIColor(hex: "#6B7684")
-        return b
-    }()
-
-    private lazy var titleRow: UIView = {
-        let v = UIView()
-        let actions = UIStackView(arrangedSubviews: [searchButton, filterButton])
-        actions.axis = .horizontal
-        actions.spacing = 16
-        actions.alignment = .center
-        v.addSubview(titleLabel)
-        v.addSubview(actions)
-        titleLabel.snp.makeConstraints { $0.leading.centerY.equalToSuperview() }
-        actions.snp.makeConstraints { $0.trailing.centerY.equalToSuperview() }
-        return v
-    }()
-
     private let subtitleLabel: UILabel = {
         let l = UILabel()
-        l.text = "카드를 스와이프하여 색상 컬렉션을 탐색하세요"
+        l.text = "오늘의 색을 찾아보세요"
         l.font = UIFont(name: "Pretendard-Regular", size: 13)
         l.textColor = UIColor(hex: "#6B7684")
         return l
     }()
 
-    private lazy var headerStack: UIStackView = {
-        let s = UIStackView(arrangedSubviews: [titleRow, subtitleLabel])
+    private lazy var titleStack: UIStackView = {
+        let s = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         s.axis = .vertical
-        s.spacing = 4
+        s.spacing = 2
+        s.alignment = .leading
         return s
     }()
 
-    // MARK: - UI: Content
-    private let carouselView = CardCarouselView()
-    private let paginationView = PaginationView()
-    private let detailsSectionView = DetailsSectionView()
+    private let bellButton: UIButton = {
+        let b = UIButton(type: .system)
+        b.setImage(
+            UIImage(systemName: "bell")?
+                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 18, weight: .regular)),
+            for: .normal
+        )
+        b.tintColor = UIColor(hex: "#191F28")
+        return b
+    }()
+
+    private let avatarView: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor(hex: "#E5E8EB")
+        v.layer.cornerRadius = 16
+        return v
+    }()
+
+    private lazy var rightStack: UIStackView = {
+        let s = UIStackView(arrangedSubviews: [bellButton, avatarView])
+        s.axis = .horizontal
+        s.spacing = 8
+        s.alignment = .center
+        return s
+    }()
+
+    private let headerRow: UIView = UIView()
+
+    // MARK: - UI: Empty State
+
+    private let emptyCircleView: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor(hex: "#F2F4F6")
+        v.layer.cornerRadius = 60
+        return v
+    }()
+
+    private let cameraIconView: UIImageView = {
+        let iv = UIImageView()
+        iv.image = UIImage(systemName: "camera")?
+            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 28, weight: .regular))
+        iv.tintColor = UIColor(hex: "#B0B8C1")
+        iv.contentMode = .scaleAspectFit
+        return iv
+    }()
+
+    private let emptyTitleLabel: UILabel = {
+        let l = UILabel()
+        l.text = "아직 수집한 색이 없어요"
+        l.font = UIFont(name: "Pretendard-Bold", size: 18)
+        l.textColor = UIColor(hex: "#191F28")
+        l.textAlignment = .center
+        return l
+    }()
+
+    private let emptyDescLabel: UILabel = {
+        let l = UILabel()
+        l.text = "산책하면서 주변의 아름다운 색을\n카메라로 담아보세요"
+        l.font = UIFont(name: "Pretendard-Regular", size: 13)
+        l.textColor = UIColor(hex: "#6B7684")
+        l.textAlignment = .center
+        l.numberOfLines = 2
+        return l
+    }()
+
+    private let ctaButton: UIButton = {
+        let b = UIButton(type: .system)
+        var config = UIButton.Configuration.plain()
+        config.background.backgroundColor = UIColor(hex: "#191F28")
+        config.background.cornerRadius = 26
+        config.imagePadding = 8
+        config.contentInsets = NSDirectionalEdgeInsets(top: 16, leading: 24, bottom: 16, trailing: 24)
+
+        let iconConfig = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
+        config.image = UIImage(systemName: "camera", withConfiguration: iconConfig)
+        config.baseForegroundColor = .white
+
+        var title = AttributedString("오늘의 첫 번째 색을 찾아볼까요?")
+        title.font = UIFont(name: "Pretendard-SemiBold", size: 15) ?? .systemFont(ofSize: 15, weight: .semibold)
+        title.foregroundColor = .white
+        config.attributedTitle = title
+
+        b.configuration = config
+        return b
+    }()
+
+    private lazy var emptyStateStack: UIStackView = {
+        let s = UIStackView(arrangedSubviews: [emptyCircleView, emptyTitleLabel, emptyDescLabel, ctaButton])
+        s.axis = .vertical
+        s.alignment = .center
+        s.spacing = 24
+        return s
+    }()
 
     // MARK: - Init
 
@@ -105,111 +151,62 @@ final class HomeViewController: BaseViewController {
     override func setupViews() {
         view.backgroundColor = .white
 
-        view.addSubview(scrollView)
-        scrollView.addSubview(contentView)
-        [headerStack, carouselView, paginationView, detailsSectionView].forEach {
-            contentView.addSubview($0)
-        }
+        view.addSubview(headerRow)
+        headerRow.addSubview(titleStack)
+        headerRow.addSubview(rightStack)
 
-        paginationView.setup(count: allCards.count)
-        carouselView.configure(cards: allCards, currentIndex: 0)
-        titleLabel.setKern(-0.5)
+        view.addSubview(emptyStateStack)
+        emptyCircleView.addSubview(cameraIconView)
     }
 
     // MARK: - setupConstraints
 
     override func setupConstraints() {
-        scrollView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
-
-        contentView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-            $0.width.equalTo(view)
-        }
-
-        headerStack.snp.makeConstraints {
+        headerRow.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(8)
             $0.leading.trailing.equalToSuperview().inset(24)
+            $0.height.equalTo(57)
         }
 
-        titleRow.snp.makeConstraints {
-            $0.height.equalTo(44)
+        titleStack.snp.makeConstraints {
+            $0.leading.centerY.equalToSuperview()
         }
 
-        carouselView.snp.makeConstraints {
-            $0.top.equalTo(headerStack.snp.bottom).offset(16)
-            $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(452)
+        rightStack.snp.makeConstraints {
+            $0.trailing.centerY.equalToSuperview()
         }
 
-        paginationView.snp.makeConstraints {
-            $0.top.equalTo(carouselView.snp.bottom).offset(8)
+        bellButton.snp.makeConstraints {
+            $0.width.height.equalTo(22)
+        }
+
+        avatarView.snp.makeConstraints {
+            $0.width.height.equalTo(32)
+        }
+
+        emptyStateStack.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.height.equalTo(16)
-        }
-
-        detailsSectionView.snp.makeConstraints {
-            $0.top.equalTo(paginationView.snp.bottom).offset(16)
+            $0.centerY.equalTo(view.snp.centerY).offset(20)
             $0.leading.trailing.equalToSuperview().inset(24)
-            $0.bottom.equalToSuperview().inset(24)
         }
 
-        searchButton.snp.makeConstraints { $0.width.height.equalTo(22) }
-        filterButton.snp.makeConstraints { $0.width.height.equalTo(22) }
+        emptyCircleView.snp.makeConstraints {
+            $0.width.height.equalTo(120)
+        }
+
+        cameraIconView.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.width.height.equalTo(48)
+        }
     }
 
     // MARK: - bind
 
     override func bind() {
-        let input = HomeViewModel.Input(
-            swipeLeft: carouselView.swipeLeft,
-            swipeRight: carouselView.swipeRight,
-            shareTap: detailsSectionView.shareTap,
-            saveTap: detailsSectionView.saveTap
-        )
-
-        let output = viewModel.transform(input: input)
-
-        output.currentIndex
-            .drive(onNext: { [weak self] index in
-                guard let self else { return }
-                self.currentIndex = index
-                self.carouselView.configure(cards: self.allCards, currentIndex: index)
-                self.paginationView.setActive(index: index)
-                self.scrollToDetails()
-            })
-            .disposed(by: disposeBag)
-
-        output.progressRatio
-            .drive(onNext: { [weak self] ratio in
-                self?.detailsSectionView.setProgress(ratio: ratio)
-            })
-            .disposed(by: disposeBag)
-
-        output.missionText
-            .drive(onNext: { [weak self] text in
-                self?.detailsSectionView.setMission(text: text)
-            })
-            .disposed(by: disposeBag)
-
-        carouselView.cardTapped
+        ctaButton.rx.tap
             .subscribe(onNext: { [weak self] in
-                guard let self else { return }
-                self.onCardTap?(self.currentIndex)
+                self?.onMissionTap?()
             })
             .disposed(by: disposeBag)
-    }
-
-    // MARK: - Helpers
-
-    private func scrollToDetails() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            guard let self else { return }
-            let origin = self.detailsSectionView.convert(CGPoint.zero, to: self.scrollView)
-            let rect = CGRect(origin: origin, size: self.detailsSectionView.frame.size)
-            self.scrollView.scrollRectToVisible(rect, animated: true)
-        }
     }
 }
-
