@@ -57,34 +57,31 @@ final class CardCarouselView: UIView {
     }
 
     private func setupConstraints() {
-        // backCard2: width 305, x 44, y 4
         backCard2.snp.makeConstraints {
             $0.width.equalTo(305)
             $0.height.equalTo(380)
-            $0.centerX.equalToSuperview().offset(44 - 24) // x:44 from parent (parent x starts at 0)
+            $0.centerX.equalToSuperview()
             $0.top.equalToSuperview().offset(4)
         }
 
-        // backCard1: width 325, x 34, y 14
         backCard1.snp.makeConstraints {
             $0.width.equalTo(325)
             $0.height.equalTo(395)
-            $0.centerX.equalToSuperview().offset(34 - 24)
+            $0.centerX.equalToSuperview()
             $0.top.equalToSuperview().offset(14)
         }
 
-        // frontCard: width 345, x 24, y 32, height 420
         frontCard.snp.makeConstraints {
             $0.width.equalTo(345)
             $0.height.equalTo(420)
-            $0.leading.equalToSuperview().offset(24)
+            $0.centerX.equalToSuperview()
             $0.top.equalToSuperview().offset(32)
         }
 
-        // GlassOverlay: 카드 하단 — AFc3C height 140
+        // GlassOverlay: 카드 하단
         glassOverlay.snp.makeConstraints {
             $0.leading.trailing.bottom.equalToSuperview()
-            $0.height.equalTo(140)
+            $0.height.equalTo(120)
         }
     }
 
@@ -160,23 +157,29 @@ final class CardCarouselView: UIView {
     func configure(cards: [ColorCard], currentIndex: Int) {
         let total = cards.count
 
-        // front card
         let frontCardData = cards[currentIndex]
-        loadImage(into: frontCard, url: frontCardData.imageURL)
+        loadImage(into: frontCard, card: frontCardData)
         glassOverlay.configure(card: frontCardData)
 
-        // back1 card (next)
-        let back1Index = (currentIndex + 1) % total
-        loadImage(into: backCard1, url: cards[back1Index].imageURL)
+        backCard1.isHidden = total < 2
+        backCard2.isHidden = total < 3
 
-        // back2 card
-        let back2Index = (currentIndex + 2) % total
-        loadImage(into: backCard2, url: cards[back2Index].imageURL)
+        if total >= 2 {
+            loadImage(into: backCard1, card: cards[(currentIndex + 1) % total])
+        }
+        if total >= 3 {
+            loadImage(into: backCard2, card: cards[(currentIndex + 2) % total])
+        }
     }
 
-    private func loadImage(into imageView: UIImageView, url: URL?) {
-        guard let url else { return }
-        imageView.kf.setImage(with: url, options: [.transition(.fade(0.2))])
+    private func loadImage(into imageView: UIImageView, card: ColorCard) {
+        if let img = card.capturedImage {
+            imageView.image = img
+        } else if let url = card.imageURL {
+            imageView.kf.setImage(with: url, options: [.transition(.fade(0.2))])
+        } else {
+            imageView.image = nil
+        }
     }
 
     // MARK: - Helpers

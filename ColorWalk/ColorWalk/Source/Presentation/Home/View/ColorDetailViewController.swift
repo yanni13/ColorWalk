@@ -226,7 +226,9 @@ final class ColorDetailViewController: BaseViewController {
     // MARK: - Configure
 
     private func configure(card: ColorCard) {
-        if let url = card.imageURL {
+        if let img = card.capturedImage {
+            backgroundImageView.image = img
+        } else if let url = card.imageURL {
             backgroundImageView.kf.setImage(with: url, options: [.transition(.fade(0.25))])
         }
 
