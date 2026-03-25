@@ -1,3 +1,4 @@
+
 //
 //  MissionHomeViewController.swift
 //  ColorWalk
@@ -12,7 +13,7 @@ final class MissionHomeViewController: BaseViewController {
 
     // MARK: - Properties
     private let viewModel: MissionHomeViewModel
-    var onCameraTap: (() -> Void)?
+    private var currentDisplayedMission: ColorMission = ColorMission.mockMissions[0]
 
     // MARK: - UI: Header
 
@@ -151,10 +152,47 @@ final class MissionHomeViewController: BaseViewController {
         return b
     }()
 
-    // MARK: - Rx
+    // MARK: - UI: Hero Card Placeholder (E8dgn)
 
+    private let heroCardView: UIView = {
+        let v = UIView()
+        v.backgroundColor = .white
+        v.layer.cornerRadius = 24
+        v.layer.shadowColor = UIColor.black.cgColor
+        v.layer.shadowOffset = CGSize(width: 0, height: 2)
+        v.layer.shadowRadius = 6
+        v.layer.shadowOpacity = 0.04
+        return v
+    }()
+
+    private let heroIconView: UIImageView = {
+        let iv = UIImageView()
+        iv.image = UIImage(systemName: "photo")?
+            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 28, weight: .regular))
+        iv.tintColor = UIColor(hex: "#B0B8C1")
+        iv.contentMode = .scaleAspectFit
+        return iv
+    }()
+
+    private let heroPlaceholderLabel: UILabel = {
+        let l = UILabel()
+        l.text = "첫 촬영 후 여기에 사진이 표시됩니다"
+        l.font = UIFont(name: "Pretendard-Medium", size: 13)
+        l.textColor = UIColor(hex: "#B0B8C1")
+        l.textAlignment = .center
+        return l
+    }()
+
+    private lazy var heroContentStack: UIStackView = {
+        let s = UIStackView(arrangedSubviews: [heroIconView, heroPlaceholderLabel])
+        s.axis = .vertical
+        s.alignment = .center
+        s.spacing = 12
+        return s
+    }()
+
+    // MARK: - Rx
     private let shuffleSubject = PublishSubject<Void>()
-    private let changeMissionSubject = PublishSubject<Void>()
 
     // MARK: - Init
 
@@ -183,6 +221,9 @@ final class MissionHomeViewController: BaseViewController {
         progressTrack.addSubview(progressFill)
 
         view.addSubview(changeMissionButton)
+
+        view.addSubview(heroCardView)
+        heroCardView.addSubview(heroContentStack)
     }
 
     // MARK: - setupConstraints
@@ -198,40 +239,34 @@ final class MissionHomeViewController: BaseViewController {
         bellButton.snp.makeConstraints { $0.width.height.equalTo(22) }
         avatarView.snp.makeConstraints { $0.width.height.equalTo(32) }
 
-        // Mission section label
         missionSectionLabel.snp.makeConstraints {
             $0.top.equalTo(headerRow.snp.bottom).offset(36)
             $0.leading.equalToSuperview().offset(44)
         }
 
-        // Card
         cardView.snp.makeConstraints {
             $0.top.equalTo(missionSectionLabel.snp.bottom).offset(12)
             $0.leading.trailing.equalToSuperview().inset(24)
         }
 
-        // Color dot (40x40)
         colorDotView.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(20)
             $0.centerY.equalTo(missionTextStack)
             $0.width.height.equalTo(40)
         }
 
-        // Mission text
         missionTextStack.snp.makeConstraints {
             $0.top.equalToSuperview().offset(20)
             $0.leading.equalTo(colorDotView.snp.trailing).offset(12)
             $0.trailing.equalTo(shuffleButton.snp.leading).offset(-12)
         }
 
-        // Shuffle button (28x28)
         shuffleButton.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(20)
             $0.centerY.equalTo(missionTextStack)
             $0.width.height.equalTo(28)
         }
 
-        // Progress track
         progressTrack.snp.makeConstraints {
             $0.top.equalTo(missionTextStack.snp.bottom).offset(16)
             $0.leading.trailing.equalToSuperview().inset(20)
@@ -239,16 +274,28 @@ final class MissionHomeViewController: BaseViewController {
             $0.bottom.equalToSuperview().inset(20)
         }
 
-        // Progress fill (width 0 initially)
         progressFill.snp.makeConstraints {
             $0.leading.top.bottom.equalToSuperview()
             $0.width.equalTo(0)
         }
 
-        // Change mission link
         changeMissionButton.snp.makeConstraints {
             $0.top.equalTo(cardView.snp.bottom).offset(24)
             $0.centerX.equalToSuperview()
+        }
+
+        heroCardView.snp.makeConstraints {
+            $0.top.equalTo(changeMissionButton.snp.bottom).offset(24)
+            $0.leading.trailing.equalToSuperview().inset(24)
+            $0.height.equalTo(180)
+        }
+
+        heroContentStack.snp.makeConstraints {
+            $0.center.equalToSuperview()
+        }
+
+        heroIconView.snp.makeConstraints {
+            $0.width.height.equalTo(32)
         }
     }
 
@@ -260,12 +307,14 @@ final class MissionHomeViewController: BaseViewController {
             .disposed(by: disposeBag)
 
         changeMissionButton.rx.tap
-            .bind(to: changeMissionSubject)
+            .subscribe(onNext: { [weak self] in
+                self?.presentColorPickerSheet()
+            })
             .disposed(by: disposeBag)
 
         let output = viewModel.transform(input: MissionHomeViewModel.Input(
             shuffleTap: shuffleSubject.asObservable(),
-            changeMissionTap: changeMissionSubject.asObservable()
+            changeMissionTap: Observable.empty()
         ))
 
         output.mission
@@ -275,9 +324,22 @@ final class MissionHomeViewController: BaseViewController {
             .disposed(by: disposeBag)
     }
 
+    // MARK: - Sheet Presentation
+
+    private func presentColorPickerSheet() {
+        let sheet = ColorPickerSheetViewController(currentMission: currentDisplayedMission)
+        sheet.modalPresentationStyle = .overFullScreen
+        sheet.onApply = { [weak self] color, hex in
+            self?.applyCustomColor(color, hex: hex)
+        }
+        present(sheet, animated: false)
+    }
+
     // MARK: - Apply
 
     private func applyMission(_ mission: ColorMission) {
+        currentDisplayedMission = mission
+
         UIView.animate(withDuration: 0.25) {
             self.colorDotView.backgroundColor = mission.color
             self.progressFill.backgroundColor = mission.color
@@ -286,22 +348,34 @@ final class MissionHomeViewController: BaseViewController {
         missionNameLabel.text = mission.name
         missionDetailLabel.text = "\(mission.hexColor)  ·  \(mission.weatherInfo)"
 
-        // Progress bar width 애니메이션
-        progressFill.snp.updateConstraints {
-            $0.width.equalTo(0) // 새 미션이면 0에서 시작
-        }
-        layoutIfNeeded()
+        progressFill.snp.updateConstraints { $0.width.equalTo(0) }
+        view.layoutIfNeeded()
 
         let targetWidth = progressTrack.bounds.width * CGFloat(mission.progress)
-        progressFill.snp.updateConstraints {
-            $0.width.equalTo(targetWidth)
-        }
+        progressFill.snp.updateConstraints { $0.width.equalTo(targetWidth) }
         UIView.animate(withDuration: 0.4, delay: 0.1, options: .curveEaseOut) {
             self.progressTrack.layoutIfNeeded()
         }
     }
 
-    private func layoutIfNeeded() {
-        view.layoutIfNeeded()
+    private func applyCustomColor(_ color: UIColor, hex: String) {
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0
+        color.getRed(&r, green: &g, blue: &b, alpha: nil)
+
+        UIView.animate(withDuration: 0.3) {
+            self.colorDotView.backgroundColor = color
+            self.progressFill.backgroundColor = color
+        }
+
+        missionDetailLabel.text = "\(hex)  ·  \(currentDisplayedMission.weatherInfo)"
+
+        let updated = ColorMission(
+            name: currentDisplayedMission.name,
+            hexColor: hex,
+            color: color,
+            weatherInfo: currentDisplayedMission.weatherInfo,
+            progress: currentDisplayedMission.progress
+        )
+        currentDisplayedMission = updated
     }
 }
