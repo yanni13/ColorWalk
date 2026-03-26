@@ -15,7 +15,8 @@ final class ColorConfirmSheetViewController: UIViewController {
     private let currentMission: ColorMission
     private var pendingColor: UIColor
     private var pendingHex: String
-    var onApply: ((UIColor, String) -> Void)?
+    private var pendingName: String
+    var onApply: ((UIColor, String, String) -> Void)?
 
     private let disposeBag = DisposeBag()
 
@@ -237,10 +238,11 @@ final class ColorConfirmSheetViewController: UIViewController {
     }()
 
     // MARK: - Init
-    init(currentMission: ColorMission, selectedColor: UIColor, selectedHex: String) {
+    init(currentMission: ColorMission, selectedColor: UIColor, selectedHex: String, selectedName: String) {
         self.currentMission = currentMission
         self.pendingColor = selectedColor
         self.pendingHex = selectedHex
+        self.pendingName = selectedName
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -436,7 +438,7 @@ final class ColorConfirmSheetViewController: UIViewController {
         newDotView.layer.borderColor = pendingColor.withAlphaComponent(0.3).cgColor
 
         let hexWithout = String(pendingHex.dropFirst())
-        newBottomLabel.text = pendingHex
+        newBottomLabel.text = "\(pendingName) · \(pendingHex)"
 
         hexValueLabel.text = hexWithout
         hexDotView.backgroundColor = pendingColor
@@ -454,6 +456,7 @@ final class ColorConfirmSheetViewController: UIViewController {
                 let preset = ColorPickerSheetViewController.presets.randomElement()!
                 self.pendingColor = preset.color
                 self.pendingHex = preset.hex
+                self.pendingName = preset.name
                 self.applyPendingColor()
             })
             .disposed(by: disposeBag)
@@ -466,6 +469,7 @@ final class ColorConfirmSheetViewController: UIViewController {
                 palette.onColorPicked = { [weak self] color, hex in
                     self?.pendingColor = color
                     self?.pendingHex = hex
+                    self?.pendingName = "직접 선택한 색상"
                     self?.applyPendingColor()
                 }
                 self.present(palette, animated: false)
@@ -475,7 +479,7 @@ final class ColorConfirmSheetViewController: UIViewController {
         applyButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 guard let self else { return }
-                self.onApply?(self.pendingColor, self.pendingHex)
+                self.onApply?(self.pendingColor, self.pendingHex, self.pendingName)
                 self.dismissAll()
             })
             .disposed(by: disposeBag)

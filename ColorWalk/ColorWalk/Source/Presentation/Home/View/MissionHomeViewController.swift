@@ -124,6 +124,26 @@ final class MissionHomeViewController: BaseViewController {
         return l
     }()
 
+    private let editNameButton: UIButton = {
+        let b = UIButton(type: .system)
+        b.setImage(
+            UIImage(systemName: "pencil")?
+                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 12, weight: .medium)),
+            for: .normal
+        )
+        b.tintColor = UIColor(hex: "#B0B8C1")
+        b.accessibilityLabel = "이름 수정"
+        return b
+    }()
+
+    private lazy var missionNameStack: UIStackView = {
+        let s = UIStackView(arrangedSubviews: [missionNameLabel, editNameButton])
+        s.axis = .horizontal
+        s.spacing = 6
+        s.alignment = .center
+        return s
+    }()
+
     private let missionDetailLabel: UILabel = {
         let l = UILabel()
         l.font = UIFont(name: "Pretendard-Regular", size: 13)
@@ -132,7 +152,7 @@ final class MissionHomeViewController: BaseViewController {
     }()
 
     private lazy var missionTextStack: UIStackView = {
-        let s = UIStackView(arrangedSubviews: [missionNameLabel, missionDetailLabel])
+        let s = UIStackView(arrangedSubviews: [missionNameStack, missionDetailLabel])
         s.axis = .vertical
         s.spacing = 4
         s.alignment = .leading
@@ -496,6 +516,12 @@ final class MissionHomeViewController: BaseViewController {
             .bind(to: shuffleSubject)
             .disposed(by: disposeBag)
 
+        editNameButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                self?.presentEditNameAlert()
+            })
+            .disposed(by: disposeBag)
+
         changeMissionButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 self?.presentColorPickerSheet()
@@ -581,11 +607,26 @@ final class MissionHomeViewController: BaseViewController {
     private func presentColorPickerSheet() {
         let sheet = ColorPickerSheetViewController(currentMission: currentDisplayedMission)
         sheet.modalPresentationStyle = .overFullScreen
-        sheet.onApply = { [weak self] color, hex in
-            self?.applyCustomColor(color, hex: hex)
+        sheet.onApply = { [weak self] color, hex, name in
+            self?.applyCustomColor(color, hex: hex, name: name)
         }
         present(sheet, animated: false)
     }
+
+    private func presentEditNameAlert() {
+        let alert = UIAlertController(title: "이름 수정", message: "미션의 이름을 입력해주세요", preferredStyle: .alert)
+        alert.addTextField { [weak self] tf in
+            tf.text = self?.currentDisplayedMission.name
+            tf.placeholder = "미션 이름"
+        }
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+        alert.addAction(UIAlertAction(title: "변경", style: .default) { [weak self] _ in
+            guard let name = alert.textFields?.first?.text, !name.isEmpty else { return }
+            self?.updateMissionName(name)
+        })
+        present(alert, animated: true)
+    }
+
 
     // MARK: - Apply
 
@@ -620,19 +661,33 @@ final class MissionHomeViewController: BaseViewController {
         }
     }
 
-    private func applyCustomColor(_ color: UIColor, hex: String) {
+    private func applyCustomColor(_ color: UIColor, hex: String, name: String) {
         UIView.animate(withDuration: 0.3) {
             self.colorDotView.backgroundColor = color
             self.progressFill.backgroundColor = color
             self.progressCountLabel.textColor = color
         }
 
+        missionNameLabel.text = name
         missionDetailLabel.text = "\(hex)  ·  \(currentDisplayedMission.weatherInfo)"
 
         let updated = ColorMission(
-            name: currentDisplayedMission.name,
+            name: name,
             hexColor: hex,
             color: color,
+            weatherInfo: currentDisplayedMission.weatherInfo,
+            progress: currentDisplayedMission.progress
+        )
+        currentDisplayedMission = updated
+        ColorMissionStore.shared.setMission(updated)
+    }
+
+    private func updateMissionName(_ name: String) {
+        missionNameLabel.text = name
+        let updated = ColorMission(
+            name: name,
+            hexColor: currentDisplayedMission.hexColor,
+            color: currentDisplayedMission.color,
             weatherInfo: currentDisplayedMission.weatherInfo,
             progress: currentDisplayedMission.progress
         )

@@ -31,10 +31,10 @@ final class ColorPickerSheetViewController: UIViewController {
 
     // MARK: - Properties
     private let currentMission: ColorMission
-    var onApply: ((UIColor, String) -> Void)?
+    var onApply: ((UIColor, String, String) -> Void)?
 
     private let disposeBag = DisposeBag()
-    private let selectedRelay: BehaviorRelay<(UIColor, String)>
+    private let selectedRelay: BehaviorRelay<(UIColor, String, String)>
     private var selectedPresetIndex: Int? = nil
 
     // MARK: - UI: Sheet
@@ -217,7 +217,7 @@ final class ColorPickerSheetViewController: UIViewController {
     // MARK: - Init
     init(currentMission: ColorMission) {
         self.currentMission = currentMission
-        self.selectedRelay = BehaviorRelay(value: (currentMission.color, currentMission.hexColor))
+        self.selectedRelay = BehaviorRelay(value: (currentMission.color, currentMission.hexColor, currentMission.name))
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -380,15 +380,10 @@ final class ColorPickerSheetViewController: UIViewController {
             .disposed(by: disposeBag)
 
         selectedRelay
-            .subscribe(onNext: { [weak self] (color, hex) in
+            .subscribe(onNext: { [weak self] (color, hex, name) in
                 guard let self else { return }
                 self.currentDotView.backgroundColor = color
-                // 프리셋인 경우 이름을 표시하고, 아닌 경우 '새로운 색상'으로 표시
-                if let idx = self.selectedPresetIndex {
-                    self.currentBottomLabel.text = "\(Self.presets[idx].name) · \(hex)"
-                } else {
-                    self.currentBottomLabel.text = "새로운 색상 · \(hex)"
-                }
+                self.currentBottomLabel.text = "\(name) · \(hex)"
             })
             .disposed(by: disposeBag)
 
@@ -404,7 +399,7 @@ final class ColorPickerSheetViewController: UIViewController {
                 let palette = ColorPalettePickerSheetViewController()
                 palette.modalPresentationStyle = .overFullScreen
                 palette.onColorPicked = { [weak self] color, hex in
-                    self?.selectedRelay.accept((color, hex))
+                    self?.selectedRelay.accept((color, hex, "직접 선택한 색상"))
                     self?.setHexInputDisplay(color: color, hex: hex)
                     self?.updatePresetRings(selectedIndex: nil)
                     self?.selectedPresetIndex = nil
@@ -415,16 +410,17 @@ final class ColorPickerSheetViewController: UIViewController {
 
         applyButton.rx.tap
             .withLatestFrom(selectedRelay)
-            .subscribe(onNext: { [weak self] (color, hex) in
+            .subscribe(onNext: { [weak self] (color, hex, name) in
                 guard let self else { return }
                 let confirm = ColorConfirmSheetViewController(
                     currentMission: self.currentMission,
                     selectedColor: color,
-                    selectedHex: hex
+                    selectedHex: hex,
+                    selectedName: name
                 )
                 confirm.modalPresentationStyle = .overFullScreen
-                confirm.onApply = { [weak self] color, hex in
-                    self?.onApply?(color, hex)
+                confirm.onApply = { [weak self] color, hex, name in
+                    self?.onApply?(color, hex, name)
                 }
                 self.present(confirm, animated: false)
             })
@@ -444,7 +440,7 @@ final class ColorPickerSheetViewController: UIViewController {
     private func applyPresetSelection(at index: Int) {
         let preset = Self.presets[index]
         selectedPresetIndex = index
-        selectedRelay.accept((preset.color, preset.hex))
+        selectedRelay.accept((preset.color, preset.hex, preset.name))
         updatePresetRings(selectedIndex: index)
         resetHexInputDisplay()
     }
@@ -457,7 +453,7 @@ final class ColorPickerSheetViewController: UIViewController {
         let hex = String(format: "#%02X%02X%02X", Int(r*255), Int(g*255), Int(b*255))
         
         selectedPresetIndex = nil
-        selectedRelay.accept((color, hex))
+        selectedRelay.accept((color, hex, "랜덤 색상"))
         updatePresetRings(selectedIndex: nil)
         resetHexInputDisplay()
     }
