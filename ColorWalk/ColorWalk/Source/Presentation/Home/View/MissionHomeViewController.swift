@@ -502,6 +502,7 @@ final class MissionHomeViewController: BaseViewController {
                 self.actionRow.isHidden = isEmpty
 
                 self.progressCountLabel.text = "\(newCards.count) / 9 완료"
+                self.updateProgressBar(count: newCards.count)
 
                 guard !isEmpty else { return }
                 if self.currentIndex >= newCards.count { self.currentIndex = 0 }
@@ -564,10 +565,16 @@ final class MissionHomeViewController: BaseViewController {
         missionNameLabel.text = mission.name
         missionDetailLabel.text = "\(mission.hexColor)  ·  \(mission.weatherInfo)"
 
+        let count = ColorCardStore.shared.cards.value.count
+        updateProgressBar(count: count)
+    }
+
+    private func updateProgressBar(count: Int) {
         progressFill.snp.updateConstraints { make in make.width.equalTo(0) }
         view.layoutIfNeeded()
 
-        let targetWidth = progressTrack.bounds.width * CGFloat(mission.progress)
+        let ratio = min(CGFloat(count) / 9.0, 1.0)
+        let targetWidth = progressTrack.bounds.width * ratio
         progressFill.snp.updateConstraints { make in make.width.equalTo(targetWidth) }
         UIView.animate(withDuration: 0.4, delay: 0.1, options: .curveEaseOut) {
             self.progressTrack.layoutIfNeeded()

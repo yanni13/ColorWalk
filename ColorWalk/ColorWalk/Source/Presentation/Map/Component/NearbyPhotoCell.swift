@@ -1,5 +1,6 @@
 import UIKit
 import SnapKit
+import Kingfisher
 
 final class NearbyPhotoCell: UICollectionViewCell {
     static let reuseId = "NearbyPhotoCell"
@@ -21,12 +22,15 @@ final class NearbyPhotoCell: UICollectionViewCell {
     required init?(coder: NSCoder) { fatalError() }
 
     func configure(with photo: Photo) {
-        if !photo.imagePath.isEmpty, let image = UIImage(contentsOfFile: photo.imagePath) {
+        imageView.backgroundColor = UIColor(hex: photo.capturedHex)
+
+        guard !photo.imagePath.isEmpty else { return }
+
+        if photo.imagePath.hasPrefix("http"), let url = URL(string: photo.imagePath) {
+            imageView.kf.setImage(with: url, options: [.transition(.fade(0.2))])
+        } else if let image = UIImage(contentsOfFile: photo.imagePath) {
             imageView.image = image
             imageView.backgroundColor = nil
-        } else {
-            imageView.image = nil
-            imageView.backgroundColor = UIColor(hex: photo.capturedHex)
         }
     }
 }

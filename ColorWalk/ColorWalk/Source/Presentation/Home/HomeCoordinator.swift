@@ -4,6 +4,8 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 final class HomeCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
@@ -14,6 +16,7 @@ final class HomeCoordinator: Coordinator {
     }
 
     func start() {
+        ColorCardStore.shared.cards.accept(ColorCard.mockCards)
         let viewModel = MissionHomeViewModel()
         let vc = MissionHomeViewController(viewModel: viewModel)
         vc.onCardTap = { [weak self, weak vc] index in

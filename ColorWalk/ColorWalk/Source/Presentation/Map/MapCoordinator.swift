@@ -9,7 +9,7 @@ final class MapCoordinator: Coordinator {
     }
 
     func start() {
-        let viewModel = MapViewModel()
+        let viewModel = MapViewModel(photoRepository: MockPhotoRepository())
         let vc = MapViewController(viewModel: viewModel)
         navigationController.setViewControllers([vc], animated: false)
     }

@@ -88,6 +88,58 @@ extension ColorCard {
             matchPercentage: 88,
             missionCurrent: 6,
             missionTotal: 9
+        ),
+        ColorCard(
+            id: "6",
+            imageURL: URL(string: "https://picsum.photos/seed/mint/400/600"),
+            capturedImage: nil,
+            colorName: "민트 그린",
+            hexColor: "#34D399",
+            dotColor: UIColor(hex: "#34D399"),
+            locationName: "강남역",
+            captureDate: "2026.03.06",
+            matchPercentage: 72,
+            missionCurrent: 7,
+            missionTotal: 9
+        ),
+        ColorCard(
+            id: "7",
+            imageURL: URL(string: "https://picsum.photos/seed/sky/400/600"),
+            capturedImage: nil,
+            colorName: "하늘빛 파랑",
+            hexColor: "#5B8DEF",
+            dotColor: UIColor(hex: "#5B8DEF"),
+            locationName: "잠실 석촌호수",
+            captureDate: "2026.03.04",
+            matchPercentage: 94,
+            missionCurrent: 8,
+            missionTotal: 9
+        ),
+        ColorCard(
+            id: "8",
+            imageURL: URL(string: "https://picsum.photos/seed/golden/400/600"),
+            capturedImage: nil,
+            colorName: "황금빛 주황",
+            hexColor: "#FFB347",
+            dotColor: UIColor(hex: "#FFB347"),
+            locationName: "성수동",
+            captureDate: "2026.03.01",
+            matchPercentage: 81,
+            missionCurrent: 9,
+            missionTotal: 9
+        ),
+        ColorCard(
+            id: "9",
+            imageURL: URL(string: "https://picsum.photos/seed/brick/400/600"),
+            capturedImage: nil,
+            colorName: "벽돌 레드",
+            hexColor: "#FF6B6B",
+            dotColor: UIColor(hex: "#FF6B6B"),
+            locationName: "광화문",
+            captureDate: "2026.02.24",
+            matchPercentage: 67,
+            missionCurrent: 9,
+            missionTotal: 9
         )
     ]
 }

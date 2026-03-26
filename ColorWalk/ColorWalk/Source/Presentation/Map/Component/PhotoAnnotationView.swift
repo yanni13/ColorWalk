@@ -1,6 +1,7 @@
 import MapKit
 import UIKit
 import SnapKit
+import Kingfisher
 
 // MARK: - Individual Photo Pin (Single Marker)
 
@@ -54,13 +55,15 @@ final class PhotoAnnotationView: MKAnnotationView {
         let photo = ann.photo
         let accentColor = UIColor(hex: photo.capturedHex)
         containerView.backgroundColor = accentColor
+        imageView.backgroundColor = accentColor
 
-        if !photo.imagePath.isEmpty, let image = UIImage(contentsOfFile: photo.imagePath) {
+        guard !photo.imagePath.isEmpty else { return }
+
+        if photo.imagePath.hasPrefix("http"), let url = URL(string: photo.imagePath) {
+            imageView.kf.setImage(with: url, options: [.transition(.fade(0.2))])
+        } else if let image = UIImage(contentsOfFile: photo.imagePath) {
             imageView.image = image
             imageView.backgroundColor = nil
-        } else {
-            imageView.image = nil
-            imageView.backgroundColor = accentColor.withAlphaComponent(0.25)
         }
     }
 }
@@ -168,12 +171,15 @@ final class PhotoClusterAnnotationView: MKAnnotationView {
 
         if let first = members.first {
             let photo = first.photo
-            if !photo.imagePath.isEmpty, let image = UIImage(contentsOfFile: photo.imagePath) {
-                imageView.image = image
-                imageView.backgroundColor = nil
-            } else {
-                imageView.image = nil
-                imageView.backgroundColor = UIColor(hex: photo.capturedHex)
+            imageView.backgroundColor = UIColor(hex: photo.capturedHex)
+
+            if !photo.imagePath.isEmpty {
+                if photo.imagePath.hasPrefix("http"), let url = URL(string: photo.imagePath) {
+                    imageView.kf.setImage(with: url, options: [.transition(.fade(0.2))])
+                } else if let image = UIImage(contentsOfFile: photo.imagePath) {
+                    imageView.image = image
+                    imageView.backgroundColor = nil
+                }
             }
         }
     }
