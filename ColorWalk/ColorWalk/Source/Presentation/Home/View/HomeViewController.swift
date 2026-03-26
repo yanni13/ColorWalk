@@ -11,13 +11,9 @@ import RxCocoa
 final class HomeViewController: BaseViewController {
 
     // MARK: - Properties
-    private let viewModel: HomeViewModel
-    private var cards: [ColorCard] = []
-    private var currentIndex = 0
 
-    var allCards: [ColorCard] { cards }
-    var onCardTap: ((Int) -> Void)?
-    var onMissionTap: (() -> Void)?
+    private let viewModel: HomeViewModel
+    var onOnboardingComplete: (() -> Void)?
 
     // MARK: - UI: Header
 
@@ -31,6 +27,7 @@ final class HomeViewController: BaseViewController {
 
     private let subtitleLabel: UILabel = {
         let l = UILabel()
+        l.text = "오늘의 색을 찾아보세요"
         l.font = UIFont(name: "Pretendard-Regular", size: 13) ?? .systemFont(ofSize: 13)
         l.textColor = UIColor(hex: "#6B7684")
         return l
@@ -42,17 +39,6 @@ final class HomeViewController: BaseViewController {
         s.spacing = 4
         s.alignment = .leading
         return s
-    }()
-
-    private let filterButton: UIButton = {
-        let b = UIButton(type: .system)
-        b.setImage(
-            UIImage(systemName: "slider.horizontal.3")?
-                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)),
-            for: .normal
-        )
-        b.tintColor = UIColor(hex: "#191F28")
-        return b
     }()
 
     private let headerRow = UIView()
@@ -120,21 +106,6 @@ final class HomeViewController: BaseViewController {
         return s
     }()
 
-    // MARK: - UI: Carousel (existing components)
-
-    private let carouselView = CardCarouselView()
-    private let paginationView = PaginationView()
-    private let detailsView = DetailsSectionView()
-
-    private let scrollView: UIScrollView = {
-        let sv = UIScrollView()
-        sv.showsVerticalScrollIndicator = false
-        sv.alwaysBounceVertical = true
-        return sv
-    }()
-
-    private let contentView = UIView()
-
     // MARK: - Init
 
     init(viewModel: HomeViewModel) {
@@ -146,145 +117,50 @@ final class HomeViewController: BaseViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - setupViews
+    // MARK: - Setup
 
     override func setupViews() {
         view.backgroundColor = .white
-
         view.addSubview(headerRow)
         headerRow.addSubview(titleStack)
-        headerRow.addSubview(filterButton)
-
         view.addSubview(emptyStateStack)
         emptyCircleView.addSubview(cameraIconView)
-
-        view.addSubview(scrollView)
-        scrollView.addSubview(contentView)
-        contentView.addSubview(carouselView)
-        contentView.addSubview(paginationView)
-        contentView.addSubview(detailsView)
-
-        scrollView.isHidden = true
     }
-
-    // MARK: - setupConstraints
 
     override func setupConstraints() {
-        headerRow.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(8)
-            $0.leading.trailing.equalToSuperview().inset(24)
-            $0.height.equalTo(57)
-        }
-        titleStack.snp.makeConstraints { $0.leading.centerY.equalToSuperview() }
-        filterButton.snp.makeConstraints {
-            $0.trailing.centerY.equalToSuperview()
-            $0.width.height.equalTo(32)
+        headerRow.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(8)
+            make.leading.trailing.equalToSuperview().inset(24)
+            make.height.equalTo(57)
         }
 
-        emptyStateStack.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.centerY.equalTo(view.snp.centerY).offset(20)
-            $0.leading.trailing.equalToSuperview().inset(24)
-        }
-        emptyCircleView.snp.makeConstraints { $0.width.height.equalTo(120) }
-        cameraIconView.snp.makeConstraints {
-            $0.center.equalToSuperview()
-            $0.width.height.equalTo(48)
+        titleStack.snp.makeConstraints { make in
+            make.leading.centerY.equalToSuperview()
         }
 
-        scrollView.snp.makeConstraints {
-            $0.top.equalTo(headerRow.snp.bottom).offset(12)
-            $0.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(view.safeAreaLayoutGuide)
-        }
-        contentView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-            $0.width.equalTo(scrollView)
+        emptyStateStack.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalTo(view.snp.centerY).offset(20)
+            make.leading.trailing.equalToSuperview().inset(24)
         }
 
-        carouselView.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
-            $0.height.equalTo(460)
+        emptyCircleView.snp.makeConstraints { make in
+            make.width.height.equalTo(120)
         }
 
-        paginationView.snp.makeConstraints {
-            $0.top.equalTo(carouselView.snp.bottom).offset(22)
-            $0.centerX.equalToSuperview()
-            $0.height.equalTo(8)
-        }
-
-        detailsView.snp.makeConstraints {
-            $0.top.equalTo(paginationView.snp.bottom).offset(20)
-            $0.leading.trailing.equalToSuperview().inset(24)
-            $0.bottom.equalToSuperview().inset(24)
+        cameraIconView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.height.equalTo(48)
         }
     }
 
-    // MARK: - bind
+    // MARK: - Bind
 
     override func bind() {
         ctaButton.rx.tap
-            .subscribe(onNext: { [weak self] in self?.onMissionTap?() })
-            .disposed(by: disposeBag)
-
-        // Observe store
-        ColorCardStore.shared.cards
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] newCards in
-                guard let self else { return }
-                self.cards = newCards
-                let isEmpty = newCards.isEmpty
-
-                self.emptyStateStack.isHidden = !isEmpty
-                self.scrollView.isHidden = isEmpty
-                self.subtitleLabel.text = isEmpty
-                    ? "오늘의 색을 찾아보세요"
-                    : "카드를 스와이프하여 색상 컬렉션을 탐색하세요"
-
-                guard !isEmpty else { return }
-
-                if self.currentIndex >= newCards.count { self.currentIndex = 0 }
-
-                self.paginationView.setup(count: newCards.count)
-                self.paginationView.setActive(index: self.currentIndex)
-                self.carouselView.configure(cards: newCards, currentIndex: self.currentIndex)
-                self.updateDetails()
-            })
-            .disposed(by: disposeBag)
-
-        // Carousel swipe events
-        carouselView.swipeLeft
-            .subscribe(onNext: { [weak self] in self?.advanceIndex(by: +1) })
-            .disposed(by: disposeBag)
-
-        carouselView.swipeRight
-            .subscribe(onNext: { [weak self] in self?.advanceIndex(by: -1) })
-            .disposed(by: disposeBag)
-
-        carouselView.cardTapped
             .subscribe(onNext: { [weak self] in
-                guard let self else { return }
-                self.onCardTap?(self.currentIndex)
+                self?.onOnboardingComplete?()
             })
             .disposed(by: disposeBag)
-    }
-
-    // MARK: - Helpers
-
-    private func advanceIndex(by delta: Int) {
-        guard !cards.isEmpty else { return }
-        let next = (currentIndex + delta + cards.count) % cards.count
-        guard next != currentIndex else { return }
-        currentIndex = next
-        paginationView.setActive(index: currentIndex)
-        carouselView.configure(cards: cards, currentIndex: currentIndex)
-        updateDetails()
-    }
-
-    private func updateDetails() {
-        guard currentIndex < cards.count else { return }
-        let card = cards[currentIndex]
-        detailsView.setProgress(ratio: Float(card.matchPercentage) / 100.0)
-        detailsView.setMission(text: "\(card.missionCurrent) / \(card.missionTotal)")
     }
 }

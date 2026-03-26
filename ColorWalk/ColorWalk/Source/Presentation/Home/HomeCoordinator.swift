@@ -14,23 +14,16 @@ final class HomeCoordinator: Coordinator {
     }
 
     func start() {
-        let viewModel = HomeViewModel()
-        let viewController = HomeViewController(viewModel: viewModel)
-        viewController.onCardTap = { [weak self, weak viewController] index in
-            guard let self, let vc = viewController else { return }
-            self.showDetail(cards: vc.allCards, startIndex: index)
-        }
-        viewController.onMissionTap = { [weak self] in
-            self?.showMission()
-        }
-        navigationController.setViewControllers([viewController], animated: false)
-    }
-
-    private func showMission() {
         let viewModel = MissionHomeViewModel()
         let vc = MissionHomeViewController(viewModel: viewModel)
-        navigationController.pushViewController(vc, animated: true)
+        vc.onCardTap = { [weak self, weak vc] index in
+            guard let self, let vc else { return }
+            self.showDetail(cards: vc.allCards, startIndex: index)
+        }
+        navigationController.setViewControllers([vc], animated: false)
     }
+
+    // MARK: - Private
 
     private func showDetail(cards: [ColorCard], startIndex: Int) {
         let viewModel = ColorDetailViewModel(cards: cards, startIndex: startIndex)

@@ -262,6 +262,7 @@ final class GalleryColorViewController: UIViewController {
         }
     }
 
+    // TODO: DateFormatterManager로 이동 필요
     private static func currentDateString() -> String {
         let fmt = DateFormatter()
         fmt.dateFormat = "yyyy.MM.dd"
