@@ -10,7 +10,7 @@ final class PhotoAnnotationView: MKAnnotationView {
 
     private let containerView: UIView = {
         let v = UIView()
-        v.layer.cornerRadius = 10
+        v.layer.cornerRadius = 14
         v.layer.shadowColor = UIColor.black.cgColor
         v.layer.shadowOpacity = 0.18
         v.layer.shadowRadius = 4
@@ -21,7 +21,7 @@ final class PhotoAnnotationView: MKAnnotationView {
     private let imageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
-        iv.layer.cornerRadius = 8
+        iv.layer.cornerRadius = 12
         iv.layer.masksToBounds = true
         return iv
     }()
@@ -35,15 +35,19 @@ final class PhotoAnnotationView: MKAnnotationView {
     required init?(coder: NSCoder) { fatalError() }
 
     private func setupLayout() {
-        frame = CGRect(x: 0, y: 0, width: 44, height: 44)
-        centerOffset = CGPoint(x: 0, y: -22)
+        frame = CGRect(x: 0, y: 0, width: 60, height: 60)
+        centerOffset = CGPoint(x: 0, y: -30)
         backgroundColor = .clear
 
         addSubview(containerView)
-        containerView.snp.makeConstraints { $0.edges.equalToSuperview() }
+        containerView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
 
         containerView.addSubview(imageView)
-        imageView.snp.makeConstraints { $0.edges.equalToSuperview().inset(2) }
+        imageView.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(2)
+        }
     }
 
     override var annotation: MKAnnotation? {
@@ -76,7 +80,7 @@ final class PhotoClusterAnnotationView: MKAnnotationView {
     private let outerContainer: UIView = {
         let v = UIView()
         v.backgroundColor = .white
-        v.layer.cornerRadius = 23 
+        v.layer.cornerRadius = 26
         v.layer.shadowColor = UIColor.black.cgColor
         v.layer.shadowOpacity = 0.18
         v.layer.shadowRadius = 4
@@ -88,7 +92,7 @@ final class PhotoClusterAnnotationView: MKAnnotationView {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
         iv.backgroundColor = UIColor.App.bgSecondary
-        iv.layer.cornerRadius = 20
+        iv.layer.cornerRadius = 23
         iv.layer.masksToBounds = true
         return iv
     }()
@@ -127,36 +131,40 @@ final class PhotoClusterAnnotationView: MKAnnotationView {
     required init?(coder: NSCoder) { fatalError() }
 
     private func setupLayout() {
-        frame = CGRect(x: 0, y: 0, width: 62, height: 62)
-        centerOffset = CGPoint(x: 0, y: -31)
+        frame = CGRect(x: 0, y: 0, width: 68, height: 68)
+        centerOffset = CGPoint(x: 0, y: -34)
         backgroundColor = .clear
 
         addSubview(outerContainer)
-        outerContainer.snp.makeConstraints { $0.edges.equalToSuperview() }
+        outerContainer.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
 
         outerContainer.addSubview(imageView)
-        imageView.snp.makeConstraints { $0.edges.equalToSuperview().inset(3) }
+        imageView.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(3)
+        }
 
         addSubview(badgeView)
-        badgeView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(-8)
-            $0.trailing.equalToSuperview().offset(8)
-            $0.height.equalTo(22)
-            $0.width.greaterThanOrEqualTo(38)
+        badgeView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(-8)
+            make.trailing.equalToSuperview().offset(8)
+            make.height.equalTo(22)
+            make.width.greaterThanOrEqualTo(38)
         }
 
         badgeView.addSubview(badgeIcon)
-        badgeIcon.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(8)
-            $0.centerY.equalToSuperview()
-            $0.width.height.equalTo(12)
+        badgeIcon.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(8)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(12)
         }
 
         badgeView.addSubview(countLabel)
-        countLabel.snp.makeConstraints {
-            $0.leading.equalTo(badgeIcon.snp.trailing).offset(4)
-            $0.trailing.equalToSuperview().inset(8)
-            $0.centerY.equalToSuperview()
+        countLabel.snp.makeConstraints { make in
+            make.leading.equalTo(badgeIcon.snp.trailing).offset(4)
+            make.trailing.equalToSuperview().inset(8)
+            make.centerY.equalToSuperview()
         }
     }
 
