@@ -86,6 +86,7 @@ final class MissionHomeViewController: BaseViewController {
         let sv = UIScrollView()
         sv.showsVerticalScrollIndicator = false
         sv.alwaysBounceVertical = true
+        sv.contentInsetAdjustmentBehavior = .never
         return sv
     }()
 
@@ -334,6 +335,7 @@ final class MissionHomeViewController: BaseViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
         ColorCardStore.shared.checkDailyReset()
         updateLocationLabelVisibility()
     }
