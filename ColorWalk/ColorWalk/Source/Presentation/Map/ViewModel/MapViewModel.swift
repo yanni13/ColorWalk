@@ -15,12 +15,18 @@ final class MapViewModel: ViewModelType {
         let nearbySubtitle: Driver<String>
     }
 
+    private let photoRepository: PhotoRepositoryProtocol
     private let disposeBag = DisposeBag()
+
+    init(photoRepository: PhotoRepositoryProtocol = RealmPhotoRepository()) {
+        self.photoRepository = photoRepository
+    }
 
     func transform(input: Input) -> Output {
         let annotations = input.viewDidLoad
-            .map { _ -> [PhotoAnnotation] in
-                RealmManager.shared.fetchAllPhotos()
+            .map { [weak self] _ -> [PhotoAnnotation] in
+                guard let self else { return [] }
+                return self.photoRepository.fetchAllPhotos()
                     .filter { $0.latitude != 0 || $0.longitude != 0 }
                     .map { PhotoAnnotation(photo: $0) }
             }

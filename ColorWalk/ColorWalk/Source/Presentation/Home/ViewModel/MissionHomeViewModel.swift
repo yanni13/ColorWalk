@@ -70,9 +70,15 @@ final class MissionHomeViewModel: ViewModelType {
         let mission: Driver<ColorMission>
     }
 
-    private let missions = ColorMission.mockMissions
+    private let repository: ColorMissionRepositoryProtocol
+    private let missions: [ColorMission]
     private let indexRelay = BehaviorRelay<Int>(value: 0)
     private let disposeBag = DisposeBag()
+
+    init(repository: ColorMissionRepositoryProtocol = MockColorMissionRepository()) {
+        self.repository = repository
+        self.missions = repository.fetchMissions()
+    }
 
     func transform(input: Input) -> Output {
         let count = missions.count

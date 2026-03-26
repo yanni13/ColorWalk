@@ -3,8 +3,21 @@ import RealmSwift
 
 final class RealmManager {
 
+    // MARK: - Properties
+
     static let shared = RealmManager()
-    private init() {}
+
+    private enum Constants {
+        static let schemaVersion: UInt64 = 2
+    }
+
+    private init() {
+        let config = Realm.Configuration(
+            schemaVersion: Constants.schemaVersion,
+            migrationBlock: { _, _ in }
+        )
+        Realm.Configuration.defaultConfiguration = config
+    }
 
     private var realm: Realm {
         do {

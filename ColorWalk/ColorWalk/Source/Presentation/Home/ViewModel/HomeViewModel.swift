@@ -110,9 +110,15 @@ final class HomeViewModel: ViewModelType {
         let missionText: Driver<String>
     }
 
-    private let cards: [ColorCard] = ColorCard.mockCards
+    private let repository: ColorCardRepositoryProtocol
+    private let cards: [ColorCard]
     private let currentIndexRelay = BehaviorRelay<Int>(value: 0)
     private let disposeBag = DisposeBag()
+
+    init(repository: ColorCardRepositoryProtocol = MockColorCardRepository()) {
+        self.repository = repository
+        self.cards = repository.fetchColorCards()
+    }
 
     func transform(input: Input) -> Output {
         let count = cards.count
