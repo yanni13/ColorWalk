@@ -15,11 +15,20 @@ final class ColorActivityManager {
 
     // MARK: - Start
 
-    func start(missionName: String, missionHex: String, missionColor: UIColor, match: Int, incomplete: Int) {
+    func start(missionName: String, missionHex: String, missionColor: UIColor, match: Int) {
         guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
 
-        let attrs = ColorPickerAttributes(missionName: missionName, missionHex: missionHex)
-        let state = ContentState(missionColor: missionColor, hex: missionHex, match: match, incomplete: incomplete)
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        missionColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+
+        let attrs = ColorPickerAttributes(
+            missionName: missionName,
+            missionHex:  missionHex,
+            red:         Double(r),
+            green:       Double(g),
+            blue:        Double(b)
+        )
+        let state = ColorPickerAttributes.ContentState(matchPercent: match)
 
         do {
             currentActivity = try Activity.request(
@@ -34,9 +43,9 @@ final class ColorActivityManager {
 
     // MARK: - Update
 
-    func update(missionColor: UIColor, hex: String, match: Int, incomplete: Int) {
+    func update(match: Int) {
         guard let activity = currentActivity else { return }
-        let state = ContentState(missionColor: missionColor, hex: hex, match: match, incomplete: incomplete)
+        let state = ColorPickerAttributes.ContentState(matchPercent: match)
         Task { await activity.update(.init(state: state, staleDate: nil)) }
     }
 
@@ -47,18 +56,5 @@ final class ColorActivityManager {
             await currentActivity?.end(nil, dismissalPolicy: .immediate)
             currentActivity = nil
         }
-    }
-
-    // MARK: - Helper
-
-    private func ContentState(missionColor: UIColor, hex: String, match: Int, incomplete: Int) -> ColorPickerAttributes.ContentState {
-        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
-        missionColor.getRed(&r, green: &g, blue: &b, alpha: &a)
-        return ColorPickerAttributes.ContentState(
-            missionHex: hex,
-            matchPercent: match,
-            incompleteCount: incomplete,
-            red: Double(r), green: Double(g), blue: Double(b)
-        )
     }
 }

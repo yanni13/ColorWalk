@@ -292,11 +292,11 @@ final class CameraViewController: BaseViewController {
         .subscribe(onNext: { [weak self] detectedColor, match, missionColor, cards in
             guard let self else { return }
             
-            // 중앙 알약: 실시간 색상(점), 미션 헥스코드(텍스트), 실시간 일치율
+            // 중앙 알약: 고정 미션 색상(점), 고정 미션 헥스(텍스트), 실시간 일치율
             self.colorPillView.update(
-                color: detectedColor,
-                hex: missionColor.toHexString(),
-                match: match
+                missionColor: missionColor,
+                missionHex:   missionColor.toHexString(),
+                match:        match
             )
             
            // TODO: Throttle/Debounce 고려
@@ -305,23 +305,13 @@ final class CameraViewController: BaseViewController {
         .disposed(by: disposeBag)
 
         // Dynamic Island 전용 throttle (1초)
-        Observable.combineLatest(
-            viewModel.matchPercent,
-            viewModel.missionColor,
-            ColorCardStore.shared.cards
-        )
-        .throttle(.seconds(1), scheduler: MainScheduler.instance)
-        .subscribe(onNext: { [weak self] match, missionColor, cards in
-            guard #available(iOS 16.1, *), let self else { return }
-            let incomplete = 9 - cards.count
-            ColorActivityManager.shared.update(
-                missionColor: missionColor,
-                hex: missionColor.toHexString(),
-                match: match,
-                incomplete: incomplete
-            )
-        })
-        .disposed(by: disposeBag)
+        viewModel.matchPercent
+            .throttle(.seconds(1), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { match in
+                guard #available(iOS 16.1, *) else { return }
+                ColorActivityManager.shared.update(match: match)
+            })
+            .disposed(by: disposeBag)
 
         // Mission label
         viewModel.missionName
@@ -446,14 +436,12 @@ final class CameraViewController: BaseViewController {
     private func startDynamicIsland() {
         guard #available(iOS 16.1, *) else { return }
         let missionColor = viewModel.missionColor.value
-        let incomplete = 9 - ColorCardStore.shared.cards.value.count
 
         ColorActivityManager.shared.start(
             missionName: viewModel.missionName.value,
             missionHex:  missionColor.toHexString(),
             missionColor: missionColor,
-            match: viewModel.matchPercent.value,
-            incomplete: incomplete
+            match: viewModel.matchPercent.value
         )
     }
 

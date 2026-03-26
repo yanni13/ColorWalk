@@ -22,11 +22,11 @@ struct ColorWalkWidgetLiveActivity: Widget {
                 DynamicIslandExpandedRegion(.leading) {
                     HStack(spacing: 8) {
                         Circle()
-                            .fill(stateColor(context.state))
+                            .fill(stateColor(context.attributes))
                             .frame(width: 28, height: 28)
-                            .shadow(color: stateColor(context.state).opacity(0.6), radius: 6)
+                            .shadow(color: stateColor(context.attributes).opacity(0.6), radius: 6)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(context.state.detectedHex)
+                            Text(context.attributes.missionHex)
                                 .font(.system(size: 14, weight: .semibold, design: .monospaced))
                                 .foregroundColor(.white)
                             Text("\(context.state.matchPercent)% 일치")
@@ -51,7 +51,7 @@ struct ColorWalkWidgetLiveActivity: Widget {
                 DynamicIslandExpandedRegion(.bottom) {
                     MatchProgressBar(
                         percent:    context.state.matchPercent,
-                        barColor:   stateColor(context.state),
+                        barColor:   stateColor(context.attributes),
                         missionHex: context.attributes.missionHex
                     )
                     .padding(.horizontal, 12)
@@ -61,13 +61,13 @@ struct ColorWalkWidgetLiveActivity: Widget {
             } compactLeading: {
                 // Compact: 왼쪽 컬러 도트
                 Circle()
-                    .fill(stateColor(context.state))
+                    .fill(stateColor(context.attributes))
                     .frame(width: 16, height: 16)
                     .padding(.leading, 4)
 
             } compactTrailing: {
-                // Compact: 오른쪽 미션 hex 코드
-                Text(context.attributes.missionHex)
+                // Compact: 오른쪽 실시간 일치율
+                Text("\(context.state.matchPercent)%")
                     .font(.system(size: 11, weight: .semibold, design: .monospaced))
                     .foregroundColor(.white)
                     .padding(.trailing, 4)
@@ -75,14 +75,14 @@ struct ColorWalkWidgetLiveActivity: Widget {
             } minimal: {
                 // Minimal: 도트만 
                 Circle()
-                    .fill(stateColor(context.state))
+                    .fill(stateColor(context.attributes))
             }
             .contentMargins(.all, 0, for: .minimal)
         }
     }
 
-    private func stateColor(_ state: ColorPickerAttributes.ContentState) -> Color {
-        Color(red: state.red, green: state.green, blue: state.blue)
+    private func stateColor(_ attrs: ColorPickerAttributes) -> Color {
+        Color(red: attrs.red, green: attrs.green, blue: attrs.blue)
     }
 }
 
@@ -92,7 +92,7 @@ private struct LockScreenBannerView: View {
     let state: ColorPickerAttributes.ContentState
     let attrs: ColorPickerAttributes
 
-    private var color: Color { Color(red: state.red, green: state.green, blue: state.blue) }
+    private var color: Color { Color(red: attrs.red, green: attrs.green, blue: attrs.blue) }
 
     var body: some View {
         HStack(spacing: 12) {
@@ -103,7 +103,7 @@ private struct LockScreenBannerView: View {
                 .shadow(color: color.opacity(0.5), radius: 8)
 
             VStack(alignment: .leading, spacing: 3) {
-                Text(state.detectedHex)
+                Text(attrs.missionHex)
                     .font(.system(size: 16, weight: .semibold, design: .monospaced))
                     .foregroundColor(.white)
                 Text("미션: \(attrs.missionName)  ·  \(state.matchPercent)% 일치")
@@ -168,19 +168,14 @@ private struct MatchProgressBar: View {
 extension ColorPickerAttributes {
     fileprivate static let preview = ColorPickerAttributes(
         missionName: "Sky Blue",
-        missionHex:  "#5B8DEF"
+        missionHex:  "#5B8DEF",
+        red: 0.36, green: 0.55, blue: 0.94
     )
 }
 
 extension ColorPickerAttributes.ContentState {
-    fileprivate static let low = ColorPickerAttributes.ContentState(
-        detectedHex: "#B0C4DE", matchPercent: 42,
-        red: 0.69, green: 0.77, blue: 0.87
-    )
-    fileprivate static let high = ColorPickerAttributes.ContentState(
-        detectedHex: "#5B8DEF", matchPercent: 96,
-        red: 0.36, green: 0.55, blue: 0.94
-    )
+    fileprivate static let low = ColorPickerAttributes.ContentState(matchPercent: 42)
+    fileprivate static let high = ColorPickerAttributes.ContentState(matchPercent: 96)
 }
 
 #Preview("Notification", as: .content, using: ColorPickerAttributes.preview) {

@@ -72,9 +72,9 @@ final class ColorDetectPillView: UIView {
 
     // MARK: - Update
 
-    func update(color: UIColor, hex: String, match: Int) {
-        colorDot.backgroundColor = color
-        hexLabel.text = hex
+    func update(missionColor: UIColor, missionHex: String, match: Int) {
+        colorDot.backgroundColor = missionColor
+        hexLabel.text = missionHex
         matchLabel.text = "\(match)% 일치"
     }
 }
