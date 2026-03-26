@@ -22,35 +22,56 @@ final class MapViewController: BaseViewController {
         return m
     }()
 
-    private let searchBar: UIView = {
+    // MARK: Header
+
+    private let headerView: UIView = {
         let v = UIView()
-        v.backgroundColor = UIColor.white.withAlphaComponent(0.95)
-        v.layer.cornerRadius = 22
+        v.backgroundColor = .white
         v.layer.shadowColor = UIColor.black.cgColor
-        v.layer.shadowOpacity = 0.10
-        v.layer.shadowRadius = 16
-        v.layer.shadowOffset = CGSize(width: 0, height: 4)
+        v.layer.shadowOpacity = 0.05
+        v.layer.shadowRadius = 4
+        v.layer.shadowOffset = CGSize(width: 0, height: 2)
         return v
     }()
 
-    private let searchIcon: UIImageView = {
-        let iv = UIImageView(image: UIImage(systemName: "magnifyingglass"))
-        iv.tintColor = UIColor.App.textSecondary
-        iv.contentMode = .scaleAspectFit
-        return iv
-    }()
-
-    private let searchPlaceholder: UILabel = {
+    private let titleLabel: UILabel = {
         let l = UILabel()
-        l.text = "위치 검색"
-        l.textColor = UIColor.App.textTertiary
-        l.font = UIFont(name: "Pretendard-Regular", size: 15) ?? .systemFont(ofSize: 15)
+        l.text = "산책 지도"
+        l.font = UIFont(name: "Pretendard-Bold", size: 22) ?? .boldSystemFont(ofSize: 22)
+        l.textColor = UIColor.App.textPrimary
         return l
     }()
 
+    private let listButton: UIButton = {
+        let b = UIButton(type: .system)
+        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
+        b.setImage(UIImage(systemName: "list.bullet", withConfiguration: config), for: .normal)
+        b.tintColor = UIColor.App.textSecondary
+        return b
+    }()
+
+    private let filterButton: UIButton = {
+        let b = UIButton(type: .system)
+        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
+        b.setImage(UIImage(systemName: "slider.horizontal.3", withConfiguration: config), for: .normal)
+        b.tintColor = UIColor.App.textSecondary
+        return b
+    }()
+
+    private lazy var actionStack: UIStackView = {
+        let sv = UIStackView(arrangedSubviews: [listButton, filterButton])
+        sv.axis = .horizontal
+        sv.spacing = 12
+        sv.alignment = .center
+        return sv
+    }()
+
+    // MARK: Map Controls
+
     private let myLocationButton: UIButton = {
         let b = UIButton(type: .system)
-        b.setImage(UIImage(systemName: "location.fill"), for: .normal)
+        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
+        b.setImage(UIImage(systemName: "location.fill", withConfiguration: config), for: .normal)
         b.tintColor = UIColor.App.accentBlue
         b.backgroundColor = .white
         b.layer.cornerRadius = 24
@@ -61,7 +82,8 @@ final class MapViewController: BaseViewController {
         return b
     }()
 
-    // Bottom card
+    // MARK: Bottom Card
+
     private let bottomCard: UIView = {
         let v = UIView()
         v.backgroundColor = UIColor.white.withAlphaComponent(0.97)
@@ -103,7 +125,6 @@ final class MapViewController: BaseViewController {
         return cv
     }()
 
-    // Bottom card constraint for animation
     private var bottomCardBottomConstraint: Constraint?
     private let bottomCardHeight: CGFloat = 156
 
@@ -120,14 +141,14 @@ final class MapViewController: BaseViewController {
 
     override func setupViews() {
         view.addSubview(mapView)
-        view.addSubview(searchBar)
-        searchBar.addSubview(searchIcon)
-        searchBar.addSubview(searchPlaceholder)
-        view.addSubview(myLocationButton)
+        view.addSubview(headerView)
+        headerView.addSubview(titleLabel)
+        headerView.addSubview(actionStack)
         view.addSubview(bottomCard)
         bottomCard.addSubview(nearbyTitleLabel)
         bottomCard.addSubview(nearbySubtitleLabel)
         bottomCard.addSubview(photoCollectionView)
+        view.addSubview(myLocationButton)
 
         mapView.delegate = self
         mapView.register(
@@ -139,7 +160,6 @@ final class MapViewController: BaseViewController {
             forAnnotationViewWithReuseIdentifier: MKMapViewDefaultClusterAnnotationViewReuseIdentifier
         )
 
-        // Initial map region — Seoul
         let seoul = CLLocationCoordinate2D(latitude: 37.5665, longitude: 126.9780)
         mapView.setRegion(
             MKCoordinateRegion(center: seoul, latitudinalMeters: 6000, longitudinalMeters: 6000),
@@ -150,28 +170,26 @@ final class MapViewController: BaseViewController {
     override func setupConstraints() {
         mapView.snp.makeConstraints { $0.edges.equalToSuperview() }
 
-        searchBar.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(12)
-            $0.leading.trailing.equalToSuperview().inset(16)
-            $0.height.equalTo(44)
+        headerView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(56)
         }
 
-        searchIcon.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(16)
+        titleLabel.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(20)
             $0.centerY.equalToSuperview()
-            $0.width.height.equalTo(18)
         }
 
-        searchPlaceholder.snp.makeConstraints {
-            $0.leading.equalTo(searchIcon.snp.trailing).offset(10)
+        actionStack.snp.makeConstraints {
+            $0.trailing.equalToSuperview().inset(20)
             $0.centerY.equalToSuperview()
-            $0.trailing.lessThanOrEqualToSuperview().inset(16)
         }
 
         bottomCard.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(bottomCardHeight)
-            bottomCardBottomConstraint = $0.bottom.equalTo(view.snp.bottom).offset(bottomCardHeight).constraint
+            bottomCardBottomConstraint = $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(bottomCardHeight).constraint
         }
 
         myLocationButton.snp.makeConstraints {
