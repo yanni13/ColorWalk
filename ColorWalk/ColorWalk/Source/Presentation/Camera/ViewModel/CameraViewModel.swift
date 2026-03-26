@@ -37,10 +37,25 @@ final class CameraViewModel: NSObject {
     let detectedHex   = BehaviorRelay<String>(value: "#888888")
     let matchPercent  = BehaviorRelay<Int>(value: 0)
     let currentFilter = BehaviorRelay<CameraFilter>(value: .normal)
-    let missionName   = BehaviorRelay<String>(value: "Sky Blue")
-    let missionColor  = BehaviorRelay<UIColor>(value: UIColor(hex: "#5B8DEF"))
+    let missionName   = BehaviorRelay<String>(value: ColorMissionStore.shared.mission.value.name)
+    let missionColor  = BehaviorRelay<UIColor>(value: ColorMissionStore.shared.mission.value.color)
 
     private let ciContext = CIContext(options: [.useSoftwareRenderer: false])
+    private let disposeBag = DisposeBag()
+
+    override init() {
+        super.init()
+        
+        ColorMissionStore.shared.mission
+            .map { $0.name }
+            .bind(to: missionName)
+            .disposed(by: disposeBag)
+            
+        ColorMissionStore.shared.mission
+            .map { $0.color }
+            .bind(to: missionColor)
+            .disposed(by: disposeBag)
+    }
 
     // MARK: - Session Setup
 

@@ -15,16 +15,16 @@ final class ColorActivityManager {
 
     // MARK: - Start
 
-    func start(missionName: String, missionHex: String, color: UIColor, hex: String, match: Int) {
+    func start(missionName: String, missionHex: String, missionColor: UIColor, match: Int, incomplete: Int) {
         guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
 
         let attrs = ColorPickerAttributes(missionName: missionName, missionHex: missionHex)
-        let state = ContentState(color: color, hex: hex, match: match)
+        let state = ContentState(missionColor: missionColor, hex: missionHex, match: match, incomplete: incomplete)
 
         do {
             currentActivity = try Activity.request(
                 attributes: attrs,
-                contentState: state,
+                content: .init(state: state, staleDate: nil),
                 pushType: nil
             )
         } catch {
@@ -34,29 +34,30 @@ final class ColorActivityManager {
 
     // MARK: - Update
 
-    func update(color: UIColor, hex: String, match: Int) {
+    func update(missionColor: UIColor, hex: String, match: Int, incomplete: Int) {
         guard let activity = currentActivity else { return }
-        let state = ContentState(color: color, hex: hex, match: match)
-        Task { await activity.update(using: state) }
+        let state = ContentState(missionColor: missionColor, hex: hex, match: match, incomplete: incomplete)
+        Task { await activity.update(.init(state: state, staleDate: nil)) }
     }
 
     // MARK: - Stop
 
     func stop() {
         Task {
-            await currentActivity?.end(dismissalPolicy: .immediate)
+            await currentActivity?.end(nil, dismissalPolicy: .immediate)
             currentActivity = nil
         }
     }
 
     // MARK: - Helper
 
-    private func ContentState(color: UIColor, hex: String, match: Int) -> ColorPickerAttributes.ContentState {
+    private func ContentState(missionColor: UIColor, hex: String, match: Int, incomplete: Int) -> ColorPickerAttributes.ContentState {
         var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
-        color.getRed(&r, green: &g, blue: &b, alpha: &a)
+        missionColor.getRed(&r, green: &g, blue: &b, alpha: &a)
         return ColorPickerAttributes.ContentState(
-            detectedHex: hex,
+            missionHex: hex,
             matchPercent: match,
+            incompleteCount: incomplete,
             red: Double(r), green: Double(g), blue: Double(b)
         )
     }

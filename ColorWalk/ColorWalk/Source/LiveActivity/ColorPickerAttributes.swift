@@ -15,8 +15,9 @@ struct ColorPickerAttributes: ActivityAttributes {
 
     // 매 프레임마다 업데이트되는 정보
     struct ContentState: Codable, Hashable {
-        var detectedHex:  String
+        var missionHex:   String
         var matchPercent: Int
+        var incompleteCount: Int
         var red:   Double
         var green: Double
         var blue:  Double

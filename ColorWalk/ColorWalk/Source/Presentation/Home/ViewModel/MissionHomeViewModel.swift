@@ -89,10 +89,17 @@ final class MissionHomeViewModel: ViewModelType {
             .bind(to: indexRelay)
             .disposed(by: disposeBag)
 
-        let mission = indexRelay
+        let missionObservable = indexRelay
             .map { [weak self] idx -> ColorMission in
                 self?.missions[idx] ?? ColorMission.mockMissions[0]
             }
+            .share(replay: 1)
+
+        missionObservable
+            .bind(onNext: { ColorMissionStore.shared.setMission($0) })
+            .disposed(by: disposeBag)
+
+        let mission = missionObservable
             .asDriver(onErrorJustReturn: ColorMission.mockMissions[0])
 
         return Output(mission: mission)

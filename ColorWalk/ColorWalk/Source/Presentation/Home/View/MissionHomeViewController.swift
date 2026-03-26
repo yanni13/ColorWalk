@@ -4,7 +4,6 @@
 //
 
 import UIKit
-import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
@@ -228,7 +227,7 @@ final class MissionHomeViewController: BaseViewController {
 
     private let heroPlaceholderLabel: UILabel = {
         let l = UILabel()
-        l.text = "첫 촬영 후 여기에 사진이 표시됩니다"
+        l.text = "새로운 색상을 찾으세요"
         l.font = UIFont(name: "Pretendard-Medium", size: 13)
         l.textColor = UIColor(hex: "#B0B8C1")
         l.textAlignment = .center
@@ -305,6 +304,40 @@ final class MissionHomeViewController: BaseViewController {
     }
 
     required init?(coder: NSCoder) { fatalError() }
+
+    // MARK: - Lifecycle
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupLocationManager()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        ColorCardStore.shared.checkDailyReset()
+        updateLocationLabelVisibility()
+    }
+
+    private func setupLocationManager() {
+        locationManager.delegate = self
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidEnterForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+    }
+
+    @objc private func appDidEnterForeground() {
+        ColorCardStore.shared.checkDailyReset()
+        updateLocationLabelVisibility()
+    }
+
+    private func updateLocationLabelVisibility() {
+        let status = locationManager.authorizationStatus
+        let authorized = (status == .authorizedWhenInUse || status == .authorizedAlways)
+        carouselView.updateLocationVisibility(authorized)
+    }
 
     // MARK: - Setup
 
@@ -570,6 +603,9 @@ final class MissionHomeViewController: BaseViewController {
 
         let count = ColorCardStore.shared.cards.value.count
         updateProgressBar(count: count)
+        
+        // Ensure store stays in sync
+        ColorMissionStore.shared.setMission(mission)
     }
 
     private func updateProgressBar(count: Int) {
@@ -601,5 +637,14 @@ final class MissionHomeViewController: BaseViewController {
             progress: currentDisplayedMission.progress
         )
         currentDisplayedMission = updated
+        ColorMissionStore.shared.setMission(updated)
+    }
+}
+
+// MARK: - CLLocationManagerDelegate
+
+extension MissionHomeViewController: CLLocationManagerDelegate {
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        updateLocationLabelVisibility()
     }
 }

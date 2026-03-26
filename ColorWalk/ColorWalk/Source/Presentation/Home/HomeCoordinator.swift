@@ -16,12 +16,13 @@ final class HomeCoordinator: Coordinator {
     }
 
     func start() {
-        ColorCardStore.shared.cards.accept(ColorCard.mockCards)
         let viewModel = MissionHomeViewModel()
         let vc = MissionHomeViewController(viewModel: viewModel)
         vc.onCardTap = { [weak self, weak vc] index in
             guard let self, let vc else { return }
-            self.showDetail(cards: vc.allCards, startIndex: index)
+            let cards = vc.allCards
+            guard !cards.isEmpty, index < cards.count else { return }
+            self.showDetail(cards: cards, startIndex: index)
         }
         navigationController.setViewControllers([vc], animated: false)
     }

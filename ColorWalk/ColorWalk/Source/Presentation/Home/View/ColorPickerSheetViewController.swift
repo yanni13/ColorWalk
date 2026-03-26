@@ -379,11 +379,22 @@ final class ColorPickerSheetViewController: UIViewController {
             .subscribe(onNext: { [weak self] in self?.dismissSheet() })
             .disposed(by: disposeBag)
 
+        selectedRelay
+            .subscribe(onNext: { [weak self] (color, hex) in
+                guard let self else { return }
+                self.currentDotView.backgroundColor = color
+                // 프리셋인 경우 이름을 표시하고, 아닌 경우 '새로운 색상'으로 표시
+                if let idx = self.selectedPresetIndex {
+                    self.currentBottomLabel.text = "\(Self.presets[idx].name) · \(hex)"
+                } else {
+                    self.currentBottomLabel.text = "새로운 색상 · \(hex)"
+                }
+            })
+            .disposed(by: disposeBag)
+
         randomButton.rx.tap
             .subscribe(onNext: { [weak self] in
-                guard let self else { return }
-                let idx = Int.random(in: 0..<Self.presets.count)
-                self.applyPresetSelection(at: idx)
+                self?.applyRandomColor()
             })
             .disposed(by: disposeBag)
 
@@ -432,9 +443,22 @@ final class ColorPickerSheetViewController: UIViewController {
 
     private func applyPresetSelection(at index: Int) {
         let preset = Self.presets[index]
-        selectedRelay.accept((preset.color, preset.hex))
         selectedPresetIndex = index
+        selectedRelay.accept((preset.color, preset.hex))
         updatePresetRings(selectedIndex: index)
+        resetHexInputDisplay()
+    }
+
+    private func applyRandomColor() {
+        let r = CGFloat.random(in: 0...1)
+        let g = CGFloat.random(in: 0...1)
+        let b = CGFloat.random(in: 0...1)
+        let color = UIColor(red: r, green: g, blue: b, alpha: 1.0)
+        let hex = String(format: "#%02X%02X%02X", Int(r*255), Int(g*255), Int(b*255))
+        
+        selectedPresetIndex = nil
+        selectedRelay.accept((color, hex))
+        updatePresetRings(selectedIndex: nil)
         resetHexInputDisplay()
     }
 

@@ -281,22 +281,47 @@ final class CameraViewController: BaseViewController {
             .subscribe(onNext: { [weak self] img in self?.previewView.image = img })
             .disposed(by: disposeBag)
 
-        // Color pill 업데이트
-        Observable.combineLatest(viewModel.detectedColor, viewModel.detectedHex, viewModel.matchPercent)
-            .throttle(.milliseconds(100), scheduler: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] color, hex, match in
-                self?.colorPillView.update(color: color, hex: hex, match: match)
-            })
-            .disposed(by: disposeBag)
+        // Color pill & Dynamic Island 업데이트
+        Observable.combineLatest(
+            viewModel.detectedColor,
+            viewModel.matchPercent,
+            viewModel.missionColor,
+            ColorCardStore.shared.cards
+        )
+        .throttle(.milliseconds(100), scheduler: MainScheduler.instance)
+        .subscribe(onNext: { [weak self] detectedColor, match, missionColor, cards in
+            guard let self else { return }
+            
+            // 중앙 알약: 실시간 색상(점), 미션 헥스코드(텍스트), 실시간 일치율
+            self.colorPillView.update(
+                color: detectedColor,
+                hex: missionColor.toHexString(),
+                match: match
+            )
+            
+           // TODO: Throttle/Debounce 고려
+            
+        })
+        .disposed(by: disposeBag)
 
-        // Dynamic Island 업데이트 (1초마다 — 과도한 업데이트 방지)
-        Observable.combineLatest(viewModel.detectedColor, viewModel.detectedHex, viewModel.matchPercent)
-            .throttle(.seconds(1), scheduler: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] color, hex, match in
-                guard #available(iOS 16.1, *) else { return }
-                ColorActivityManager.shared.update(color: color, hex: hex, match: match)
-            })
-            .disposed(by: disposeBag)
+        // Dynamic Island 전용 throttle (1초)
+        Observable.combineLatest(
+            viewModel.matchPercent,
+            viewModel.missionColor,
+            ColorCardStore.shared.cards
+        )
+        .throttle(.seconds(1), scheduler: MainScheduler.instance)
+        .subscribe(onNext: { [weak self] match, missionColor, cards in
+            guard #available(iOS 16.1, *), let self else { return }
+            let incomplete = 9 - cards.count
+            ColorActivityManager.shared.update(
+                missionColor: missionColor,
+                hex: missionColor.toHexString(),
+                match: match,
+                incomplete: incomplete
+            )
+        })
+        .disposed(by: disposeBag)
 
         // Mission label
         viewModel.missionName
@@ -420,14 +445,18 @@ final class CameraViewController: BaseViewController {
 
     private func startDynamicIsland() {
         guard #available(iOS 16.1, *) else { return }
+        let missionColor = viewModel.missionColor.value
+        let incomplete = 9 - ColorCardStore.shared.cards.value.count
+
         ColorActivityManager.shared.start(
             missionName: viewModel.missionName.value,
-            missionHex:  "#5B8DEF",
-            color: viewModel.detectedColor.value,
-            hex:   viewModel.detectedHex.value,
-            match: viewModel.matchPercent.value
+            missionHex:  missionColor.toHexString(),
+            missionColor: missionColor,
+            match: viewModel.matchPercent.value,
+            incomplete: incomplete
         )
     }
+
 
     // MARK: - Gallery (gJyRv)
 

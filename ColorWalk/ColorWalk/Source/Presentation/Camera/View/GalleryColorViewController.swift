@@ -132,7 +132,7 @@ final class GalleryColorViewController: UIViewController {
         showTapIndicator(at: point, color: color)
 
         let match = colorMatch(detected: color)
-        let hex = hexString(from: color)
+        let hex = color.toHexString()
         showPopup(color: color, hex: hex, match: match)
     }
 
@@ -322,11 +322,5 @@ final class GalleryColorViewController: UIViewController {
         missionColor.getRed(&mr, green: &mg, blue: &mb, alpha: nil)
         let dist = sqrt(pow(dr - mr, 2) + pow(dg - mg, 2) + pow(db - mb, 2))
         return max(0, min(100, Int((1 - dist / sqrt(3)) * 100)))
-    }
-
-    private func hexString(from color: UIColor) -> String {
-        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0
-        color.getRed(&r, green: &g, blue: &b, alpha: nil)
-        return String(format: "#%02X%02X%02X", Int(r * 255), Int(g * 255), Int(b * 255))
     }
 }
