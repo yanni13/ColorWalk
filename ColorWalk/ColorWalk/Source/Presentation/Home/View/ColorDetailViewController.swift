@@ -202,6 +202,10 @@ final class ColorDetailViewController: BaseViewController {
         output.pageText
             .drive(pageCounterLabel.rx.text)
             .disposed(by: disposeBag)
+
+        output.shareCard
+            .drive(onNext: { [weak self] card in self?.presentShareSheet(for: card) })
+            .disposed(by: disposeBag)
     }
 
     // MARK: - Gesture
@@ -221,6 +225,24 @@ final class ColorDetailViewController: BaseViewController {
         } else if translation.x > 60 || velocity.x > 400 {
             swipeRightSubject.onNext(())
         }
+    }
+
+    // MARK: - Share
+
+    private func presentShareSheet(for card: ColorCard) {
+        var items: [Any] = ["\(card.colorName)  \(card.hexColor)\n\(card.captureDate) · \(card.locationName)"]
+
+        if let image = card.capturedImage ?? backgroundImageView.image {
+            items.append(image)
+        }
+
+        let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        if let popover = activityViewController.popoverPresentationController {
+            popover.sourceView = view
+            popover.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.maxY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+        present(activityViewController, animated: true)
     }
 
     // MARK: - Configure

@@ -144,4 +144,8 @@ final class CardGlassOverlayView: UIView {
         dateLabel.text = card.captureDate
         locationLabel.text = card.locationName
     }
+
+    func updateLocationVisibility(_ authorized: Bool) {
+        locationRowStack.isHidden = !authorized
+    }
 }

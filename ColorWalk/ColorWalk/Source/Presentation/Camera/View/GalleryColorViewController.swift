@@ -13,6 +13,7 @@ final class GalleryColorViewController: UIViewController {
 
     // MARK: - Properties
     private let image: UIImage
+    private let missionName: String
     private let missionColor: UIColor
     private let missionHex: String
     private let disposeBag = DisposeBag()
@@ -61,8 +62,9 @@ final class GalleryColorViewController: UIViewController {
     }()
 
     // MARK: - Init
-    init(image: UIImage, missionColor: UIColor, missionHex: String) {
+    init(image: UIImage, missionName: String, missionColor: UIColor, missionHex: String) {
         self.image = image
+        self.missionName = missionName
         self.missionColor = missionColor
         self.missionHex = missionHex
         super.init(nibName: nil, bundle: nil)
@@ -220,7 +222,7 @@ final class GalleryColorViewController: UIViewController {
             id: UUID().uuidString,
             imageURL: nil,
             capturedImage: image,
-            colorName: hex,
+            colorName: missionName,
             hexColor: hex,
             dotColor: color,
             locationName: "갤러리",

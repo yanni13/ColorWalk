@@ -182,6 +182,10 @@ final class CardCarouselView: UIView {
         }
     }
 
+    func updateLocationVisibility(_ authorized: Bool) {
+        glassOverlay.updateLocationVisibility(authorized)
+    }
+
     // MARK: - Helpers
 
     private static func makeCardImageView(alpha: CGFloat) -> UIImageView {

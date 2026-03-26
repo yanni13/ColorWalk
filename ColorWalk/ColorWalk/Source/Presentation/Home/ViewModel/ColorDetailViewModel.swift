@@ -17,7 +17,8 @@ final class ColorDetailViewModel: ViewModelType {
 
     struct Output {
         let currentCard: Driver<ColorCard>
-        let pageText: Driver<String>   // "1 / 9"
+        let pageText: Driver<String>
+        let shareCard: Driver<ColorCard>
     }
 
     var onBack: (() -> Void)?
@@ -50,12 +51,12 @@ final class ColorDetailViewModel: ViewModelType {
             .subscribe(onNext: { [weak self] in self?.onBack?() })
             .disposed(by: disposeBag)
 
+        let shareCardRelay = PublishRelay<ColorCard>()
+
         input.shareTap
             .withLatestFrom(currentIndexRelay)
-            .subscribe(onNext: { [weak self] index in
-                guard let card = self?.cards[index] else { return }
-                print("공유: \(card.colorName)")
-            })
+            .compactMap { [weak self] index in self?.cards[index] }
+            .bind(to: shareCardRelay)
             .disposed(by: disposeBag)
 
         let currentCard = currentIndexRelay
@@ -71,6 +72,8 @@ final class ColorDetailViewModel: ViewModelType {
             }
             .asDriver(onErrorJustReturn: "")
 
-        return Output(currentCard: currentCard, pageText: pageText)
+        let shareCard = shareCardRelay.asDriver(onErrorDriveWith: .empty())
+
+        return Output(currentCard: currentCard, pageText: pageText, shareCard: shareCard)
     }
 }

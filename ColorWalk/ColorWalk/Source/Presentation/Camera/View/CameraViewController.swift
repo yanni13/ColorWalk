@@ -357,7 +357,7 @@ final class CameraViewController: BaseViewController {
                 id: UUID().uuidString,
                 imageURL: nil,
                 capturedImage: img,
-                colorName: viewModel.detectedHex.value,
+                colorName: viewModel.missionName.value,
                 hexColor: viewModel.detectedHex.value,
                 dotColor: viewModel.detectedColor.value,
                 locationName: "현재 위치",
@@ -455,6 +455,7 @@ extension CameraViewController: PHPickerViewControllerDelegate {
                 guard let self, let image = obj as? UIImage else { return }
                 let galleryVC = GalleryColorViewController(
                     image: image,
+                    missionName: self.viewModel.missionName.value,
                     missionColor: self.viewModel.missionColor.value,
                     missionHex:   self.viewModel.detectedHex.value
                 )

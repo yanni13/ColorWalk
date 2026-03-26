@@ -4,9 +4,11 @@
 //
 
 import UIKit
+import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import CoreLocation
 
 final class MissionHomeViewController: BaseViewController {
 
@@ -16,6 +18,7 @@ final class MissionHomeViewController: BaseViewController {
     private var currentDisplayedMission: ColorMission = ColorMission.mockMissions[0]
     private var cards: [ColorCard] = []
     private var currentIndex: Int = 0
+    private let locationManager = CLLocationManager()
 
     var allCards: [ColorCard] { cards }
     var onCardTap: ((Int) -> Void)?
