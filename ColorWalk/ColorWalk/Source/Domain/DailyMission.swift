@@ -8,4 +8,5 @@ final class DailyMission: Object {
     @Persisted var recommendedHex: String = ""
     @Persisted var slots: List<ColorSlot>
     @Persisted var isPaletteCompleted: Bool = false
+    @Persisted var completedAt: Date? = nil
 }

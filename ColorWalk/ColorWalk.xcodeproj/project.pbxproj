@@ -18,6 +18,7 @@
 		D82CC52F2F73D0E900211DB3 /* ColorWalkWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D82CC5192F73D0E700211DB3 /* ColorWalkWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		D82CC62A2F74336000211DB3 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D82CC6292F74336000211DB3 /* RealmSwift */; };
 		D82CC62B2F74339300211DB3 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D82CC6292F74336000211DB3 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D85CE9D22F74C2B6002DB279 /* CLAUDE.md in Resources */ = {isa = PBXBuildFile; fileRef = D85CE9D12F74C2B6002DB279 /* CLAUDE.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +63,7 @@
 		D82CC5192F73D0E700211DB3 /* ColorWalkWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ColorWalkWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D82CC51B2F73D0E700211DB3 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		D82CC51D2F73D0E800211DB3 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		D85CE9D12F74C2B6002DB279 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -129,6 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				D82CC09D2F71136D00211DB3 /* AtomicDesign.md */,
+				D85CE9D12F74C2B6002DB279 /* CLAUDE.md */,
 				D82CC0882F710D6100211DB3 /* .gitignore */,
 				D82CC0722F710D1B00211DB3 /* ColorWalk */,
 				D82CC51F2F73D0E800211DB3 /* ColorWalkWidget */,
@@ -260,6 +263,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D82CC0892F710D6100211DB3 /* .gitignore in Resources */,
+				D85CE9D22F74C2B6002DB279 /* CLAUDE.md in Resources */,
 				D82CC09E2F71136D00211DB3 /* AtomicDesign.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -310,7 +314,9 @@
 				DEVELOPMENT_TEAM = W5Z68U98HJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ColorWalk/Info.plist;
-				INFOPLIST_KEY_NSCameraUsageDescription = "카메라 접근 권한 허용해주세요.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "주변의 아름다운 색을 카메라로 촬영하기 위해 카메라 접근 권한이 필요합니다.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "사용자의 위치를 기반으로 사진 정보를 제공하기 위해 필요합니다.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "갤러리에서 사진을 가져와 색상을 수집하기 위해 사진 접근 권한이 필요합니다.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -349,7 +355,9 @@
 				DEVELOPMENT_TEAM = W5Z68U98HJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ColorWalk/Info.plist;
-				INFOPLIST_KEY_NSCameraUsageDescription = "카메라 접근 권한 허용해주세요.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "주변의 아름다운 색을 카메라로 촬영하기 위해 카메라 접근 권한이 필요합니다.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "사용자의 위치를 기반으로 사진 정보를 제공하기 위해 필요합니다.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "갤러리에서 사진을 가져와 색상을 수집하기 위해 사진 접근 권한이 필요합니다.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;

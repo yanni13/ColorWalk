@@ -1,5 +1,6 @@
 import UIKit
 import MapKit
+import CoreLocation
 import RxSwift
 import RxCocoa
 import SnapKit
@@ -12,6 +13,7 @@ final class MapViewController: BaseViewController {
     private let clusterTappedRelay = PublishRelay<[Photo]>()
     private var selectedPhotos: [Photo] = []
     private var isBottomCardVisible = false
+    private let locationManager = CLLocationManager()
 
     // MARK: - UI
 
@@ -20,50 +22,6 @@ final class MapViewController: BaseViewController {
         m.showsUserLocation = true
         m.showsCompass = false
         return m
-    }()
-
-    // MARK: Header
-
-    private let headerView: UIView = {
-        let v = UIView()
-        v.backgroundColor = .white
-        v.layer.shadowColor = UIColor.black.cgColor
-        v.layer.shadowOpacity = 0.05
-        v.layer.shadowRadius = 4
-        v.layer.shadowOffset = CGSize(width: 0, height: 2)
-        return v
-    }()
-
-    private let titleLabel: UILabel = {
-        let l = UILabel()
-        l.text = "산책 지도"
-        l.font = UIFont(name: "Pretendard-Bold", size: 22) ?? .boldSystemFont(ofSize: 22)
-        l.textColor = UIColor.App.textPrimary
-        return l
-    }()
-
-    private let listButton: UIButton = {
-        let b = UIButton(type: .system)
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
-        b.setImage(UIImage(systemName: "list.bullet", withConfiguration: config), for: .normal)
-        b.tintColor = UIColor.App.textSecondary
-        return b
-    }()
-
-    private let filterButton: UIButton = {
-        let b = UIButton(type: .system)
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
-        b.setImage(UIImage(systemName: "slider.horizontal.3", withConfiguration: config), for: .normal)
-        b.tintColor = UIColor.App.textSecondary
-        return b
-    }()
-
-    private lazy var actionStack: UIStackView = {
-        let sv = UIStackView(arrangedSubviews: [listButton, filterButton])
-        sv.axis = .horizontal
-        sv.spacing = 12
-        sv.alignment = .center
-        return sv
     }()
 
     // MARK: Map Controls
@@ -141,9 +99,6 @@ final class MapViewController: BaseViewController {
 
     override func setupViews() {
         view.addSubview(mapView)
-        view.addSubview(headerView)
-        headerView.addSubview(titleLabel)
-        headerView.addSubview(actionStack)
         view.addSubview(bottomCard)
         bottomCard.addSubview(nearbyTitleLabel)
         bottomCard.addSubview(nearbySubtitleLabel)
@@ -160,31 +115,13 @@ final class MapViewController: BaseViewController {
             forAnnotationViewWithReuseIdentifier: MKMapViewDefaultClusterAnnotationViewReuseIdentifier
         )
 
-        let seoul = CLLocationCoordinate2D(latitude: 37.5665, longitude: 126.9780)
-        mapView.setRegion(
-            MKCoordinateRegion(center: seoul, latitudinalMeters: 6000, longitudinalMeters: 6000),
-            animated: false
-        )
+        locationManager.delegate = self
+        locationManager.requestWhenInUseAuthorization()
+        mapView.setUserTrackingMode(.follow, animated: false)
     }
 
     override func setupConstraints() {
         mapView.snp.makeConstraints { $0.edges.equalToSuperview() }
-
-        headerView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide)
-            $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(56)
-        }
-
-        titleLabel.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(20)
-            $0.centerY.equalToSuperview()
-        }
-
-        actionStack.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(20)
-            $0.centerY.equalToSuperview()
-        }
 
         bottomCard.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
@@ -313,6 +250,20 @@ extension MapViewController: MKMapViewDelegate {
 
     func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
         hideBottomCard()
+    }
+}
+
+// MARK: - CLLocationManagerDelegate
+
+extension MapViewController: CLLocationManagerDelegate {
+
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        switch manager.authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
+            mapView.setUserTrackingMode(.follow, animated: true)
+        default:
+            break
+        }
     }
 }
 

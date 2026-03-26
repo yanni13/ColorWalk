@@ -31,12 +31,6 @@
 			</array>
 		</dict>
 	</dict>
-	<key>NSCameraUsageDescription</key>
-	<string>주변의 아름다운 색을 카메라로 촬영하기 위해 카메라 접근 권한이 필요합니다.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>갤러리에서 사진을 가져와 색상을 수집하기 위해 사진 접근 권한이 필요합니다.</string>
-	<key>NSSupportsLiveActivities</key>
-	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

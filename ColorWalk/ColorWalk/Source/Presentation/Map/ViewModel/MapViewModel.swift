@@ -1,4 +1,5 @@
 import RxSwift
+import UIKit
 import RxCocoa
 
 final class MapViewModel: ViewModelType {
