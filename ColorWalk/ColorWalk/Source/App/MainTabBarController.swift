@@ -44,6 +44,9 @@ final class MainTabBarController: UITabBarController {
         // 컬렉션
         let collectionNav = UINavigationController()
         collectionNav.isNavigationBarHidden = true
+        let collectionCoordinator = CollectionCoordinator(navigationController: collectionNav)
+        coordinators.append(collectionCoordinator)
+        collectionCoordinator.start()
         collectionNav.tabBarItem = UITabBarItem(
             title: "컬렉션",
             image: UIImage(systemName: "rectangle.grid.2x2"),
