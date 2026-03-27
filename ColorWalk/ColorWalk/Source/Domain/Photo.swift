@@ -8,6 +8,7 @@ final class Photo: Object {
     @Persisted var matchRate: Double = 0.0
     @Persisted var latitude: Double = 0.0
     @Persisted var longitude: Double = 0.0
+    @Persisted var locationName: String = "알 수 없는 위치"
     @Persisted var createdAt: Date = Date()
     @Persisted var isFromGallery: Bool = false
 

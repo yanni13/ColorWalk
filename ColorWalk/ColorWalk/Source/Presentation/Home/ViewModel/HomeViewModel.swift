@@ -19,6 +19,8 @@ struct ColorCard {
     let matchPercentage: Int
     let missionCurrent: Int
     let missionTotal: Int
+    let latitude: Double
+    let longitude: Double
 }
 
 // MARK: - Mock Data
@@ -35,7 +37,9 @@ extension ColorCard {
             captureDate: "2026.03.20",
             matchPercentage: 98,
             missionCurrent: 5,
-            missionTotal: 9
+            missionTotal: 9,
+            latitude: 37.5284,
+            longitude: 126.9331
         ),
         ColorCard(
             id: "2",
@@ -48,7 +52,9 @@ extension ColorCard {
             captureDate: "2026.03.18",
             matchPercentage: 85,
             missionCurrent: 3,
-            missionTotal: 9
+            missionTotal: 9,
+            latitude: 35.1531,
+            longitude: 129.1189
         ),
         ColorCard(
             id: "3",
@@ -61,7 +67,9 @@ extension ColorCard {
             captureDate: "2026.03.15",
             matchPercentage: 91,
             missionCurrent: 7,
-            missionTotal: 9
+            missionTotal: 9,
+            latitude: 37.6611,
+            longitude: 126.9936
         ),
         ColorCard(
             id: "4",
@@ -74,7 +82,9 @@ extension ColorCard {
             captureDate: "2026.03.12",
             matchPercentage: 76,
             missionCurrent: 2,
-            missionTotal: 9
+            missionTotal: 9,
+            latitude: 37.5796,
+            longitude: 126.9770
         ),
         ColorCard(
             id: "5",
@@ -87,7 +97,9 @@ extension ColorCard {
             captureDate: "2026.03.10",
             matchPercentage: 88,
             missionCurrent: 6,
-            missionTotal: 9
+            missionTotal: 9,
+            latitude: 37.5512,
+            longitude: 126.9882
         ),
         ColorCard(
             id: "6",
@@ -100,7 +112,9 @@ extension ColorCard {
             captureDate: "2026.03.06",
             matchPercentage: 72,
             missionCurrent: 7,
-            missionTotal: 9
+            missionTotal: 9,
+            latitude: 37.4979,
+            longitude: 127.0276
         ),
         ColorCard(
             id: "7",
@@ -113,7 +127,9 @@ extension ColorCard {
             captureDate: "2026.03.04",
             matchPercentage: 94,
             missionCurrent: 8,
-            missionTotal: 9
+            missionTotal: 9,
+            latitude: 37.5115,
+            longitude: 127.1032
         ),
         ColorCard(
             id: "8",
@@ -126,7 +142,9 @@ extension ColorCard {
             captureDate: "2026.03.01",
             matchPercentage: 81,
             missionCurrent: 9,
-            missionTotal: 9
+            missionTotal: 9,
+            latitude: 37.5445,
+            longitude: 127.0560
         ),
         ColorCard(
             id: "9",
@@ -139,7 +157,9 @@ extension ColorCard {
             captureDate: "2026.02.24",
             matchPercentage: 67,
             missionCurrent: 9,
-            missionTotal: 9
+            missionTotal: 9,
+            latitude: 37.5759,
+            longitude: 126.9768
         )
     ]
 }

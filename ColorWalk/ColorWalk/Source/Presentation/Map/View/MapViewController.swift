@@ -81,13 +81,18 @@ final class MapViewController: BaseViewController {
 
     override func bind() {
         let output = viewModel.transform(input: MapViewModel.Input(
-            viewDidLoad: .just(()),
+            viewDidLoad: rx.viewDidLoad.asObservable(),
+            viewWillAppear: rx.viewWillAppear.asObservable().map { _ in },
             clusterTapped: clusterTappedRelay.asObservable()
         ))
 
         output.annotations
             .drive(onNext: { [weak self] annotations in
-                self?.mapView.addAnnotations(annotations)
+                guard let self = self else { return }
+                // 기존 어노테이션(사용자 위치 제외) 삭제 후 새로운 어노테이션 추가
+                let existing = self.mapView.annotations.filter { !($0 is MKUserLocation) }
+                self.mapView.removeAnnotations(existing)
+                self.mapView.addAnnotations(annotations)
             })
             .disposed(by: disposeBag)
 

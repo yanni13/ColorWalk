@@ -47,6 +47,9 @@ final class ColorCardStore {
                 photo.imagePath = fileName
                 photo.capturedHex = card.hexColor
                 photo.matchRate = Double(card.matchPercentage)
+                photo.latitude = card.latitude
+                photo.longitude = card.longitude
+                photo.locationName = card.locationName
                 photo.createdAt = Date()
                 
                 // 슬롯 인덱스 결정: 0이면 첫 번째 빈 슬롯 찾기
@@ -89,11 +92,13 @@ final class ColorCardStore {
                 colorName: "수집된 색상",
                 hexColor: photo.capturedHex,
                 dotColor: UIColor(hex: photo.capturedHex),
-                locationName: "현재 위치",
+                locationName: photo.locationName,
                 captureDate: formatter.string(from: photo.createdAt),
                 matchPercentage: Int(photo.matchRate),
                 missionCurrent: 0, // 표시용으로는 0이어도 무관하나 필요시 로직 추가
-                missionTotal: 9
+                missionTotal: 9,
+                latitude: photo.latitude,
+                longitude: photo.longitude
             )
         }
         cards.accept(loadedCards)

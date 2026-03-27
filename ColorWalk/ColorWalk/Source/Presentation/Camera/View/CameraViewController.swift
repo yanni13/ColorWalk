@@ -9,6 +9,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 import PhotosUI
+import CoreLocation
 
 final class CameraViewController: BaseViewController {
 
@@ -17,6 +18,7 @@ final class CameraViewController: BaseViewController {
 
     // MARK: - ViewModel
     private let viewModel = CameraViewModel()
+    private let locationManager = CLLocationManager()
 
     // MARK: - Preview
     private let previewView: UIImageView = {
@@ -344,6 +346,10 @@ final class CameraViewController: BaseViewController {
             guard granted else { return }
             self?.viewModel.setupSession()
         }
+        
+        locationManager.delegate = self
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
     }
 
     // MARK: - Shutter Animation
@@ -367,24 +373,52 @@ final class CameraViewController: BaseViewController {
         thumbnailButton.imageView?.contentMode = .scaleAspectFill
 
         let match = viewModel.matchPercent.value
-        if match >= 60 {
-            let card = ColorCard(
-                id: UUID().uuidString,
-                imageURL: nil,
-                capturedImage: img,
-                colorName: viewModel.missionName.value,
-                hexColor: viewModel.detectedHex.value,
-                dotColor: viewModel.detectedColor.value,
-                locationName: "현재 위치",
-                captureDate: Self.currentDateString(),
-                matchPercentage: match,
-                missionCurrent: 0,
-                missionTotal: 9
-            )
-            ColorCardStore.shared.add(card)
-            showCaptureToast(success: true, match: match)
-        } else {
-            showCaptureToast(success: false, match: match)
+        let location = locationManager.location?.coordinate
+        let latitude = location?.latitude ?? 0.0
+        let longitude = location?.longitude ?? 0.0
+
+        // 1. 역지오코딩을 통해 주소 텍스트 가져오기
+        fetchAddress(lat: latitude, lon: longitude) { [weak self] address in
+            guard let self = self else { return }
+            
+            if match >= 60 {
+                let card = ColorCard(
+                    id: UUID().uuidString,
+                    imageURL: nil,
+                    capturedImage: img,
+                    colorName: self.viewModel.missionName.value,
+                    hexColor: self.viewModel.detectedHex.value,
+                    dotColor: self.viewModel.detectedColor.value,
+                    locationName: address, // 실제 주소 텍스트 삽입
+                    captureDate: Self.currentDateString(),
+                    matchPercentage: match,
+                    missionCurrent: 0,
+                    missionTotal: 9,
+                    latitude: latitude,
+                    longitude: longitude
+                )
+                ColorCardStore.shared.add(card)
+                self.showCaptureToast(success: true, match: match)
+            } else {
+                self.showCaptureToast(success: false, match: match)
+            }
+        }
+    }
+
+    private func fetchAddress(lat: Double, lon: Double, completion: @escaping (String) -> Void) {
+        let geocoder = CLGeocoder()
+        let locale = Locale(identifier: "ko_KR")
+        let location = CLLocation(latitude: lat, longitude: lon)
+        
+        geocoder.reverseGeocodeLocation(location, preferredLocale: locale) { placemarks, _ in
+            if let pm = placemarks?.first {
+                let locality = pm.locality ?? "" // 예: 강남구
+                let subLocality = pm.subLocality ?? "" // 예: 역삼동
+                let address = locality.isEmpty ? "현재 위치" : "\(locality) \(subLocality)"
+                completion(address)
+            } else {
+                completion("현재 위치")
+            }
         }
     }
 
@@ -470,14 +504,27 @@ extension CameraViewController: PHPickerViewControllerDelegate {
         provider.loadObject(ofClass: UIImage.self) { [weak self] obj, _ in
             DispatchQueue.main.async {
                 guard let self, let image = obj as? UIImage else { return }
+                let location = self.locationManager.location?.coordinate
                 let galleryVC = GalleryColorViewController(
                     image: image,
                     missionName: self.viewModel.missionName.value,
                     missionColor: self.viewModel.missionColor.value,
-                    missionHex:   self.viewModel.detectedHex.value
+                    missionHex:   self.viewModel.detectedHex.value,
+                    latitude: location?.latitude ?? 0.0,
+                    longitude: location?.longitude ?? 0.0
                 )
                 self.present(galleryVC, animated: true)
             }
+        }
+    }
+}
+
+// MARK: - CLLocationManagerDelegate
+
+extension CameraViewController: CLLocationManagerDelegate {
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        if manager.authorizationStatus == .authorizedWhenInUse || manager.authorizationStatus == .authorizedAlways {
+            manager.startUpdatingLocation()
         }
     }
 }

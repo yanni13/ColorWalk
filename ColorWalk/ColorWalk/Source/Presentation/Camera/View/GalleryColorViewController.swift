@@ -16,6 +16,8 @@ final class GalleryColorViewController: UIViewController {
     private let missionName: String
     private let missionColor: UIColor
     private let missionHex: String
+    private let latitude: Double
+    private let longitude: Double
     private let disposeBag = DisposeBag()
 
     private var tapIndicator: UIView?
@@ -62,11 +64,13 @@ final class GalleryColorViewController: UIViewController {
     }()
 
     // MARK: - Init
-    init(image: UIImage, missionName: String, missionColor: UIColor, missionHex: String) {
+    init(image: UIImage, missionName: String, missionColor: UIColor, missionHex: String, latitude: Double = 0.0, longitude: Double = 0.0) {
         self.image = image
         self.missionName = missionName
         self.missionColor = missionColor
         self.missionHex = missionHex
+        self.latitude = latitude
+        self.longitude = longitude
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .fullScreen
     }
@@ -229,7 +233,9 @@ final class GalleryColorViewController: UIViewController {
             captureDate: Self.currentDateString(),
             matchPercentage: match,
             missionCurrent: 0,
-            missionTotal: 9
+            missionTotal: 9,
+            latitude: latitude,
+            longitude: longitude
         )
         ColorCardStore.shared.add(card)
 

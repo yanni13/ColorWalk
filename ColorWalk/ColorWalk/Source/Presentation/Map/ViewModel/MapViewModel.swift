@@ -6,6 +6,7 @@ final class MapViewModel: ViewModelType {
 
     struct Input {
         let viewDidLoad: Observable<Void>
+        let viewWillAppear: Observable<Void>
         let clusterTapped: Observable<[Photo]>
     }
 
@@ -23,12 +24,22 @@ final class MapViewModel: ViewModelType {
     }
 
     func transform(input: Input) -> Output {
-        let annotations = input.viewDidLoad
+        // 모든 갱신 시점(로드, 화면진입, 데이터변경)을 하나로 통합
+        let annotations = Observable.merge(
+                input.viewDidLoad,
+                input.viewWillAppear,
+                ColorCardStore.shared.cards.map { _ in }.asObservable()
+            )
+            .throttle(.milliseconds(300), scheduler: MainScheduler.instance)
             .map { [weak self] _ -> [PhotoAnnotation] in
-                guard let self else { return [] }
-                return self.photoRepository.fetchAllPhotos()
+                guard let self = self else { return [] }
+
+                // Realm에서 실제 촬영한 사진 데이터만 가져오기 (최신순)
+                let realmPhotos = self.photoRepository.fetchAllPhotos()
+                    .sorted { $0.createdAt > $1.createdAt }
                     .filter { $0.latitude != 0 || $0.longitude != 0 }
-                    .map { PhotoAnnotation(photo: $0) }
+
+                return realmPhotos.map { PhotoAnnotation(photo: $0) }
             }
             .asDriver(onErrorJustReturn: [])
 
