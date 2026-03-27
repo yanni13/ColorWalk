@@ -65,8 +65,8 @@ final class PhotoAnnotationView: MKAnnotationView {
 
         if photo.imagePath.hasPrefix("http"), let url = URL(string: photo.imagePath) {
             imageView.kf.setImage(with: url, options: [.transition(.fade(0.2))])
-        } else if let image = UIImage(contentsOfFile: photo.imagePath) {
-            imageView.image = image
+        } else {
+            imageView.image = ImageFileManager.shared.loadImage(fileName: photo.imagePath)
             imageView.backgroundColor = nil
         }
     }
@@ -184,8 +184,8 @@ final class PhotoClusterAnnotationView: MKAnnotationView {
             if !photo.imagePath.isEmpty {
                 if photo.imagePath.hasPrefix("http"), let url = URL(string: photo.imagePath) {
                     imageView.kf.setImage(with: url, options: [.transition(.fade(0.2))])
-                } else if let image = UIImage(contentsOfFile: photo.imagePath) {
-                    imageView.image = image
+                } else {
+                    imageView.image = ImageFileManager.shared.loadImage(fileName: photo.imagePath)
                     imageView.backgroundColor = nil
                 }
             }
