@@ -26,9 +26,18 @@ final class ColorCardStore {
     func add(_ card: ColorCard) {
         checkDailyReset()
         
-        // 오늘 미션이 없으면 생성 (RealmManager 활용)
+        // 오늘 미션이 없으면 생성 및 초기값 설정
         let today = currentDateString()
-        _ = RealmManager.shared.fetchOrCreateTodayMission()
+        let mission = RealmManager.shared.fetchOrCreateTodayMission()
+        
+        // 미션 기본 정보가 비어있으면 현재 미션 정보로 업데이트
+        if mission.recommendedHex.isEmpty {
+            let currentMission = ColorMissionStore.shared.mission.value
+            RealmManager.shared.write { realm in
+                mission.recommendedHex = currentMission.hexColor
+                mission.weatherStatus = currentMission.weatherInfo
+            }
+        }
         
         // 이미지 저장 및 Realm 저장
         if let image = card.capturedImage {
@@ -40,9 +49,8 @@ final class ColorCardStore {
                 photo.matchRate = Double(card.matchPercentage)
                 photo.createdAt = Date()
                 
-                // 슬롯 인덱스 결정: 0이면 첫 번째 빈 슬롯 찾기 (최대 9개)
-                let currentIndex = cards.value.count
-                let slotIndex = (card.missionCurrent > 0) ? (card.missionCurrent - 1) : currentIndex
+                // 슬롯 인덱스 결정: 0이면 첫 번째 빈 슬롯 찾기
+                let slotIndex = (card.missionCurrent > 0) ? (card.missionCurrent - 1) : cards.value.count
                 
                 if slotIndex < 9 {
                     repository.savePhoto(photo, toSlotIndex: slotIndex, missionId: today)

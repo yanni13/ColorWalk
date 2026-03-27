@@ -99,12 +99,15 @@ final class MissionPhotoGridView: UIView {
 
     private func updateCell(at index: Int, with slot: SlotDisplayInfo) {
         let imageView = imageViews[index]
-        guard slot.isCaptured, let path = slot.imagePath else {
+        guard slot.isCaptured, let fileName = slot.imagePath else {
             imageView.image = nil
             imageView.backgroundColor = UIColor.App.bgSecondary
             return
         }
-        imageView.image = UIImage(contentsOfFile: path)
+        
+        // ImageFileManager를 통해 이미지 로드
+        imageView.image = ImageFileManager.shared.loadImage(fileName: fileName)
+        
         if let hex = slot.capturedHex {
             imageView.backgroundColor = UIColor(hex: hex)
         }

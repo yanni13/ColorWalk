@@ -9,15 +9,31 @@ final class CollectionViewController: BaseViewController {
 
     private let viewModel: CollectionViewModel
     private let viewWillAppearRelay = PublishRelay<Void>()
-
+    
     // MARK: - UI: Scroll
 
-    private let scrollView = UIScrollView()
+    private let scrollView: UIScrollView = {
+        let sv = UIScrollView()
+        sv.showsVerticalScrollIndicator = false
+        return sv
+    }()
+    
     private let contentView = UIView()
 
-    // MARK: - UI: Card
+    // MARK: - UI: Cards
 
-    private let archiveCard: UIView = {
+    private let missionHeaderCard: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 24
+        view.layer.shadowColor = UIColor.black.withAlphaComponent(0.04).cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 2)
+        view.layer.shadowRadius = 12
+        view.layer.shadowOpacity = 1.0
+        return view
+    }()
+
+    private let archiveGridCard: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 24
@@ -31,27 +47,28 @@ final class CollectionViewController: BaseViewController {
     private let contentStackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
-        stack.spacing = 12
+        stack.spacing = 16
         stack.isLayoutMarginsRelativeArrangement = true
         stack.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
         return stack
     }()
 
-    // MARK: - UI: Mission Info
+    // MARK: - UI: Mission Info (XfU13)
 
-    private let missionInfoStack: UIStackView = {
+    private let missionInfoRow: UIStackView = {
         let stack = UIStackView()
         stack.axis = .horizontal
-        stack.spacing = 10
+        stack.spacing = 12
         stack.alignment = .center
+        stack.isLayoutMarginsRelativeArrangement = true
+        stack.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
         return stack
     }()
 
     private let colorDotView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 14
-        view.backgroundColor = UIColor.App.bgSecondary
-        view.accessibilityLabel = "미션 색상"
+        view.backgroundColor = UIColor(hex: "#F7F8FA")
         return view
     }()
 
@@ -62,57 +79,61 @@ final class CollectionViewController: BaseViewController {
         return stack
     }()
 
-    private let colorHexLabel: UILabel = {
+    private let missionNameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Pretendard-SemiBold", size: 14) ?? .boldSystemFont(ofSize: 14)
-        label.textColor = UIColor.App.textPrimary
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 14)
+        label.textColor = UIColor(hex: "#191F28")
         return label
     }()
 
     private let metaLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Pretendard-Medium", size: 12) ?? .systemFont(ofSize: 12)
-        label.textColor = UIColor.App.textTertiary
+        label.font = UIFont(name: "Pretendard-Medium", size: 12)
+        label.textColor = UIColor(hex: "#B0B8C1")
         return label
     }()
 
-    private let separatorView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.App.divider
-        return view
-    }()
+    // MARK: - UI: Grid Card Content (hRzrP)
 
-    // MARK: - UI: Date Navigation
-
-    private let dateNavRow = UIView()
-
-    private let prevButton: UIButton = {
-        let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "chevron.left", withConfiguration: config), for: .normal)
-        button.tintColor = UIColor.App.textPrimary
-        button.accessibilityLabel = "이전 날짜"
-        return button
-    }()
-
-    private let nextButton: UIButton = {
-        let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "chevron.right", withConfiguration: config), for: .normal)
-        button.tintColor = UIColor.App.textPrimary
-        button.accessibilityLabel = "다음 날짜"
-        return button
+    private let gridCardStack: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 12
+        stack.isLayoutMarginsRelativeArrangement = true
+        stack.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+        return stack
     }()
 
     private let dateLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Pretendard-Bold", size: 18) ?? .boldSystemFont(ofSize: 18)
-        label.textColor = UIColor.App.textPrimary
-        label.textAlignment = .center
+        label.font = UIFont(name: "Pretendard-Bold", size: 18)
+        label.textColor = UIColor(hex: "#191F28")
         return label
     }()
 
-    // MARK: - UI: Photo Grid
+    private let dateNavRow: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.distribution = .equalSpacing
+        stack.alignment = .center
+        return stack
+    }()
+
+    private let prevButton: UIButton = {
+        let config = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "chevron.left", withConfiguration: config), for: .normal)
+        button.tintColor = UIColor(hex: "#B0B8C1")
+        return button
+    }()
+
+    private let nextButton: UIButton = {
+        let config = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "chevron.right", withConfiguration: config), for: .normal)
+        button.tintColor = UIColor(hex: "#B0B8C1")
+        return button
+    }()
 
     private let photoGridView = MissionPhotoGridView()
 
@@ -128,28 +149,26 @@ final class CollectionViewController: BaseViewController {
 
     private let emptyIconImageView: UIImageView = {
         let config = UIImage.SymbolConfiguration(pointSize: 56, weight: .thin)
-        let imageView = UIImageView(
-            image: UIImage(systemName: "figure.walk.circle", withConfiguration: config)
-        )
-        imageView.tintColor = UIColor.App.textTertiary
+        let imageView = UIImageView(image: UIImage(systemName: "figure.walk.circle", withConfiguration: config))
+        imageView.tintColor = UIColor(hex: "#B0B8C1")
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
 
     private let emptyTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = AppConstants.Text.noMissionTitle
-        label.font = UIFont(name: "Pretendard-Bold", size: 28) ?? .boldSystemFont(ofSize: 28)
-        label.textColor = UIColor.App.textPrimary
+        label.text = "텅~"
+        label.font = UIFont(name: "Pretendard-Bold", size: 28)
+        label.textColor = UIColor(hex: "#191F28")
         label.textAlignment = .center
         return label
     }()
 
     private let emptySubtitleLabel: UILabel = {
         let label = UILabel()
-        label.text = AppConstants.Text.noMissionSubtitle
-        label.font = UIFont(name: "Pretendard-Medium", size: 14) ?? .systemFont(ofSize: 14)
-        label.textColor = UIColor.App.textSecondary
+        label.text = "이 날은 산책을 하지 않았어요."
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
+        label.textColor = UIColor(hex: "#6B7684")
         label.textAlignment = .center
         return label
     }()
@@ -158,21 +177,20 @@ final class CollectionViewController: BaseViewController {
 
     private let stateLabel: UILabel = {
         let label = UILabel()
-        label.text = AppConstants.Text.inProgressMessage
-        label.font = UIFont(name: "Pretendard-Medium", size: 13) ?? .systemFont(ofSize: 13)
-        label.textColor = UIColor.App.textTertiary
+        label.text = "아쉬워요 😢 미션을 완성하지 못했어요."
+        label.font = UIFont(name: "Pretendard-Medium", size: 13)
+        label.textColor = UIColor(hex: "#B0B8C1")
         label.textAlignment = .center
         return label
     }()
 
     private let shareButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setTitle(AppConstants.Text.shareButtonTitle, for: .normal)
+        button.setTitle("공유하기", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 16) ?? .boldSystemFont(ofSize: 16)
-        button.backgroundColor = UIColor.App.progressStart
+        button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 16)
+        button.backgroundColor = UIColor(hex: "#34D399")
         button.layer.cornerRadius = 14
-        button.accessibilityLabel = AppConstants.Text.shareButtonTitle
         return button
     }()
 
@@ -195,47 +213,42 @@ final class CollectionViewController: BaseViewController {
     // MARK: - Setup
 
     override func setupViews() {
-        view.backgroundColor = UIColor.App.bgSecondary
-        addScrollHierarchy()
-        addCardContent()
-        configureInitialState()
-    }
-
-    private func addScrollHierarchy() {
+        view.backgroundColor = UIColor(hex: "#F7F8FA")
+        
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
-        contentView.addSubview(archiveCard)
-        archiveCard.addSubview(contentStackView)
-    }
-
-    private func addCardContent() {
-        missionInfoStack.addArrangedSubview(colorDotView)
-        infoTextStack.addArrangedSubview(colorHexLabel)
+        contentView.addSubview(contentStackView)
+        
+        // Mission Header (XfU13)
+        contentStackView.addArrangedSubview(missionHeaderCard)
+        missionHeaderCard.addSubview(missionInfoRow)
+        missionInfoRow.addArrangedSubview(colorDotView)
+        missionInfoRow.addArrangedSubview(infoTextStack)
+        infoTextStack.addArrangedSubview(missionNameLabel)
         infoTextStack.addArrangedSubview(metaLabel)
-        missionInfoStack.addArrangedSubview(infoTextStack)
-
-        dateNavRow.addSubview(prevButton)
-        dateNavRow.addSubview(dateLabel)
-        dateNavRow.addSubview(nextButton)
-
+        
+        // Archive Grid (hRzrP)
+        contentStackView.addArrangedSubview(archiveGridCard)
+        archiveGridCard.addSubview(gridCardStack)
+        gridCardStack.addArrangedSubview(dateNavRow)
+        dateNavRow.addArrangedSubview(prevButton)
+        dateNavRow.addArrangedSubview(dateLabel)
+        dateNavRow.addArrangedSubview(nextButton)
+        gridCardStack.addArrangedSubview(photoGridView)
+        gridCardStack.addArrangedSubview(emptyStateStack)
+        
         emptyStateStack.addArrangedSubview(emptyIconImageView)
         emptyStateStack.addArrangedSubview(emptyTitleLabel)
         emptyStateStack.addArrangedSubview(emptySubtitleLabel)
-
-        contentStackView.addArrangedSubview(missionInfoStack)
-        contentStackView.addArrangedSubview(separatorView)
-        contentStackView.addArrangedSubview(dateNavRow)
-        contentStackView.addArrangedSubview(photoGridView)
-        contentStackView.addArrangedSubview(emptyStateStack)
+        
         contentStackView.addArrangedSubview(stateLabel)
         contentStackView.addArrangedSubview(shareButton)
-
-        contentStackView.setCustomSpacing(8, after: missionInfoStack)
+        
+        configureInitialState()
     }
 
     private func configureInitialState() {
-        missionInfoStack.isHidden = true
-        separatorView.isHidden = true
+        missionHeaderCard.isHidden = true
         photoGridView.isHidden = true
         stateLabel.isHidden = true
         shareButton.isHidden = true
@@ -245,13 +258,6 @@ final class CollectionViewController: BaseViewController {
     // MARK: - Constraints
 
     override func setupConstraints() {
-        constrainScroll()
-        constrainCard()
-        constrainDateNav()
-        constrainCardContent()
-    }
-
-    private func constrainScroll() {
         scrollView.snp.makeConstraints { make in
             make.edges.equalTo(view.safeAreaLayoutGuide)
         }
@@ -259,49 +265,32 @@ final class CollectionViewController: BaseViewController {
             make.edges.equalTo(scrollView.contentLayoutGuide)
             make.width.equalTo(scrollView.frameLayoutGuide)
         }
-    }
-
-    private func constrainCard() {
-        archiveCard.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(20)
-            make.leading.trailing.equalToSuperview().inset(20)
-            make.bottom.equalToSuperview().offset(-20)
-        }
         contentStackView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-    }
-
-    private func constrainDateNav() {
-        prevButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.centerY.equalToSuperview()
-            make.width.height.equalTo(44)
+        
+        missionInfoRow.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
-        nextButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview()
-            make.centerY.equalToSuperview()
-            make.width.height.equalTo(44)
-        }
-        dateLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.leading.greaterThanOrEqualTo(prevButton.snp.trailing).offset(4)
-            make.trailing.lessThanOrEqualTo(nextButton.snp.leading).offset(-4)
-        }
-        dateNavRow.snp.makeConstraints { make in
-            make.height.equalTo(44)
-        }
-    }
-
-    private func constrainCardContent() {
         colorDotView.snp.makeConstraints { make in
             make.width.height.equalTo(28)
         }
-        separatorView.snp.makeConstraints { make in
-            make.height.equalTo(1)
+        
+        gridCardStack.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
+        dateNavRow.snp.makeConstraints { make in
+            make.height.equalTo(24)
+        }
+        prevButton.snp.makeConstraints { make in
+            make.width.height.equalTo(24)
+        }
+        nextButton.snp.makeConstraints { make in
+            make.width.height.equalTo(24)
+        }
+        
         photoGridView.snp.makeConstraints { make in
-            make.height.equalTo(photoGridView.snp.width)
+            make.height.equalTo(photoGridView.snp.width).multipliedBy(1.1)
         }
         emptyStateStack.snp.makeConstraints { make in
             make.height.greaterThanOrEqualTo(200)
@@ -315,11 +304,42 @@ final class CollectionViewController: BaseViewController {
 
     override func bind() {
         let output = viewModel.transform(input: makeInput())
-        bindDateText(output: output)
-        bindMissionInfo(output: output)
-        bindMissionState(output: output)
-        bindNavigation(output: output)
-        bindShareButton()
+        
+        output.dateText
+            .drive(dateLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        output.missionColorHex
+            .drive(onNext: { [weak self] hex in
+                guard let self else { return }
+                self.colorDotView.backgroundColor = UIColor(hex: hex)
+                self.missionNameLabel.text = "오늘의 미션 색상"
+            })
+            .disposed(by: disposeBag)
+
+        output.missionMetaText
+            .drive(metaLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        output.missionState
+            .drive(onNext: { [weak self] state in
+                self?.applyState(state)
+            })
+            .disposed(by: disposeBag)
+
+        output.canGoNext
+            .drive(onNext: { [weak self] canGo in
+                guard let self else { return }
+                self.nextButton.isEnabled = canGo
+                self.nextButton.alpha = canGo ? 1.0 : 0.3
+            })
+            .disposed(by: disposeBag)
+
+        shareButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                self?.presentShareSheet()
+            })
+            .disposed(by: disposeBag)
     }
 
     private func makeInput() -> CollectionViewModel.Input {
@@ -330,98 +350,42 @@ final class CollectionViewController: BaseViewController {
         )
     }
 
-    private func bindDateText(output: CollectionViewModel.Output) {
-        output.dateText
-            .drive(dateLabel.rx.text)
-            .disposed(by: disposeBag)
-    }
-
-    private func bindMissionInfo(output: CollectionViewModel.Output) {
-        output.missionColorHex
-            .drive(onNext: { [weak self] hex in
-                guard let self else { return }
-                self.colorDotView.backgroundColor = UIColor(hex: hex)
-                self.colorHexLabel.text = hex
-            })
-            .disposed(by: disposeBag)
-
-        output.missionMetaText
-            .drive(metaLabel.rx.text)
-            .disposed(by: disposeBag)
-    }
-
-    private func bindMissionState(output: CollectionViewModel.Output) {
-        output.missionState
-            .drive(onNext: { [weak self] state in
-                self?.applyState(state)
-            })
-            .disposed(by: disposeBag)
-    }
-
-    private func bindNavigation(output: CollectionViewModel.Output) {
-        output.canGoNext
-            .drive(onNext: { [weak self] canGo in
-                guard let self else { return }
-                self.nextButton.isEnabled = canGo
-                self.nextButton.alpha = canGo ? 1.0 : 0.3
-            })
-            .disposed(by: disposeBag)
-    }
-
-    private func bindShareButton() {
-        shareButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                self?.presentShareSheet()
-            })
-            .disposed(by: disposeBag)
-    }
-
     // MARK: - State
 
     private func applyState(_ state: MissionState) {
         switch state {
-        case .noMission: showNoMission()
-        case .inProgress(_, let slots): showInProgress(slots: slots)
-        case .completed(let slots): showCompleted(slots: slots)
+        case .noMission:
+            missionHeaderCard.isHidden = true
+            photoGridView.isHidden = true
+            stateLabel.isHidden = true
+            shareButton.isHidden = true
+            emptyStateStack.isHidden = false
+            photoGridView.clearSlots()
+            
+        case .inProgress(_, let slots):
+            missionHeaderCard.isHidden = false
+            photoGridView.isHidden = false
+            stateLabel.isHidden = false
+            shareButton.isHidden = true
+            emptyStateStack.isHidden = true
+            photoGridView.configure(with: slots)
+            
+        case .completed(let slots):
+            missionHeaderCard.isHidden = false
+            photoGridView.isHidden = false
+            stateLabel.isHidden = true
+            shareButton.isHidden = false
+            emptyStateStack.isHidden = true
+            photoGridView.configure(with: slots)
         }
-    }
-
-    private func showNoMission() {
-        missionInfoStack.isHidden = true
-        separatorView.isHidden = true
-        photoGridView.isHidden = true
-        stateLabel.isHidden = true
-        shareButton.isHidden = true
-        emptyStateStack.isHidden = false
-        photoGridView.clearSlots()
-    }
-
-    private func showInProgress(slots: [SlotDisplayInfo]) {
-        missionInfoStack.isHidden = false
-        separatorView.isHidden = false
-        photoGridView.isHidden = false
-        stateLabel.isHidden = false
-        shareButton.isHidden = true
-        emptyStateStack.isHidden = true
-        photoGridView.configure(with: slots)
-    }
-
-    private func showCompleted(slots: [SlotDisplayInfo]) {
-        missionInfoStack.isHidden = false
-        separatorView.isHidden = false
-        photoGridView.isHidden = false
-        stateLabel.isHidden = true
-        shareButton.isHidden = false
-        emptyStateStack.isHidden = true
-        photoGridView.configure(with: slots)
     }
 
     // MARK: - Action
 
     private func presentShareSheet() {
-        let renderer = UIGraphicsImageRenderer(bounds: archiveCard.bounds)
+        let renderer = UIGraphicsImageRenderer(bounds: archiveGridCard.bounds)
         let image = renderer.image { _ in
-            archiveCard.drawHierarchy(in: archiveCard.bounds, afterScreenUpdates: true)
+            archiveGridCard.drawHierarchy(in: archiveGridCard.bounds, afterScreenUpdates: true)
         }
         let activityVC = UIActivityViewController(activityItems: [image], applicationActivities: nil)
         present(activityVC, animated: true)

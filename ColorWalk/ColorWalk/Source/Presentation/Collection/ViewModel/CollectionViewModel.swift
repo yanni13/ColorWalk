@@ -129,8 +129,10 @@ final class CollectionViewModel: ViewModelType {
                         )
                     }
                     .sorted { $0.index < $1.index }
+                
                 let capturedCount = sortedSlots.filter { $0.isCaptured }.count
-                if capturedCount == 0 { return .noMission }
+                
+                // 미션 객체만 있으면 진행 중(inProgress)으로 간주하여 그리드를 표시함
                 return mission.isPaletteCompleted
                     ? .completed(slots: sortedSlots)
                     : .inProgress(capturedCount: capturedCount, slots: sortedSlots)
