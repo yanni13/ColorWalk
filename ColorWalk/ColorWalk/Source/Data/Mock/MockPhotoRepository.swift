@@ -2,6 +2,14 @@ import Foundation
 import RealmSwift
 
 final class MockPhotoRepository: PhotoRepositoryProtocol {
+    func deletePhoto(_ photo: Photo) {
+        
+    }
+    
+    func deleteAllPhotos() {
+        
+    }
+    
 
     // MARK: - Properties
 

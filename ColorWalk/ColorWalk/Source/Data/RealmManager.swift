@@ -79,13 +79,30 @@ final class RealmManager {
         guard let mission = fetchDailyMission(for: missionId),
               index < mission.slots.count else { return }
 
-        write { _ in
+        write { realm in
+            realm.add(photo) // 사진 객체 먼저 추가
             let slot = mission.slots[index]
             slot.linkedPhoto = photo
             slot.isCaptured = true
 
             let allCaptured = mission.slots.allSatisfy { $0.isCaptured }
             mission.isPaletteCompleted = allCaptured
+        }
+    }
+
+    func deletePhoto(_ photo: Photo) {
+        let fileName = photo.imagePath
+        write { realm in
+            ImageFileManager.shared.deleteImage(fileName: fileName)
+            realm.delete(photo)
+        }
+    }
+
+    func deleteAllPhotos() {
+        let photos = realm.objects(Photo.self)
+        write { realm in
+            photos.forEach { ImageFileManager.shared.deleteImage(fileName: $0.imagePath) }
+            realm.delete(photos)
         }
     }
 
