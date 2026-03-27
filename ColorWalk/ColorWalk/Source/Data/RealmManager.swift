@@ -111,4 +111,14 @@ final class RealmManager {
     func fetchAllPhotos() -> [Photo] {
         Array(realm.objects(Photo.self).sorted(byKeyPath: "createdAt", ascending: false))
     }
+
+    // MARK: - Photo Helper
+
+    func findMissionColor(for photo: Photo) -> String? {
+        // 해당 사진이 연결된 ColorSlot 찾기
+        let slots = realm.objects(ColorSlot.self).filter("linkedPhoto == %@", photo)
+        guard let slot = slots.first,
+              let mission = slot.parentMission.first else { return nil }
+        return mission.recommendedHex
+    }
 }

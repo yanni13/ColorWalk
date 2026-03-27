@@ -10,16 +10,12 @@ final class NearbyPhotosSheetViewController: UIViewController {
 
     private enum Constants {
         static let horizontalInset: CGFloat = 23
-        static let photoCardStroke: CGFloat = 3
-        static let photoContainerCornerRadius: CGFloat = 23
-        static let photoImageCornerRadius: CGFloat = 20
     }
 
     // MARK: - Properties
 
     private let photos: [Photo]
     private var currentPage: Int = 0
-    private var lastLayoutWidth: CGFloat = 0
     private let geocoder = CLGeocoder()
     private var weatherTask: Task<Void, Never>?
 
@@ -40,14 +36,52 @@ final class NearbyPhotosSheetViewController: UIViewController {
         return l
     }()
 
-    private let photoScrollView: UIScrollView = {
-        let sv = UIScrollView()
-        sv.isPagingEnabled = true
-        sv.showsHorizontalScrollIndicator = false
-        sv.showsVerticalScrollIndicator = false
-        sv.clipsToBounds = false
-        return sv
+    private lazy var collectionView: UICollectionView = {
+        let layout = createLayout()
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.backgroundColor = .white
+        cv.showsHorizontalScrollIndicator = false
+        cv.showsVerticalScrollIndicator = false
+        cv.clipsToBounds = true
+        cv.alwaysBounceVertical = false
+        return cv
     }()
+
+    private func createLayout() -> UICollectionViewLayout {
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .fractionalHeight(1.0)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(0.82),
+            heightDimension: .fractionalHeight(1.0)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.orthogonalScrollingBehavior = .groupPagingCentered
+        section.interGroupSpacing = 12
+        
+        section.visibleItemsInvalidationHandler = { [weak self] (visibleItems, offset, env) in
+            guard let self = self else { return }
+            let width = env.container.contentSize.width
+            let groupWidth = width * 0.82 + 12
+            let page = Int(round(offset.x / groupWidth))
+            
+            if page != self.currentPage, page >= 0, page < self.photos.count {
+                self.currentPage = page
+                DispatchQueue.main.async {
+                    self.paginationDotsView.configure(count: self.photos.count, currentIndex: page)
+                    self.updateColorCard(for: self.photos[page])
+                    self.fetchWeather(for: self.photos[page])
+                }
+            }
+        }
+
+        return UICollectionViewCompositionalLayout(section: section)
+    }
 
     private let paginationDotsView = PaginationDotsView()
     private let colorInfoCard = InfoCardView()
@@ -72,14 +106,6 @@ final class NearbyPhotosSheetViewController: UIViewController {
         reverseGeocodeLocation()
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        let width = photoScrollView.bounds.width
-        guard width > 0, width != lastLayoutWidth else { return }
-        lastLayoutWidth = width
-        layoutPhotoCards()
-    }
-
     deinit {
         weatherTask?.cancel()
         geocoder.cancelGeocode()
@@ -89,10 +115,15 @@ final class NearbyPhotosSheetViewController: UIViewController {
 
     private func setupViews() {
         view.backgroundColor = .white
+        
+        view.addSubview(collectionView)
         view.addSubview(titleLabel)
         view.addSubview(subtitleLabel)
-        view.addSubview(photoScrollView)
-        photoScrollView.delegate = self
+        
+        collectionView.dataSource = self
+        collectionView.register(NearbyPhotoCell.self, forCellWithReuseIdentifier: NearbyPhotoCell.reuseId)
+        collectionView.reloadData()
+        
         view.addSubview(paginationDotsView)
         view.addSubview(colorInfoCard)
         view.addSubview(weatherInfoCard)
@@ -119,15 +150,14 @@ final class NearbyPhotosSheetViewController: UIViewController {
             make.trailing.equalToSuperview().inset(26)
         }
 
-        photoScrollView.snp.makeConstraints { make in
+        collectionView.snp.makeConstraints { make in
             make.top.equalTo(subtitleLabel.snp.bottom).offset(16)
-            make.leading.equalToSuperview().offset(Constants.horizontalInset)
-            make.trailing.equalToSuperview().inset(Constants.horizontalInset)
-            make.height.equalTo(photoScrollView.snp.width)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(view.snp.width).multipliedBy(0.82)
         }
 
         paginationDotsView.snp.makeConstraints { make in
-            make.top.equalTo(photoScrollView.snp.bottom).offset(20)
+            make.top.equalTo(collectionView.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
             make.height.equalTo(12)
         }
@@ -162,63 +192,6 @@ final class NearbyPhotosSheetViewController: UIViewController {
         let matchText = photo.matchRate > 0 ? " • 매칭율 \(Int(photo.matchRate))%" : ""
         colorInfoCard.subtitleLabel.text = "\(photo.capturedHex)\(matchText)"
         colorInfoCard.rightLabel.text = relativeTime(from: photo.createdAt)
-    }
-
-    private func layoutPhotoCards() {
-        photoScrollView.subviews.forEach { $0.removeFromSuperview() }
-
-        let cardWidth = photoScrollView.bounds.width
-        let cardHeight = photoScrollView.bounds.height
-
-        for (index, photo) in photos.enumerated() {
-            let card = makePhotoCard(for: photo, cardWidth: cardWidth, cardHeight: cardHeight)
-            photoScrollView.addSubview(card)
-            card.frame = CGRect(
-                x: CGFloat(index) * cardWidth,
-                y: 0,
-                width: cardWidth,
-                height: cardHeight
-            )
-        }
-
-        photoScrollView.contentSize = CGSize(
-            width: cardWidth * CGFloat(photos.count),
-            height: cardHeight
-        )
-    }
-
-    private func makePhotoCard(for photo: Photo, cardWidth: CGFloat, cardHeight: CGFloat) -> UIView {
-        let container = UIView()
-        container.backgroundColor = .white
-        container.layer.cornerRadius = Constants.photoContainerCornerRadius
-        container.layer.shadowColor = UIColor.black.cgColor
-        container.layer.shadowOpacity = 0.12
-        container.layer.shadowRadius = 12
-        container.layer.shadowOffset = CGSize(width: 0, height: 4)
-
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = UIColor(hex: photo.capturedHex)
-        imageView.layer.cornerRadius = Constants.photoImageCornerRadius
-        imageView.clipsToBounds = true
-        imageView.frame = CGRect(
-            x: Constants.photoCardStroke,
-            y: Constants.photoCardStroke,
-            width: cardWidth - Constants.photoCardStroke * 2,
-            height: cardHeight - Constants.photoCardStroke * 2
-        )
-        container.addSubview(imageView)
-
-        guard !photo.imagePath.isEmpty else { return container }
-
-        if photo.imagePath.hasPrefix("http"), let url = URL(string: photo.imagePath) {
-            imageView.kf.setImage(with: url, options: [.transition(.fade(0.2))])
-        } else {
-            imageView.image = ImageFileManager.shared.loadImage(fileName: photo.imagePath)
-            imageView.backgroundColor = nil
-        }
-
-        return container
     }
 
     private func reverseGeocodeLocation() {
@@ -289,19 +262,22 @@ final class NearbyPhotosSheetViewController: UIViewController {
     }
 }
 
-// MARK: - UIScrollViewDelegate
+// MARK: - UICollectionViewDataSource
 
-extension NearbyPhotosSheetViewController: UIScrollViewDelegate {
+extension NearbyPhotosSheetViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return photos.count
+    }
 
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let width = scrollView.bounds.width
-        guard width > 0 else { return }
-        let page = max(0, min(Int(round(scrollView.contentOffset.x / width)), photos.count - 1))
-        guard page != currentPage else { return }
-        currentPage = page
-        paginationDotsView.configure(count: photos.count, currentIndex: page)
-        updateColorCard(for: photos[page])
-        fetchWeather(for: photos[page])
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: NearbyPhotoCell.reuseId,
+            for: indexPath
+        ) as? NearbyPhotoCell else {
+            return UICollectionViewCell()
+        }
+        cell.configure(with: photos[indexPath.item])
+        return cell
     }
 }
 

@@ -39,7 +39,10 @@ final class MapViewModel: ViewModelType {
                     .sorted { $0.createdAt > $1.createdAt }
                     .filter { $0.latitude != 0 || $0.longitude != 0 }
 
-                return realmPhotos.map { PhotoAnnotation(photo: $0) }
+                return realmPhotos.map { photo in
+                    let targetHex = RealmManager.shared.findMissionColor(for: photo)
+                    return PhotoAnnotation(photo: photo, targetHex: targetHex)
+                }
             }
             .asDriver(onErrorJustReturn: [])
 
@@ -52,7 +55,6 @@ final class MapViewModel: ViewModelType {
                 let color = UIColor(hex: first.capturedHex)
                 var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0
                 color.getRed(&r, green: &g, blue: &b, alpha: nil)
-                // Simple color name: use hex if no name available
                 return "\(first.capturedHex) 외 \(max(0, photos.count - 1))장"
             }
 

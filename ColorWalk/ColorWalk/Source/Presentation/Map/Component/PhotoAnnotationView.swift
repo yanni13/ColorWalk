@@ -57,9 +57,11 @@ final class PhotoAnnotationView: MKAnnotationView {
     private func updateAppearance() {
         guard let ann = annotation as? PhotoAnnotation else { return }
         let photo = ann.photo
-        let accentColor = UIColor(hex: photo.capturedHex)
-        containerView.backgroundColor = accentColor
-        imageView.backgroundColor = accentColor
+        let targetColor = UIColor(hex: ann.targetHex ?? photo.capturedHex)
+        let capturedColor = UIColor(hex: photo.capturedHex)
+
+        containerView.backgroundColor = targetColor
+        imageView.backgroundColor = capturedColor
 
         guard !photo.imagePath.isEmpty else { return }
 
@@ -179,7 +181,11 @@ final class PhotoClusterAnnotationView: MKAnnotationView {
 
         if let first = members.first {
             let photo = first.photo
-            imageView.backgroundColor = UIColor(hex: photo.capturedHex)
+            let targetColor = UIColor(hex: first.targetHex ?? photo.capturedHex)
+            let capturedColor = UIColor(hex: photo.capturedHex)
+
+            outerContainer.backgroundColor = targetColor
+            imageView.backgroundColor = capturedColor
 
             if !photo.imagePath.isEmpty {
                 if photo.imagePath.hasPrefix("http"), let url = URL(string: photo.imagePath) {
