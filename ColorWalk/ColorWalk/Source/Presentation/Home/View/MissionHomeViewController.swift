@@ -80,6 +80,34 @@ final class MissionHomeViewController: BaseViewController {
 
     private let headerRow = UIView()
 
+    // MARK: - UI: Midnight Banner (Ay4YW)
+
+    private let midnightBannerView: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor(hex: "#F0F0F0")
+        v.layer.cornerRadius = 16
+        v.isHidden = true
+        return v
+    }()
+
+    private let moonIconView: UIImageView = {
+        let iv = UIImageView()
+        iv.image = UIImage(systemName: "moon.fill")?
+            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
+        iv.tintColor = UIColor(hex: "#666666")
+        iv.contentMode = .scaleAspectFit
+        return iv
+    }()
+
+    private let bannerLabel: UILabel = {
+        let l = UILabel()
+        l.text = "자정이 지났어요! 새로운 미션이 도착했습니다"
+        l.font = UIFont(name: "Pretendard-SemiBold", size: 13)
+        l.textColor = UIColor(hex: "#333333")
+        l.numberOfLines = 0
+        return l
+    }()
+
     // MARK: - UI: Scroll Container
 
     private let scrollView: UIScrollView = {
@@ -337,6 +365,7 @@ final class MissionHomeViewController: BaseViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
         ColorCardStore.shared.checkDailyReset()
+        updateBannerVisibility()
         updateLocationLabelVisibility()
     }
 
@@ -352,7 +381,26 @@ final class MissionHomeViewController: BaseViewController {
 
     @objc private func appDidEnterForeground() {
         ColorCardStore.shared.checkDailyReset()
+        updateBannerVisibility()
         updateLocationLabelVisibility()
+    }
+
+    private func updateBannerVisibility() {
+        let didReset = ColorCardStore.shared.didResetToday
+        midnightBannerView.isHidden = !didReset
+
+        missionSectionLabel.snp.remakeConstraints { make in
+            if didReset {
+                make.top.equalTo(midnightBannerView.snp.bottom).offset(36)
+            } else {
+                make.top.equalToSuperview().offset(36)
+            }
+            make.leading.equalToSuperview().offset(44)
+        }
+
+        if didReset {
+            ColorCardStore.shared.didResetToday = false
+        }
     }
 
     private func updateLocationLabelVisibility() {
@@ -372,6 +420,10 @@ final class MissionHomeViewController: BaseViewController {
 
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
+
+        contentView.addSubview(midnightBannerView)
+        midnightBannerView.addSubview(moonIconView)
+        midnightBannerView.addSubview(bannerLabel)
 
         contentView.addSubview(missionSectionLabel)
         contentView.addSubview(cardView)
@@ -427,8 +479,23 @@ final class MissionHomeViewController: BaseViewController {
             make.width.equalTo(scrollView)
         }
 
+        midnightBannerView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(20)
+            make.leading.trailing.equalToSuperview().inset(24)
+        }
+        moonIconView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(20)
+        }
+        bannerLabel.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(14)
+            make.leading.equalTo(moonIconView.snp.trailing).offset(12)
+            make.trailing.equalToSuperview().offset(-16)
+        }
+
         missionSectionLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(36)
+            make.top.equalTo(midnightBannerView.snp.bottom).offset(36)
             make.leading.equalToSuperview().offset(44)
         }
         cardView.snp.makeConstraints { make in

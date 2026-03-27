@@ -17,6 +17,7 @@ final class ColorCardStore {
     private let repository: PhotoRepositoryProtocol = RealmPhotoRepository()
 
     let cards = BehaviorRelay<[ColorCard]>(value: [])
+    var didResetToday: Bool = false
 
     private init() {
         checkDailyReset()
@@ -74,6 +75,7 @@ final class ColorCardStore {
             repository.deleteAllPhotos()
             cards.accept([])
             userDefaults.set(today, forKey: lastResetKey)
+            didResetToday = true
         }
     }
 
