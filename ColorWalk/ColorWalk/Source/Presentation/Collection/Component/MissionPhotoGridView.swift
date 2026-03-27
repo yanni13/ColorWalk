@@ -105,8 +105,9 @@ final class MissionPhotoGridView: UIView {
             return
         }
         
-        // ImageFileManager를 통해 이미지 로드
-        imageView.image = ImageFileManager.shared.loadImage(fileName: fileName)
+        // ImageFileManager를 통해 썸네일(다운샘플링) 로드 (메모리 최적화)
+        let cellSize = CGSize(width: 150, height: 150)
+        imageView.image = ImageFileManager.shared.loadThumbnail(fileName: fileName, size: cellSize)
         
         if let hex = slot.capturedHex {
             imageView.backgroundColor = UIColor(hex: hex)

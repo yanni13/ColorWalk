@@ -32,6 +32,23 @@ final class ImageFileManager {
         return UIImage(contentsOfFile: url.path)
     }
 
+    func loadThumbnail(fileName: String, size: CGSize) -> UIImage? {
+        let url = getImageUrl(fileName: fileName) as CFURL
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: max(size.width, size.height) * UIScreen.main.scale
+        ]
+        
+        guard let source = CGImageSourceCreateWithURL(url, nil),
+              let image = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
+            return nil
+        }
+        
+        return UIImage(cgImage: image)
+    }
+
     private func getDocumentsDirectory() -> URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
