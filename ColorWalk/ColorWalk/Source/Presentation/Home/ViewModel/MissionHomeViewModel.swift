@@ -7,6 +7,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 import CoreLocation
+import Photos
 
 // MARK: - Model
 
@@ -58,6 +59,14 @@ extension ColorMission {
     ]
 }
 
+// MARK: - GallerySaveResult
+
+enum GallerySaveResult {
+    case success
+    case failure
+    case permissionDenied
+}
+
 // MARK: - ViewModel
 
 final class MissionHomeViewModel: ViewModelType {
@@ -66,10 +75,12 @@ final class MissionHomeViewModel: ViewModelType {
         let shuffleTap: Observable<Void>
         let changeMissionTap: Observable<Void>
         let location: Observable<CLLocation>
+        let saveTap: Observable<UIImage?>
     }
 
     struct Output {
         let mission: Driver<ColorMission>
+        let saveResult: Driver<GallerySaveResult>
     }
 
     private let repository: ColorMissionRepositoryProtocol
@@ -129,6 +140,46 @@ final class MissionHomeViewModel: ViewModelType {
         let mission = missionObservable
             .asDriver(onErrorJustReturn: ColorMission.mockMissions[0])
 
-        return Output(mission: mission)
+        let saveResult = input.saveTap
+            .compactMap { $0 }
+            .flatMapFirst { [weak self] image -> Observable<GallerySaveResult> in
+                guard let self else { return .empty() }
+                return self.requestPhotoLibraryAuthorization()
+                    .flatMap { status -> Observable<GallerySaveResult> in
+                        switch status {
+                        case .authorized, .limited:
+                            return self.saveImageToGallery(image)
+                        default:
+                            return .just(.permissionDenied)
+                        }
+                    }
+            }
+            .asDriver(onErrorJustReturn: .failure)
+
+        return Output(mission: mission, saveResult: saveResult)
+    }
+
+    // MARK: - Private
+
+    private func requestPhotoLibraryAuthorization() -> Observable<PHAuthorizationStatus> {
+        return Observable.create { observer in
+            PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
+                observer.onNext(status)
+                observer.onCompleted()
+            }
+            return Disposables.create()
+        }
+    }
+
+    private func saveImageToGallery(_ image: UIImage) -> Observable<GallerySaveResult> {
+        return Observable.create { observer in
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetChangeRequest.creationRequestForAsset(from: image)
+            }) { success, _ in
+                observer.onNext(success ? .success : .failure)
+                observer.onCompleted()
+            }
+            return Disposables.create()
+        }
     }
 }

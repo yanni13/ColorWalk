@@ -31,6 +31,8 @@
 			</array>
 		</dict>
 	</dict>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>촬영한 색상 사진을 갤러리에 저장하기 위해 접근 권한이 필요합니다.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

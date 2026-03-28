@@ -21,7 +21,6 @@ final class MissionHomeViewController: BaseViewController {
 
     var allCards: [ColorCard] { cards }
     var onCardTap: ((Int) -> Void)?
-    var onSave: (() -> Void)?
 
     // MARK: - UI: Header
 
@@ -575,21 +574,28 @@ final class MissionHomeViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
 
-        saveButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                self?.onSave?()
-            })
-            .disposed(by: disposeBag)
+        let saveImageObservable = saveButton.rx.tap
+            .map { [weak self] () -> UIImage? in
+                guard let self, self.currentIndex < self.cards.count else { return nil }
+                return self.cards[self.currentIndex].capturedImage
+            }
 
         let output = viewModel.transform(input: MissionHomeViewModel.Input(
             shuffleTap: shuffleSubject.asObservable(),
             changeMissionTap: Observable.empty(),
-            location: locationRelay.asObservable()
+            location: locationRelay.asObservable(),
+            saveTap: saveImageObservable
         ))
 
         output.mission
             .drive(onNext: { [weak self] mission in
                 self?.applyMission(mission)
+            })
+            .disposed(by: disposeBag)
+
+        output.saveResult
+            .drive(onNext: { [weak self] result in
+                self?.handleSaveResult(result)
             })
             .disposed(by: disposeBag)
 
@@ -634,6 +640,31 @@ final class MissionHomeViewController: BaseViewController {
     }
 
     // MARK: - Helper
+
+    private func handleSaveResult(_ result: GallerySaveResult) {
+        switch result {
+        case .success:
+            showSaveAlert(title: "저장 완료", message: "사진이 갤러리에 저장되었습니다.", showSettings: false)
+        case .failure:
+            showSaveAlert(title: "저장 실패", message: "사진 저장 중 오류가 발생했습니다.", showSettings: false)
+        case .permissionDenied:
+            showSaveAlert(title: "사진 저장 권한 필요", message: "설정에서 사진 접근 권한을 허용해주세요.", showSettings: true)
+        }
+    }
+
+    private func showSaveAlert(title: String, message: String, showSettings: Bool) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        if showSettings {
+            alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+            alert.addAction(UIAlertAction(title: "설정으로 이동", style: .default) { _ in
+                guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+                UIApplication.shared.open(url)
+            })
+        } else {
+            alert.addAction(UIAlertAction(title: "확인", style: .default))
+        }
+        present(alert, animated: true)
+    }
 
     private func handleShuffleTap() {
         guard !cards.isEmpty else {
