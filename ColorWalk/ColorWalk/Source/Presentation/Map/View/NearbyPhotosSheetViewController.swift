@@ -2,7 +2,6 @@ import UIKit
 import SnapKit
 import CoreLocation
 import Kingfisher
-import WeatherKit
 
 final class NearbyPhotosSheetViewController: UIViewController {
 
@@ -229,24 +228,16 @@ final class NearbyPhotosSheetViewController: UIViewController {
         weatherTask = Task { [weak self] in
             guard let self else { return }
             let location = CLLocation(latitude: photo.latitude, longitude: photo.longitude)
-            do {
-                let weather = try await WeatherService.shared.weather(for: location)
-                let current = weather.currentWeather
-                let celsius = String(format: "%.0f°C", current.temperature.converted(to: .celsius).value)
-                let humidity = "\(Int(current.humidity * 100))%"
-                let symbolName = current.symbolName
+            guard let data = try? await WeatherCacheManager.shared.fetch(for: location) else { return }
 
-                await MainActor.run { [weak self] in
-                    guard let self else { return }
-                    self.weatherInfoCard.iconImageView.image = UIImage(systemName: symbolName)
-                    self.weatherInfoCard.subtitleLabel.text = "\(celsius) · 습도 \(humidity)"
-                    self.weatherInfoCard.rightLabel.text = "현재"
-                    UIView.animate(withDuration: 0.3) {
-                        self.weatherInfoCard.alpha = 1
-                    }
+            await MainActor.run { [weak self] in
+                guard let self else { return }
+                weatherInfoCard.iconImageView.image = UIImage(systemName: data.symbolName)
+                weatherInfoCard.subtitleLabel.text = "\(data.celsius) · 습도 \(data.humidity)"
+                weatherInfoCard.rightLabel.text = "현재"
+                UIView.animate(withDuration: 0.3) {
+                    self.weatherInfoCard.alpha = 1
                 }
-            } catch {
-                // 날씨 정보 미제공 시 카드 유지 숨김
             }
         }
     }
