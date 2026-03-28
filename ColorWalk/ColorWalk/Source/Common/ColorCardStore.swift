@@ -67,6 +67,20 @@ final class ColorCardStore {
         cards.accept(current)
     }
 
+    func remove(at index: Int) {
+        let current = cards.value
+        guard index < current.count else { return }
+
+        let photos = repository.fetchAllPhotos()
+        if index < photos.count {
+            repository.deletePhoto(photos[index])
+        }
+
+        var updated = current
+        updated.remove(at: index)
+        cards.accept(updated)
+    }
+
     func clearAll() {
         repository.deleteAllPhotos()
         cards.accept([])

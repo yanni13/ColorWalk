@@ -21,7 +21,6 @@ final class MissionHomeViewController: BaseViewController {
 
     var allCards: [ColorCard] { cards }
     var onCardTap: ((Int) -> Void)?
-    var onRetake: (() -> Void)?
     var onSave: (() -> Void)?
 
     // MARK: - UI: Header
@@ -293,11 +292,11 @@ final class MissionHomeViewController: BaseViewController {
 
     // MARK: - UI: Action Row
 
-    private let retakeButton = AppButton(style: .secondary, title: "다시 촬영")
+    private let deleteButton = AppButton(style: .secondary, title: "삭제하기")
     private let saveButton = AppButton(style: .primary, title: "저장하기")
 
     private lazy var actionRow: UIStackView = {
-        let s = UIStackView(arrangedSubviews: [retakeButton, saveButton])
+        let s = UIStackView(arrangedSubviews: [deleteButton, saveButton])
         s.axis = .horizontal
         s.spacing = 12
         s.distribution = .fillEqually
@@ -570,9 +569,9 @@ final class MissionHomeViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
 
-        retakeButton.rx.tap
+        deleteButton.rx.tap
             .subscribe(onNext: { [weak self] in
-                self?.onRetake?()
+                self?.presentDeleteConfirmAlert()
             })
             .disposed(by: disposeBag)
 
@@ -664,6 +663,20 @@ final class MissionHomeViewController: BaseViewController {
     }
 
     // MARK: - Sheet Presentation
+
+    private func presentDeleteConfirmAlert() {
+        let alert = UIAlertController(
+            title: "사진 삭제",
+            message: "해당 사진을 정말 삭제하시겠습니까?",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+        alert.addAction(UIAlertAction(title: "삭제", style: .destructive) { [weak self] _ in
+            guard let self else { return }
+            ColorCardStore.shared.remove(at: self.currentIndex)
+        })
+        present(alert, animated: true)
+    }
 
     private func presentColorPickerSheet() {
         let sheet = ColorPickerSheetViewController(currentMission: currentDisplayedMission)
