@@ -67,6 +67,11 @@ final class ColorCardStore {
         cards.accept(current)
     }
 
+    func clearAll() {
+        repository.deleteAllPhotos()
+        cards.accept([])
+    }
+
     func checkDailyReset() {
         let today = currentDateString()
         let lastReset = userDefaults.string(forKey: lastResetKey)

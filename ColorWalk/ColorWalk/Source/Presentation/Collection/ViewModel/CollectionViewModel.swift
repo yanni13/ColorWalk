@@ -27,6 +27,7 @@ final class CollectionViewModel: ViewModelType {
 
     struct Output {
         let dateText: Driver<String>
+        let shareDateText: Driver<String>
         let missionColorHex: Driver<String>
         let missionMetaText: Driver<String>
         let missionState: Driver<MissionState>
@@ -45,6 +46,7 @@ final class CollectionViewModel: ViewModelType {
         let missionData = makeMissionDataObservable(input: input)
         return Output(
             dateText: makeDateTextDriver(missionData: missionData),
+            shareDateText: makeShareDateTextDriver(missionData: missionData),
             missionColorHex: makeMissionColorHexDriver(missionData: missionData),
             missionMetaText: makeMissionMetaTextDriver(missionData: missionData),
             missionState: makeMissionStateDriver(missionData: missionData),
@@ -89,6 +91,16 @@ final class CollectionViewModel: ViewModelType {
     private func makeDateTextDriver(missionData: Observable<(Date, DailyMission?)>) -> Driver<String> {
         missionData
             .map { (date, _) in DateManager.displayShortString(from: date) }
+            .asDriver(onErrorJustReturn: "")
+    }
+
+    private func makeShareDateTextDriver(missionData: Observable<(Date, DailyMission?)>) -> Driver<String> {
+        missionData
+            .map { (date, _) -> String in
+                let formatter = DateFormatter()
+                formatter.dateFormat = AppConstants.DateFormat.displayShare
+                return formatter.string(from: date)
+            }
             .asDriver(onErrorJustReturn: "")
     }
 

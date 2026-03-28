@@ -6,6 +6,7 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import CoreLocation
 
 // MARK: - Model
 
@@ -64,6 +65,7 @@ final class MissionHomeViewModel: ViewModelType {
     struct Input {
         let shuffleTap: Observable<Void>
         let changeMissionTap: Observable<Void>
+        let location: Observable<CLLocation>
     }
 
     struct Output {
@@ -71,12 +73,18 @@ final class MissionHomeViewModel: ViewModelType {
     }
 
     private let repository: ColorMissionRepositoryProtocol
+    private let weatherService: WeatherServiceProtocol
     private let missions: [ColorMission]
     private let indexRelay = BehaviorRelay<Int>(value: 0)
+    private let weatherInfoRelay = BehaviorRelay<String>(value: "날씨 정보 없음")
     private let disposeBag = DisposeBag()
 
-    init(repository: ColorMissionRepositoryProtocol = MockColorMissionRepository()) {
+    init(
+        repository: ColorMissionRepositoryProtocol = MockColorMissionRepository(),
+        weatherService: WeatherServiceProtocol = WeatherKitService()
+    ) {
         self.repository = repository
+        self.weatherService = weatherService
         self.missions = repository.fetchMissions()
     }
 
@@ -89,9 +97,28 @@ final class MissionHomeViewModel: ViewModelType {
             .bind(to: indexRelay)
             .disposed(by: disposeBag)
 
-        let missionObservable = indexRelay
-            .map { [weak self] idx -> ColorMission in
-                self?.missions[idx] ?? ColorMission.mockMissions[0]
+        input.location
+            .distinctUntilChanged { $0.distance(from: $1) < 1000 }
+            .flatMapLatest { [weak self] location -> Observable<String> in
+                guard let self else { return .just("날씨 정보 없음") }
+                return self.weatherService.fetchWeatherInfo(for: location)
+                    .asObservable()
+                    .catchAndReturn("날씨 정보 없음")
+            }
+            .bind(to: weatherInfoRelay)
+            .disposed(by: disposeBag)
+
+        let missionObservable = Observable.combineLatest(indexRelay, weatherInfoRelay)
+            .map { [weak self] idx, weatherInfo -> ColorMission in
+                guard let self else { return ColorMission.mockMissions[0] }
+                let base = self.missions[idx]
+                return ColorMission(
+                    name: base.name,
+                    hexColor: base.hexColor,
+                    color: base.color,
+                    weatherInfo: "오늘의 날씨: \(weatherInfo)",
+                    progress: base.progress
+                )
             }
             .share(replay: 1)
 

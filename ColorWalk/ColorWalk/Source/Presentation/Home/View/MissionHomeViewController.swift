@@ -50,34 +50,6 @@ final class MissionHomeViewController: BaseViewController {
         return s
     }()
 
-    private let bellButton: UIButton = {
-        let b = UIButton(type: .system)
-        b.setImage(
-            UIImage(systemName: "bell")?
-                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 18, weight: .regular)),
-            for: .normal
-        )
-        b.tintColor = UIColor(hex: "#191F28")
-        b.accessibilityLabel = "알림"
-        return b
-    }()
-
-    private let avatarView: UIView = {
-        let v = UIView()
-        v.backgroundColor = UIColor(hex: "#E5E8EB")
-        v.layer.cornerRadius = 16
-        v.accessibilityLabel = "프로필"
-        return v
-    }()
-
-    private lazy var rightStack: UIStackView = {
-        let s = UIStackView(arrangedSubviews: [bellButton, avatarView])
-        s.axis = .horizontal
-        s.spacing = 8
-        s.alignment = .center
-        return s
-    }()
-
     private let headerRow = UIView()
 
     // MARK: - UI: Midnight Banner (Ay4YW)
@@ -335,6 +307,7 @@ final class MissionHomeViewController: BaseViewController {
     // MARK: - Rx
 
     private let shuffleSubject = PublishSubject<Void>()
+    private let locationRelay = PublishRelay<CLLocation>()
 
     // MARK: - Constants
 
@@ -367,10 +340,18 @@ final class MissionHomeViewController: BaseViewController {
         ColorCardStore.shared.checkDailyReset()
         updateBannerVisibility()
         updateLocationLabelVisibility()
+        let status = locationManager.authorizationStatus
+        if status == .authorizedWhenInUse || status == .authorizedAlways {
+            locationManager.requestLocation()
+        }
     }
 
     private func setupLocationManager() {
         locationManager.delegate = self
+        let status = locationManager.authorizationStatus
+        if status == .authorizedWhenInUse || status == .authorizedAlways {
+            locationManager.requestLocation()
+        }
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(appDidEnterForeground),
@@ -416,7 +397,6 @@ final class MissionHomeViewController: BaseViewController {
 
         view.addSubview(headerRow)
         headerRow.addSubview(titleStack)
-        headerRow.addSubview(rightStack)
 
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
@@ -458,15 +438,6 @@ final class MissionHomeViewController: BaseViewController {
         }
         titleStack.snp.makeConstraints { make in
             make.leading.centerY.equalToSuperview()
-        }
-        rightStack.snp.makeConstraints { make in
-            make.trailing.centerY.equalToSuperview()
-        }
-        bellButton.snp.makeConstraints { make in
-            make.width.height.equalTo(22)
-        }
-        avatarView.snp.makeConstraints { make in
-            make.width.height.equalTo(32)
         }
 
         scrollView.snp.makeConstraints { make in
@@ -582,7 +553,9 @@ final class MissionHomeViewController: BaseViewController {
 
     override func bind() {
         shuffleButton.rx.tap
-            .bind(to: shuffleSubject)
+            .subscribe(onNext: { [weak self] in
+                self?.handleShuffleTap()
+            })
             .disposed(by: disposeBag)
 
         editNameButton.rx.tap
@@ -611,7 +584,8 @@ final class MissionHomeViewController: BaseViewController {
 
         let output = viewModel.transform(input: MissionHomeViewModel.Input(
             shuffleTap: shuffleSubject.asObservable(),
-            changeMissionTap: Observable.empty()
+            changeMissionTap: Observable.empty(),
+            location: locationRelay.asObservable()
         ))
 
         output.mission
@@ -661,6 +635,24 @@ final class MissionHomeViewController: BaseViewController {
     }
 
     // MARK: - Helper
+
+    private func handleShuffleTap() {
+        guard !cards.isEmpty else {
+            shuffleSubject.onNext(())
+            return
+        }
+        let alert = UIAlertController(
+            title: "미션 색상 변경",
+            message: "현재 촬영한 사진이 모두 초기화되며 저장되지 않습니다. 계속하시겠습니까?",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+        alert.addAction(UIAlertAction(title: "확인", style: .destructive) { [weak self] _ in
+            ColorCardStore.shared.clearAll()
+            self?.shuffleSubject.onNext(())
+        })
+        present(alert, animated: true)
+    }
 
     private func advanceIndex(by delta: Int) {
         guard !cards.isEmpty else { return }
@@ -770,5 +762,16 @@ final class MissionHomeViewController: BaseViewController {
 extension MissionHomeViewController: CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         updateLocationLabelVisibility()
+        let status = manager.authorizationStatus
+        if status == .authorizedWhenInUse || status == .authorizedAlways {
+            manager.requestLocation()
+        }
     }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else { return }
+        locationRelay.accept(location)
+    }
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {}
 }

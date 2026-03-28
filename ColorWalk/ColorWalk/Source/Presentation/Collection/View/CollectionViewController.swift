@@ -5,10 +5,20 @@ import RxCocoa
 
 final class CollectionViewController: BaseViewController {
 
+    // MARK: - Constants
+
+    private enum Constants {
+        static let shareCardWidth: CGFloat = 390
+        static let shareCardHeight: CGFloat = 506
+    }
+
     // MARK: - Properties
 
     private let viewModel: CollectionViewModel
     private let viewWillAppearRelay = PublishRelay<Void>()
+    private var currentSlots: [SlotDisplayInfo] = []
+    private var currentMissionHex: String = ""
+    private var currentShareDateText: String = ""
     
     // MARK: - UI: Scroll
 
@@ -312,8 +322,15 @@ final class CollectionViewController: BaseViewController {
         output.missionColorHex
             .drive(onNext: { [weak self] hex in
                 guard let self else { return }
+                self.currentMissionHex = hex
                 self.colorDotView.backgroundColor = UIColor(hex: hex)
                 self.missionNameLabel.text = "오늘의 미션 색상"
+            })
+            .disposed(by: disposeBag)
+
+        output.shareDateText
+            .drive(onNext: { [weak self] text in
+                self?.currentShareDateText = text
             })
             .disposed(by: disposeBag)
 
@@ -371,6 +388,7 @@ final class CollectionViewController: BaseViewController {
             photoGridView.configure(with: slots)
             
         case .completed(let slots):
+            currentSlots = slots
             missionHeaderCard.isHidden = false
             photoGridView.isHidden = false
             stateLabel.isHidden = true
@@ -383,11 +401,26 @@ final class CollectionViewController: BaseViewController {
     // MARK: - Action
 
     private func presentShareSheet() {
-        let renderer = UIGraphicsImageRenderer(bounds: archiveGridCard.bounds)
-        let image = renderer.image { _ in
-            archiveGridCard.drawHierarchy(in: archiveGridCard.bounds, afterScreenUpdates: true)
+        guard !currentSlots.isEmpty else { return }
+
+        let cardSize = CGSize(width: Constants.shareCardWidth, height: Constants.shareCardHeight)
+        let container = UIView(frame: CGRect(origin: .zero, size: cardSize))
+
+        let cardView = InstagramShareCardView()
+        cardView.configure(slots: currentSlots, missionHex: currentMissionHex, dateText: currentShareDateText)
+        container.addSubview(cardView)
+        cardView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
+        container.layoutIfNeeded()
+
+        let renderer = UIGraphicsImageRenderer(size: cardSize)
+        let image = renderer.image { context in
+            container.layer.render(in: context.cgContext)
+        }
+
         let activityVC = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        activityVC.popoverPresentationController?.sourceView = shareButton
         present(activityVC, animated: true)
     }
 }

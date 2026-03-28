@@ -6,6 +6,7 @@ enum AppConstants {
         static let stored = "yyyy-MM-dd"
         static let displayShort = "M월 d일"
         static let displayFull = "M월 d일 EEEE"
+        static let displayShare = "yyyy. MM. dd"
     }
 
     enum Text {

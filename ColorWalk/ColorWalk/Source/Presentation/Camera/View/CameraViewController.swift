@@ -52,7 +52,6 @@ final class CameraViewController: BaseViewController {
         return l
     }()
 
-    // MrN1v → "Done" 버튼으로 교체
     private let doneButton: UIButton = {
         let b = UIButton(type: .system)
         b.setTitle("Done", for: .normal)
