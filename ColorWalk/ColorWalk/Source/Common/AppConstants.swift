@@ -2,6 +2,12 @@ import Foundation
 
 enum AppConstants {
 
+    enum Notification {
+        static let missionHexKey = "missionHex"
+        static let missionNameKey = "missionName"
+    }
+
+
     enum DateFormat {
         static let stored = "yyyy-MM-dd"
         static let displayShort = "M월 d일"

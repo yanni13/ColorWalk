@@ -19,5 +19,6 @@ struct ColorPickerAttributes: ActivityAttributes {
     // 매 프레임마다 업데이트되는 정보 (실시간 일치율)
     struct ContentState: Codable, Hashable {
         var matchPercent: Int
+        var timerEnd: Date?
     }
 }

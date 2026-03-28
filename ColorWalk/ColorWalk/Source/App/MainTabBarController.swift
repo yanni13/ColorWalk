@@ -68,6 +68,10 @@ final class MainTabBarController: UITabBarController {
         viewControllers = [homeNav, cameraNav, collectionNav, mapNav]
     }
 
+    func navigateToCamera() {
+        selectedIndex = 1
+    }
+
     private func setupAppearance() {
         let appearance = UITabBarAppearance()
         appearance.configureWithDefaultBackground()

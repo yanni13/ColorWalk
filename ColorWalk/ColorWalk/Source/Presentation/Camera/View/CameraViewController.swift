@@ -335,7 +335,9 @@ final class CameraViewController: BaseViewController {
         super.viewWillDisappear(animated)
         tabBarController?.tabBar.isHidden = false
         viewModel.stopSession()
-        if #available(iOS 16.1, *) { ColorActivityManager.shared.stop() }
+        if #available(iOS 16.1, *), !ColorActivityManager.shared.isTimedSessionActive {
+            ColorActivityManager.shared.stop()
+        }
     }
 
     // MARK: - Camera Permission

@@ -1,7 +1,6 @@
 //
 //  ColorWalkWidgetLiveActivity.swift
 //  ColorWalkWidget
-//
 
 import ActivityKit
 import WidgetKit
@@ -12,76 +11,93 @@ import SwiftUI
 struct ColorWalkWidgetLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: ColorPickerAttributes.self) { context in
-            // 잠금화면 / 알림 배너
             LockScreenBannerView(state: context.state, attrs: context.attributes)
-                .activityBackgroundTint(Color.black.opacity(0.85))
+                .activityBackgroundTint(Color.black.opacity(0.9))
 
         } dynamicIsland: { context in
             DynamicIsland {
-                // Expanded (꾹 눌렀을 때) 
+                // Expanded: 꾹 눌렀을 때
                 DynamicIslandExpandedRegion(.leading) {
                     HStack(spacing: 8) {
-                        Circle()
-                            .fill(stateColor(context.attributes))
-                            .frame(width: 28, height: 28)
-                            .shadow(color: stateColor(context.attributes).opacity(0.6), radius: 6)
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(missionColor(context.attributes))
+                            .frame(width: 32, height: 32)
+                            .shadow(color: missionColor(context.attributes).opacity(0.6), radius: 6)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(context.attributes.missionHex)
-                                .font(.system(size: 14, weight: .semibold, design: .monospaced))
+                                .font(.system(size: 13, weight: .bold, design: .monospaced))
                                 .foregroundColor(.white)
                             Text("\(context.state.matchPercent)% 일치")
-                                .font(.system(size: 11))
-                                .foregroundColor(.white.opacity(0.6))
+                                .font(.system(size: 10))
+                                .foregroundColor(.white.opacity(0.55))
                         }
                     }
                     .padding(.leading, 6)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Text("미션")
-                            .font(.system(size: 10))
-                            .foregroundColor(.white.opacity(0.45))
-                        Text(context.attributes.missionName)
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(.white)
-                            .lineLimit(1)
+                    if let timerEnd = context.state.timerEnd {
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text("남은 시간")
+                                .font(.system(size: 9))
+                                .foregroundColor(.white.opacity(0.45))
+                            Text(timerInterval: Date()...timerEnd, countsDown: true, showsHours: false)
+                                .font(.system(size: 18, weight: .bold, design: .monospaced))
+                                .foregroundColor(.white)
+                                .monospacedDigit()
+                        }
+                        .padding(.trailing, 6)
+                    } else {
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text("미션")
+                                .font(.system(size: 9))
+                                .foregroundColor(.white.opacity(0.45))
+                            Text(context.attributes.missionName)
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(.white)
+                                .lineLimit(1)
+                        }
+                        .padding(.trailing, 6)
                     }
-                    .padding(.trailing, 6)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     MatchProgressBar(
-                        percent:    context.state.matchPercent,
-                        barColor:   stateColor(context.attributes),
+                        percent: context.state.matchPercent,
+                        barColor: missionColor(context.attributes),
                         missionHex: context.attributes.missionHex
                     )
                     .padding(.horizontal, 12)
-                    .padding(.bottom, 6)
+                    .padding(.bottom, 8)
                 }
 
             } compactLeading: {
-                // Compact: 왼쪽 컬러 도트
                 Circle()
-                    .fill(stateColor(context.attributes))
-                    .frame(width: 16, height: 16)
+                    .fill(missionColor(context.attributes))
+                    .frame(width: 14, height: 14)
                     .padding(.leading, 4)
 
             } compactTrailing: {
-                // Compact: 오른쪽 실시간 일치율
-                Text("\(context.state.matchPercent)%")
-                    .font(.system(size: 11, weight: .semibold, design: .monospaced))
-                    .foregroundColor(.white)
-                    .padding(.trailing, 4)
+                if let timerEnd = context.state.timerEnd {
+                    Text(timerInterval: Date()...timerEnd, countsDown: true, showsHours: false)
+                        .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                        .foregroundColor(.white)
+                        .monospacedDigit()
+                        .padding(.trailing, 4)
+                } else {
+                    Text("\(context.state.matchPercent)%")
+                        .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                        .foregroundColor(.white)
+                        .padding(.trailing, 4)
+                }
 
             } minimal: {
-                // Minimal: 도트만 
                 Circle()
-                    .fill(stateColor(context.attributes))
+                    .fill(missionColor(context.attributes))
             }
             .contentMargins(.all, 0, for: .minimal)
         }
     }
 
-    private func stateColor(_ attrs: ColorPickerAttributes) -> Color {
+    private func missionColor(_ attrs: ColorPickerAttributes) -> Color {
         Color(red: attrs.red, green: attrs.green, blue: attrs.blue)
     }
 }
@@ -95,37 +111,47 @@ private struct LockScreenBannerView: View {
     private var color: Color { Color(red: attrs.red, green: attrs.green, blue: attrs.blue) }
 
     var body: some View {
-        HStack(spacing: 12) {
-            // 컬러 미리보기
-            Circle()
-                .fill(color)
-                .frame(width: 40, height: 40)
-                .shadow(color: color.opacity(0.5), radius: 8)
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text(attrs.missionHex)
-                    .font(.system(size: 16, weight: .semibold, design: .monospaced))
+        HStack(alignment: .top, spacing: 14) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("⚠️ 지금 색상을 찾아라! ⚠️")
+                    .font(.system(size: 17, weight: .bold))
                     .foregroundColor(.white)
-                Text("미션: \(attrs.missionName)  ·  \(state.matchPercent)% 일치")
-                    .font(.system(size: 12))
-                    .foregroundColor(.white.opacity(0.65))
+
+                if let timerEnd = state.timerEnd {
+                    HStack(spacing: 6) {
+                        Text(attrs.missionHex)
+                            .font(.system(size: 13, weight: .semibold, design: .monospaced))
+                            .foregroundColor(color)
+                        Text("·")
+                            .foregroundColor(.white.opacity(0.35))
+                        Text(timerInterval: Date()...timerEnd, countsDown: true, showsHours: false)
+                            .font(.system(size: 13, weight: .semibold, design: .monospaced))
+                            .foregroundColor(.white.opacity(0.85))
+                            .monospacedDigit()
+                        Text("남음")
+                            .font(.system(size: 13))
+                            .foregroundColor(.white.opacity(0.55))
+                    }
+                } else {
+                    Text("목표 \(attrs.missionHex)  ·  \(state.matchPercent)% 일치")
+                        .font(.system(size: 13))
+                        .foregroundColor(.white.opacity(0.65))
+                }
             }
 
             Spacer()
 
-            // 진행률 링
-            ZStack {
-                Circle()
-                    .stroke(Color.white.opacity(0.2), lineWidth: 3)
-                Circle()
-                    .trim(from: 0, to: min(1, CGFloat(state.matchPercent) / 100))
-                    .stroke(color, style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                    .rotationEffect(.degrees(-90))
-                Text("\(state.matchPercent)")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundColor(.white)
-            }
-            .frame(width: 38, height: 38)
+            // 컬러 칩 (BeReal의 카메라 아이콘 역할)
+            RoundedRectangle(cornerRadius: 16)
+                .fill(color)
+                .frame(width: 56, height: 56)
+                .overlay(
+                    Text(attrs.missionHex.replacingOccurrences(of: "#", with: ""))
+                        .font(.system(size: 9, weight: .bold, design: .monospaced))
+                        .foregroundColor(.white.opacity(0.85))
+                        .multilineTextAlignment(.center)
+                )
+                .shadow(color: color.opacity(0.5), radius: 8)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
@@ -135,8 +161,8 @@ private struct LockScreenBannerView: View {
 // MARK: - Match Progress Bar
 
 private struct MatchProgressBar: View {
-    let percent:    Int
-    let barColor:   Color
+    let percent: Int
+    let barColor: Color
     let missionHex: String
 
     var body: some View {
@@ -168,19 +194,19 @@ private struct MatchProgressBar: View {
 extension ColorPickerAttributes {
     fileprivate static let preview = ColorPickerAttributes(
         missionName: "Sky Blue",
-        missionHex:  "#5B8DEF",
+        missionHex: "#5B8DEF",
         red: 0.36, green: 0.55, blue: 0.94
     )
 }
 
 extension ColorPickerAttributes.ContentState {
-    fileprivate static let low = ColorPickerAttributes.ContentState(matchPercent: 42)
-    fileprivate static let high = ColorPickerAttributes.ContentState(matchPercent: 96)
+    fileprivate static let timed = ColorPickerAttributes.ContentState(matchPercent: 42, timerEnd: Date().addingTimeInterval(120))
+    fileprivate static let notimed = ColorPickerAttributes.ContentState(matchPercent: 96, timerEnd: nil)
 }
 
 #Preview("Notification", as: .content, using: ColorPickerAttributes.preview) {
     ColorWalkWidgetLiveActivity()
 } contentStates: {
-    ColorPickerAttributes.ContentState.low
-    ColorPickerAttributes.ContentState.high
+    ColorPickerAttributes.ContentState.timed
+    ColorPickerAttributes.ContentState.notimed
 }

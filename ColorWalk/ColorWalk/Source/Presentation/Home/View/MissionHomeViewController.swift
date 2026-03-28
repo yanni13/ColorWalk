@@ -50,6 +50,18 @@ final class MissionHomeViewController: BaseViewController {
 
     private let headerRow = UIView()
 
+    private let debugAlertButton: UIButton = {
+        let b = UIButton(type: .system)
+        b.setImage(
+            UIImage(systemName: "bell.badge")?
+                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)),
+            for: .normal
+        )
+        b.tintColor = UIColor(hex: "#FF7EB3")
+        b.accessibilityLabel = "테스트 알림 발송"
+        return b
+    }()
+
     // MARK: - UI: Midnight Banner (Ay4YW)
 
     private let midnightBannerView: UIView = {
@@ -395,6 +407,7 @@ final class MissionHomeViewController: BaseViewController {
 
         view.addSubview(headerRow)
         headerRow.addSubview(titleStack)
+        headerRow.addSubview(debugAlertButton)
 
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
@@ -436,6 +449,10 @@ final class MissionHomeViewController: BaseViewController {
         }
         titleStack.snp.makeConstraints { make in
             make.leading.centerY.equalToSuperview()
+        }
+        debugAlertButton.snp.makeConstraints { make in
+            make.trailing.centerY.equalToSuperview()
+            make.width.height.equalTo(36)
         }
 
         scrollView.snp.makeConstraints { make in
@@ -550,6 +567,12 @@ final class MissionHomeViewController: BaseViewController {
     // MARK: - Bind
 
     override func bind() {
+        debugAlertButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                self?.scheduleDebugAlert()
+            })
+            .disposed(by: disposeBag)
+
         shuffleButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 self?.handleShuffleTap()
@@ -637,6 +660,15 @@ final class MissionHomeViewController: BaseViewController {
                 self.onCardTap?(self.currentIndex)
             })
             .disposed(by: disposeBag)
+    }
+
+    // MARK: - Debug
+
+    private func scheduleDebugAlert() {
+        MissionAlertScheduler.shared.scheduleImmediateTest(after: 5)
+        let alert = UIAlertController(title: "테스트 알림", message: "5초 후 알림이 발송됩니다.\n앱을 백그라운드로 내려주세요.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        present(alert, animated: true)
     }
 
     // MARK: - Helper
