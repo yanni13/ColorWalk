@@ -194,6 +194,15 @@ final class CollectionViewController: BaseViewController {
         return label
     }()
 
+    private let shareHintLabel: UILabel = {
+        let label = UILabel()
+        label.text = "9개의 미션을 수행하면 그리드를 공유할 수 있어요!"
+        label.font = UIFont(name: "Pretendard-Medium", size: 13)
+        label.textColor = UIColor(hex: "#6B7684")
+        label.textAlignment = .center
+        return label
+    }()
+
     private let shareButton: UIButton = {
         let button = UIButton(type: .custom)
         button.setTitle("공유하기", for: .normal)
@@ -229,6 +238,9 @@ final class CollectionViewController: BaseViewController {
         scrollView.addSubview(contentView)
         contentView.addSubview(contentStackView)
         
+        // Share Hint
+        contentStackView.addArrangedSubview(shareHintLabel)
+
         // Mission Header (XfU13)
         contentStackView.addArrangedSubview(missionHeaderCard)
         missionHeaderCard.addSubview(missionInfoRow)
@@ -258,6 +270,7 @@ final class CollectionViewController: BaseViewController {
     }
 
     private func configureInitialState() {
+        shareHintLabel.isHidden = true
         missionHeaderCard.isHidden = true
         photoGridView.isHidden = true
         stateLabel.isHidden = true
@@ -372,27 +385,34 @@ final class CollectionViewController: BaseViewController {
     private func applyState(_ state: MissionState) {
         switch state {
         case .noMission:
+            shareHintLabel.isHidden = true
             missionHeaderCard.isHidden = true
             photoGridView.isHidden = true
             stateLabel.isHidden = true
             shareButton.isHidden = true
             emptyStateStack.isHidden = false
             photoGridView.clearSlots()
-            
+
         case .inProgress(_, let slots):
+            shareHintLabel.isHidden = false
             missionHeaderCard.isHidden = false
             photoGridView.isHidden = false
             stateLabel.isHidden = false
-            shareButton.isHidden = true
+            shareButton.isHidden = false
+            shareButton.isEnabled = false
+            shareButton.alpha = 0.4
             emptyStateStack.isHidden = true
             photoGridView.configure(with: slots)
-            
+
         case .completed(let slots):
             currentSlots = slots
+            shareHintLabel.isHidden = false
             missionHeaderCard.isHidden = false
             photoGridView.isHidden = false
             stateLabel.isHidden = true
             shareButton.isHidden = false
+            shareButton.isEnabled = true
+            shareButton.alpha = 1.0
             emptyStateStack.isHidden = true
             photoGridView.configure(with: slots)
         }

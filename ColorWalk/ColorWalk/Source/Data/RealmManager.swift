@@ -106,6 +106,27 @@ final class RealmManager {
         }
     }
 
+    func resetTodayMissionState() {
+        let today = DateManager.storedString(from: Date())
+        guard let mission = fetchDailyMission(for: today) else { return }
+        write { _ in
+            mission.isPaletteCompleted = false
+            mission.recommendedHex = ""
+            mission.slots.forEach { slot in
+                slot.isCaptured = false
+                slot.linkedPhoto = nil
+            }
+        }
+    }
+
+    func updateTodayMissionHex(_ hex: String) {
+        let today = DateManager.storedString(from: Date())
+        guard let mission = fetchDailyMission(for: today) else { return }
+        write { _ in
+            mission.recommendedHex = hex
+        }
+    }
+
     // MARK: - All Photos
 
     func fetchAllPhotos() -> [Photo] {

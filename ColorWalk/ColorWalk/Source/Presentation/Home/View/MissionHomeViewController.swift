@@ -749,9 +749,9 @@ final class MissionHomeViewController: BaseViewController {
 
         let count = ColorCardStore.shared.cards.value.count
         updateProgressBar(count: count)
-        
-        // Ensure store stays in sync
+
         ColorMissionStore.shared.setMission(mission)
+        RealmManager.shared.updateTodayMissionHex(mission.hexColor)
     }
 
     private func updateProgressBar(count: Int) {
@@ -785,6 +785,7 @@ final class MissionHomeViewController: BaseViewController {
         )
         currentDisplayedMission = updated
         ColorMissionStore.shared.setMission(updated)
+        RealmManager.shared.updateTodayMissionHex(hex)
     }
 
     private func updateMissionName(_ name: String) {

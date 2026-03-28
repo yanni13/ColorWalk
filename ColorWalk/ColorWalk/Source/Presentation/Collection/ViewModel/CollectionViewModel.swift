@@ -117,9 +117,9 @@ final class CollectionViewModel: ViewModelType {
         missionData
             .map { (_, mission) -> String in
                 guard let mission else { return "" }
-                let captured = mission.slots.filter { $0.isCaptured }.count
+                let captured = mission.slots.filter { $0.linkedPhoto != nil }.count
                 let total = mission.slots.count
-                if mission.isPaletteCompleted {
+                if captured == total && total > 0 {
                     return "\(AppConstants.Text.missionComplete) (\(total)/\(total))"
                 }
                 return "\(AppConstants.Text.missionIncomplete) (\(captured)/\(total))"
@@ -137,15 +137,15 @@ final class CollectionViewModel: ViewModelType {
                             index: slot.index,
                             imagePath: slot.linkedPhoto?.imagePath,
                             capturedHex: slot.linkedPhoto?.capturedHex,
-                            isCaptured: slot.isCaptured
+                            isCaptured: slot.linkedPhoto != nil
                         )
                     }
                     .sorted { $0.index < $1.index }
-                
+
                 let capturedCount = sortedSlots.filter { $0.isCaptured }.count
-                
-                // 미션 객체만 있으면 진행 중(inProgress)으로 간주하여 그리드를 표시함
-                return mission.isPaletteCompleted
+                let total = sortedSlots.count
+
+                return (capturedCount == total && total > 0)
                     ? .completed(slots: sortedSlots)
                     : .inProgress(capturedCount: capturedCount, slots: sortedSlots)
             }
