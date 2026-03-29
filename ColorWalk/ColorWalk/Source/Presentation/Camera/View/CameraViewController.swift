@@ -13,6 +13,40 @@ import CoreLocation
 import ImageIO
 import UniformTypeIdentifiers
 
+// MARK: - GridView (3x3)
+private final class GridView: UIView {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        isUserInteractionEnabled = false
+        backgroundColor = .clear
+        isHidden = true
+    }
+    required init?(coder: NSCoder) { fatalError() }
+
+    override func draw(_ rect: CGRect) {
+        guard let context = UIGraphicsGetCurrentContext() else { return }
+        context.setStrokeColor(UIColor.white.withAlphaComponent(0.3).cgColor)
+        context.setLineWidth(1.0)
+
+        let w = rect.width
+        let h = rect.height
+
+        // 세로선
+        context.move(to: CGPoint(x: w / 3, y: 0))
+        context.addLine(to: CGPoint(x: w / 3, y: h))
+        context.move(to: CGPoint(x: 2 * w / 3, y: 0))
+        context.addLine(to: CGPoint(x: 2 * w / 3, y: h))
+
+        // 가로선
+        context.move(to: CGPoint(x: 0, y: h / 3))
+        context.addLine(to: CGPoint(x: w, y: h / 3))
+        context.move(to: CGPoint(x: 0, y: 2 * h / 3))
+        context.addLine(to: CGPoint(x: w, y: 2 * h / 3))
+
+        context.strokePath()
+    }
+}
+
 final class CameraViewController: BaseViewController {
 
     // MARK: - Callbacks
@@ -21,6 +55,25 @@ final class CameraViewController: BaseViewController {
     // MARK: - ViewModel
     private let viewModel = CameraViewModel()
     private let locationManager = CLLocationManager()
+    private var currentZoomFactor: CGFloat = 1.0
+
+    // Timer state
+    private var timerSeconds: Int = 0 {
+        didSet {
+            let isActive = timerSeconds > 0
+            let iconName = isActive ? "timer.circle.fill" : "timer"
+            let color = isActive ? UIColor(hex: "#34D399") : .white
+            
+            timerButton.setImage(
+                UIImage(systemName: iconName)?
+                    .withConfiguration(UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)),
+                for: .normal
+            )
+            timerButton.tintColor = color
+            timerLabel.text = isActive ? "\(timerSeconds)s" : ""
+            timerLabel.textColor = color
+        }
+    }
 
     // MARK: - Preview
     private let previewView: UIImageView = {
@@ -30,6 +83,8 @@ final class CameraViewController: BaseViewController {
         iv.backgroundColor = .black
         return iv
     }()
+
+    private let gridView = GridView()
 
     // MARK: - Navigation Bar
     private let navBar = UIView()
@@ -51,6 +106,44 @@ final class CameraViewController: BaseViewController {
         l.font = UIFont(name: "Pretendard-Bold", size: 17) ?? .boldSystemFont(ofSize: 17)
         l.textColor = .white
         l.textAlignment = .center
+        return l
+    }()
+
+    private let gridButton: UIButton = {
+        let b = UIButton(type: .system)
+        b.setImage(
+            UIImage(systemName: "grid")?
+                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)),
+            for: .normal
+        )
+        b.tintColor = .white
+        return b
+    }()
+
+    private let timerButton: UIButton = {
+        let b = UIButton(type: .system)
+        b.setImage(
+            UIImage(systemName: "timer")?
+                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)),
+            for: .normal
+        )
+        b.tintColor = .white
+        return b
+    }()
+
+    private let timerLabel: UILabel = {
+        let l = UILabel()
+        l.font = UIFont(name: "Pretendard-Bold", size: 12)
+        l.textColor = .white
+        return l
+    }()
+
+    private let countdownLabel: UILabel = {
+        let l = UILabel()
+        l.font = UIFont(name: "Pretendard-Bold", size: 80)
+        l.textColor = .white
+        l.textAlignment = .center
+        l.isHidden = true
         return l
     }()
 
@@ -146,9 +239,13 @@ final class CameraViewController: BaseViewController {
         view.backgroundColor = .black
 
         view.addSubview(previewView)
+        view.addSubview(gridView)
         view.addSubview(navBar)
         navBar.addSubview(backButton)
         navBar.addSubview(navTitleLabel)
+        navBar.addSubview(gridButton)
+        navBar.addSubview(timerButton)
+        timerButton.addSubview(timerLabel)
         navBar.addSubview(doneButton)
 
         view.addSubview(crosshairView)
@@ -162,14 +259,30 @@ final class CameraViewController: BaseViewController {
         view.addSubview(thumbnailButton)
         view.addSubview(shutterButton)
         view.addSubview(flipButton)
+        view.addSubview(countdownLabel)
 
+        setupGestures()
         requestPermissionAndSetup()
+    }
+
+    private func setupGestures() {
+        let pinch = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
+        view.addGestureRecognizer(pinch)
+    }
+
+    @objc private func handlePinch(_ gesture: UIPinchGestureRecognizer) {
+        if gesture.state == .began {
+            currentZoomFactor = viewModel.currentZoomFactor
+        }
+        let factor = currentZoomFactor * (gesture.scale)
+        viewModel.setZoom(factor: factor)
     }
 
     // MARK: - setupConstraints
 
     override func setupConstraints() {
         previewView.snp.makeConstraints { $0.edges.equalToSuperview() }
+        gridView.snp.makeConstraints { $0.edges.equalTo(previewView) }
 
         navBar.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide)
@@ -184,9 +297,26 @@ final class CameraViewController: BaseViewController {
         navTitleLabel.snp.makeConstraints {
             $0.center.equalToSuperview()
         }
+        gridButton.snp.makeConstraints {
+            $0.trailing.equalTo(navTitleLabel.snp.leading).offset(-16)
+            $0.centerY.equalToSuperview()
+            $0.width.height.equalTo(32)
+        }
+        timerButton.snp.makeConstraints {
+            $0.leading.equalTo(navTitleLabel.snp.trailing).offset(16)
+            $0.centerY.equalToSuperview()
+            $0.width.height.equalTo(32)
+        }
+        timerLabel.snp.makeConstraints {
+            $0.trailing.bottom.equalToSuperview()
+        }
         doneButton.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(20)
             $0.centerY.equalToSuperview()
+        }
+
+        countdownLabel.snp.makeConstraints {
+            $0.center.equalToSuperview()
         }
 
         // Viewfinder
@@ -260,6 +390,23 @@ final class CameraViewController: BaseViewController {
             .subscribe(onNext: { exitAction() })
             .disposed(by: disposeBag)
 
+        gridButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                self?.gridView.isHidden.toggle()
+                self?.gridButton.tintColor = (self?.gridView.isHidden ?? true) ? .white : UIColor(hex: "#34D399")
+            })
+            .disposed(by: disposeBag)
+
+        timerButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                guard let self else { return }
+                if self.timerSeconds == 0 { self.timerSeconds = 3 }
+                else if self.timerSeconds == 3 { self.timerSeconds = 5 }
+                else if self.timerSeconds == 5 { self.timerSeconds = 10 }
+                else { self.timerSeconds = 0 }
+            })
+            .disposed(by: disposeBag)
+
         // 갤러리 버튼 (gJyRv) — 사진 가져오기
         thumbnailButton.rx.tap
             .subscribe(onNext: { [weak self] in self?.openPhotoPicker() })
@@ -270,7 +417,7 @@ final class CameraViewController: BaseViewController {
             .disposed(by: disposeBag)
 
         shutterButton.rx.tap
-            .subscribe(onNext: { [weak self] in self?.animateShutter() })
+            .subscribe(onNext: { [weak self] in self?.handleShutterTap() })
             .disposed(by: disposeBag)
 
         // Filter selection
@@ -356,6 +503,40 @@ final class CameraViewController: BaseViewController {
     }
 
     // MARK: - Shutter Animation
+
+    private func handleShutterTap() {
+        guard timerSeconds > 0 else {
+            animateShutter()
+            return
+        }
+
+        shutterButton.isEnabled = false
+        var count = timerSeconds
+        countdownLabel.text = "\(count)"
+        countdownLabel.isHidden = false
+        countdownLabel.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+        
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
+            guard let self = self else { return }
+            count -= 1
+            if count > 0 {
+                self.countdownLabel.text = "\(count)"
+                self.countdownLabel.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+                UIView.animate(withDuration: 0.2) {
+                    self.countdownLabel.transform = .identity
+                }
+            } else {
+                timer.invalidate()
+                self.countdownLabel.isHidden = true
+                self.shutterButton.isEnabled = true
+                self.animateShutter()
+            }
+        }
+        
+        UIView.animate(withDuration: 0.2) {
+            self.countdownLabel.transform = .identity
+        }
+    }
 
     private func animateShutter() {
         let flash = UIView(frame: view.bounds)

@@ -149,6 +149,26 @@ final class CameraViewModel: NSObject {
         currentFilter.accept(filter)
     }
 
+    func setZoom(factor: CGFloat) {
+        sessionQueue.async { [weak self] in
+            guard let self, let input = self.currentInput else { return }
+            let device = input.device
+            
+            do {
+                try device.lockForConfiguration()
+                let zoom = max(1.0, min(factor, device.activeFormat.videoMaxZoomFactor))
+                device.videoZoomFactor = zoom
+                device.unlockForConfiguration()
+            } catch {
+                print("Failed to lock for configuration: \(error)")
+            }
+        }
+    }
+
+    var currentZoomFactor: CGFloat {
+        return currentInput?.device.videoZoomFactor ?? 1.0
+    }
+
     // MARK: - Color Detection
 
     private func detectColor(from image: CIImage) {
