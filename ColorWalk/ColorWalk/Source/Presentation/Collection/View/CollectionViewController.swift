@@ -1,5 +1,6 @@
 import UIKit
 import SnapKit
+import LinkPresentation
 import RxSwift
 import RxCocoa
 
@@ -203,15 +204,7 @@ final class CollectionViewController: BaseViewController {
         return label
     }()
 
-    private let shareButton: UIButton = {
-        let button = UIButton(type: .custom)
-        button.setTitle("공유하기", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 16)
-        button.backgroundColor = UIColor(hex: "#34D399")
-        button.layer.cornerRadius = 14
-        return button
-    }()
+    private let shareButton = AppButton(style: .primary, title: "공유하기")
 
     // MARK: - Init
 
@@ -439,8 +432,41 @@ final class CollectionViewController: BaseViewController {
             container.layer.render(in: context.cgContext)
         }
 
-        let activityVC = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        let itemSource = GridShareItemSource(image: image, title: "ColorWalk Mission Grid", date: currentShareDateText)
+        let activityVC = UIActivityViewController(activityItems: [itemSource], applicationActivities: nil)
         activityVC.popoverPresentationController?.sourceView = shareButton
         present(activityVC, animated: true)
+    }
+}
+
+// MARK: - Share Item Source
+
+final class GridShareItemSource: NSObject, UIActivityItemSource {
+    let image: UIImage
+    let title: String
+    let date: String
+
+    init(image: UIImage, title: String, date: String) {
+        self.image = image
+        self.title = title
+        self.date = date
+        super.init()
+    }
+
+    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
+        return image
+    }
+
+    func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
+        return image
+    }
+
+    func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
+        let metadata = LPLinkMetadata()
+        metadata.title = title
+        metadata.originalURL = URL(string: "https://colorwalk.app") // Placeholder
+        metadata.imageProvider = NSItemProvider(object: image)
+        metadata.iconProvider = NSItemProvider(object: image)
+        return metadata
     }
 }

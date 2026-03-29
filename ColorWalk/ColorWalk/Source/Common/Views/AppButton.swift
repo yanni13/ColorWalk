@@ -11,6 +11,7 @@ import SnapKit
 enum AppButtonStyle {
     case primary
     case secondary
+    case destructive
     case ghost
     case icon(String)
 }
@@ -25,16 +26,23 @@ final class AppButton: UIButton {
 
         switch style {
         case .primary:
-            config.background.backgroundColor = UIColor.App.accentBlue
+            config.background.backgroundColor = UIColor.App.ink
             config.background.cornerRadius = 100
             config.attributedTitle = makeTitle(title, font: "Pretendard-SemiBold", color: .white)
 
         case .secondary:
             config.background.backgroundColor = .clear
             config.background.cornerRadius = 100
-            config.background.strokeColor = UIColor.App.accentBlue
+            config.background.strokeColor = UIColor.App.ink
             config.background.strokeWidth = 1.5
-            config.attributedTitle = makeTitle(title, font: "Pretendard-SemiBold", color: UIColor.App.accentBlue)
+            config.attributedTitle = makeTitle(title, font: "Pretendard-SemiBold", color: UIColor.App.ink)
+
+        case .destructive:
+            config.background.backgroundColor = .clear
+            config.background.cornerRadius = 100
+            config.background.strokeColor = UIColor(hex: "#FF4D4F")
+            config.background.strokeWidth = 1.5
+            config.attributedTitle = makeTitle(title, font: "Pretendard-SemiBold", color: UIColor(hex: "#FF4D4F"))
 
         case .ghost:
             config.background.backgroundColor = .clear

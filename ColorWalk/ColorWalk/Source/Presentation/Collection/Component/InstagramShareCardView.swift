@@ -15,7 +15,7 @@ final class InstagramShareCardView: UIView {
         static let infoStackSpacing: CGFloat = 16
         static let badgeCornerRadius: CGFloat = 11
         static let badgePaddingV: CGFloat = 4
-        static let badgePaddingH: CGFloat = 10
+        static let badgePaddingH: CGFloat = 8
         static let infoPaddingH: CGFloat = 16
         static let infoPaddingBottom: CGFloat = 24
         static let thumbnailSize: CGFloat = 400
@@ -195,13 +195,13 @@ final class InstagramShareCardView: UIView {
             make.width.height.equalTo(Constants.dotSize)
         }
 
+        badgeView.setContentHuggingPriority(.required, for: .horizontal)
+        badgeView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        badgeLabel.setContentHuggingPriority(.required, for: .horizontal)
+        
         badgeLabel.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(
-                top: Constants.badgePaddingV,
-                left: Constants.badgePaddingH,
-                bottom: Constants.badgePaddingV,
-                right: Constants.badgePaddingH
-            ))
+            make.top.bottom.equalToSuperview().inset(Constants.badgePaddingV)
+            make.leading.trailing.equalToSuperview().inset(Constants.badgePaddingH)
         }
     }
 
