@@ -34,8 +34,8 @@ final class AppCoordinator {
     // MARK: - Private
 
     private func showOnboarding() {
-        let viewModel = HomeViewModel()
-        let vc = HomeViewController(viewModel: viewModel)
+        let viewModel = OnboardingViewModel()
+        let vc = OnboardingViewController(viewModel: viewModel)
         vc.onOnboardingComplete = { [weak self] in
             UserDefaults.standard.set(true, forKey: Keys.hasLaunchedBefore)
             self?.showTabBar()

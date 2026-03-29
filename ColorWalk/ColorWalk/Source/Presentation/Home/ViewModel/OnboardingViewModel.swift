@@ -164,8 +164,8 @@ extension ColorCard {
     ]
 }
 
-// MARK: - HomeViewModel
-final class HomeViewModel: ViewModelType {
+// MARK: - OnboardingViewModel
+final class OnboardingViewModel: ViewModelType {
 
     struct Input {
         let swipeLeft: Observable<Void>

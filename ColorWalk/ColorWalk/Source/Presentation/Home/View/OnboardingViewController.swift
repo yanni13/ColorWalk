@@ -8,11 +8,11 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-final class HomeViewController: BaseViewController {
+final class OnboardingViewController: BaseViewController {
 
     // MARK: - Properties
 
-    private let viewModel: HomeViewModel
+    private let viewModel: OnboardingViewModel
     var onOnboardingComplete: (() -> Void)?
 
     // MARK: - UI: Header
@@ -108,7 +108,7 @@ final class HomeViewController: BaseViewController {
 
     // MARK: - Init
 
-    init(viewModel: HomeViewModel) {
+    init(viewModel: OnboardingViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
