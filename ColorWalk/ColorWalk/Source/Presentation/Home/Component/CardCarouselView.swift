@@ -88,6 +88,7 @@ final class CardCarouselView: UIView {
     private func setupGesture() {
         frontCard.isUserInteractionEnabled = true
         let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+        pan.delegate = self
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         frontCard.addGestureRecognizer(pan)
         frontCard.addGestureRecognizer(tap)
@@ -196,5 +197,15 @@ final class CardCarouselView: UIView {
         iv.alpha = alpha
         iv.backgroundColor = UIColor(hex: "#E0E0E0")
         return iv
+    }
+}
+
+// MARK: - UIGestureRecognizerDelegate
+
+extension CardCarouselView: UIGestureRecognizerDelegate {
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard let pan = gestureRecognizer as? UIPanGestureRecognizer else { return true }
+        let velocity = pan.velocity(in: self)
+        return abs(velocity.x) > abs(velocity.y)
     }
 }
