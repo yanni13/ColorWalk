@@ -86,8 +86,9 @@ final class MissionHomeViewModel: ViewModelType {
     private let repository: ColorMissionRepositoryProtocol
     private let weatherService: WeatherServiceProtocol
     private let missions: [ColorMission]
-    private let indexRelay = BehaviorRelay<Int>(value: 0)
+    private let indexRelay: BehaviorRelay<Int>
     private let weatherInfoRelay = BehaviorRelay<String>(value: "날씨 정보 없음")
+    private let savedCustomMission: ColorMission?
     private let disposeBag = DisposeBag()
 
     init(
@@ -96,17 +97,34 @@ final class MissionHomeViewModel: ViewModelType {
     ) {
         self.repository = repository
         self.weatherService = weatherService
-        self.missions = repository.fetchMissions()
+        let fetchedMissions = repository.fetchMissions()
+        self.missions = fetchedMissions
+
+        let today = DateManager.storedString(from: Date())
+        let daily = RealmManager.shared.fetchDailyMission(for: today)
+        let savedHex = daily?.recommendedHex ?? ""
+
+        if let idx = fetchedMissions.firstIndex(where: { $0.hexColor == savedHex }) {
+            self.indexRelay = BehaviorRelay<Int>(value: idx)
+            self.savedCustomMission = nil
+        } else if !savedHex.isEmpty {
+            let savedName = daily?.recommendedMissionName ?? ""
+            self.indexRelay = BehaviorRelay<Int>(value: 0)
+            self.savedCustomMission = ColorMission(
+                name: savedName.isEmpty ? savedHex : savedName,
+                hexColor: savedHex,
+                color: UIColor(hex: savedHex),
+                weatherInfo: "날씨 정보 없음",
+                progress: 0
+            )
+        } else {
+            self.indexRelay = BehaviorRelay<Int>(value: 0)
+            self.savedCustomMission = nil
+        }
     }
 
     func transform(input: Input) -> Output {
         let count = missions.count
-
-        Observable.merge(input.shuffleTap, input.changeMissionTap)
-            .withLatestFrom(indexRelay)
-            .map { ($0 + 1) % count }
-            .bind(to: indexRelay)
-            .disposed(by: disposeBag)
 
         input.location
             .distinctUntilChanged { $0.distance(from: $1) < 1000 }
@@ -119,7 +137,7 @@ final class MissionHomeViewModel: ViewModelType {
             .bind(to: weatherInfoRelay)
             .disposed(by: disposeBag)
 
-        let missionObservable = Observable.combineLatest(indexRelay, weatherInfoRelay)
+        let indexBasedMission = Observable.combineLatest(indexRelay, weatherInfoRelay)
             .map { [weak self] idx, weatherInfo -> ColorMission in
                 guard let self else { return ColorMission.mockMissions[0] }
                 let base = self.missions[idx]
@@ -131,7 +149,42 @@ final class MissionHomeViewModel: ViewModelType {
                     progress: base.progress
                 )
             }
-            .share(replay: 1)
+
+        let missionObservable: Observable<ColorMission>
+
+        if let custom = savedCustomMission {
+            let hasShuffledSubject = PublishSubject<Void>()
+
+            Observable.merge(input.shuffleTap, input.changeMissionTap)
+                .do(onNext: { hasShuffledSubject.onNext(()) })
+                .withLatestFrom(indexRelay)
+                .map { ($0 + 1) % count }
+                .bind(to: indexRelay)
+                .disposed(by: disposeBag)
+
+            let hasShuffled = hasShuffledSubject.take(1).share()
+            let customWithWeather = weatherInfoRelay
+                .map { weatherInfo -> ColorMission in
+                    ColorMission(
+                        name: custom.name,
+                        hexColor: custom.hexColor,
+                        color: custom.color,
+                        weatherInfo: "오늘의 날씨: \(weatherInfo)",
+                        progress: custom.progress
+                    )
+                }
+                .takeUntil(hasShuffled)
+            let indexAfterShuffle = indexBasedMission.skipUntil(hasShuffled)
+            missionObservable = Observable.merge(customWithWeather, indexAfterShuffle).share(replay: 1)
+        } else {
+            Observable.merge(input.shuffleTap, input.changeMissionTap)
+                .withLatestFrom(indexRelay)
+                .map { ($0 + 1) % count }
+                .bind(to: indexRelay)
+                .disposed(by: disposeBag)
+
+            missionObservable = indexBasedMission.share(replay: 1)
+        }
 
         missionObservable
             .bind(onNext: { ColorMissionStore.shared.setMission($0) })

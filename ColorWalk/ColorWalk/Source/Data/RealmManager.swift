@@ -8,7 +8,7 @@ final class RealmManager {
     static let shared = RealmManager()
 
     private enum Constants {
-        static let schemaVersion: UInt64 = 2
+        static let schemaVersion: UInt64 = 3
     }
 
     private init() {
@@ -124,6 +124,15 @@ final class RealmManager {
         guard let mission = fetchDailyMission(for: today) else { return }
         write { _ in
             mission.recommendedHex = hex
+        }
+    }
+
+    func updateTodayMission(hex: String, name: String) {
+        let today = DateManager.storedString(from: Date())
+        guard let mission = fetchDailyMission(for: today) else { return }
+        write { _ in
+            mission.recommendedHex = hex
+            mission.recommendedMissionName = name
         }
     }
 

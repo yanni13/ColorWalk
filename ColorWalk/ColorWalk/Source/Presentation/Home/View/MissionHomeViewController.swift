@@ -783,7 +783,7 @@ final class MissionHomeViewController: BaseViewController {
         updateProgressBar(count: count)
 
         ColorMissionStore.shared.setMission(mission)
-        RealmManager.shared.updateTodayMissionHex(mission.hexColor)
+        RealmManager.shared.updateTodayMission(hex: mission.hexColor, name: mission.name)
     }
 
     private func updateProgressBar(count: Int) {
@@ -817,7 +817,7 @@ final class MissionHomeViewController: BaseViewController {
         )
         currentDisplayedMission = updated
         ColorMissionStore.shared.setMission(updated)
-        RealmManager.shared.updateTodayMissionHex(hex)
+        RealmManager.shared.updateTodayMission(hex: hex, name: name)
     }
 
     private func updateMissionName(_ name: String) {
