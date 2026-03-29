@@ -26,22 +26,14 @@ final class MissionHomeViewController: BaseViewController {
 
     private let titleLabel: UILabel = {
         let l = UILabel()
-        l.text = "ColorWalk"
+        l.text = "담아"
         l.font = UIFont(name: "Pretendard-Bold", size: 28)
         l.textColor = UIColor(hex: "#191F28")
         return l
     }()
 
-    private let subtitleLabel: UILabel = {
-        let l = UILabel()
-        l.text = "새로운 하루, 새로운 색!"
-        l.font = UIFont(name: "Pretendard-Regular", size: 13)
-        l.textColor = UIColor(hex: "#6B7684")
-        return l
-    }()
-
     private lazy var titleStack: UIStackView = {
-        let s = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
+        let s = UIStackView(arrangedSubviews: [titleLabel])
         s.axis = .vertical
         s.spacing = 2
         s.alignment = .leading
@@ -370,9 +362,9 @@ final class MissionHomeViewController: BaseViewController {
 
         missionSectionLabel.snp.remakeConstraints { make in
             if didReset {
-                make.top.equalTo(midnightBannerView.snp.bottom).offset(36)
+                make.top.equalTo(midnightBannerView.snp.bottom).offset(20)
             } else {
-                make.top.equalToSuperview().offset(36)
+                make.top.equalToSuperview().offset(20)
             }
             make.leading.equalToSuperview().offset(44)
         }
@@ -449,7 +441,7 @@ final class MissionHomeViewController: BaseViewController {
         }
 
         midnightBannerView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(20)
+            make.top.equalToSuperview().offset(10)
             make.leading.trailing.equalToSuperview().inset(24)
         }
         moonIconView.snp.makeConstraints { make in
@@ -464,7 +456,7 @@ final class MissionHomeViewController: BaseViewController {
         }
 
         missionSectionLabel.snp.makeConstraints { make in
-            make.top.equalTo(midnightBannerView.snp.bottom).offset(36)
+            make.top.equalTo(midnightBannerView.snp.bottom).offset(20)
             make.leading.equalToSuperview().offset(44)
         }
         cardView.snp.makeConstraints { make in

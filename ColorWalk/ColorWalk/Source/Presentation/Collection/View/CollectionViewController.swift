@@ -432,7 +432,7 @@ final class CollectionViewController: BaseViewController {
             container.layer.render(in: context.cgContext)
         }
 
-        let itemSource = GridShareItemSource(image: image, title: "ColorWalk Mission Grid", date: currentShareDateText)
+        let itemSource = GridShareItemSource(image: image, title: "담아 미션 그리드", date: currentShareDateText)
         let activityVC = UIActivityViewController(activityItems: [itemSource], applicationActivities: nil)
         activityVC.popoverPresentationController?.sourceView = shareButton
         present(activityVC, animated: true)
