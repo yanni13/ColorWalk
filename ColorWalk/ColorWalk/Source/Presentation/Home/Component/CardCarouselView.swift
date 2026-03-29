@@ -19,6 +19,10 @@ final class CardCarouselView: UIView {
     var swipeRight:  Observable<Void> { swipeRightSubject.asObservable() }
     var cardTapped:  Observable<Void> { cardTappedSubject.asObservable() }
 
+    // MARK: - State
+    private var currentIndex: Int = 0
+    private var totalCount: Int = 0
+
     // MARK: - UI Components
 
     private let backCard2: UIImageView = makeCardImageView(alpha: 0.55)
@@ -103,19 +107,30 @@ final class CardCarouselView: UIView {
 
         switch gesture.state {
         case .changed:
-            frontCard.transform = CGAffineTransform(translationX: translation.x * 0.3, y: 0)
+            frontCard.transform = CGAffineTransform(translationX: translation.x * 0.85, y: 0)
 
         case .ended:
             let velocity = gesture.velocity(in: self)
             let threshold: CGFloat = 80
 
             if translation.x < -threshold || velocity.x < -500 {
-                animateSwipe(direction: .left)
+                if currentIndex < totalCount - 1 {
+                    animateSwipe(direction: .left)
+                } else {
+                    resetCardPosition()
+                }
             } else if translation.x > threshold || velocity.x > 500 {
-                animateSwipe(direction: .right)
+                if currentIndex > 0 {
+                    animateSwipe(direction: .right)
+                } else {
+                    resetCardPosition()
+                }
             } else {
                 resetCardPosition()
             }
+
+        case .cancelled:
+            resetCardPosition()
 
         default:
             break
@@ -156,6 +171,8 @@ final class CardCarouselView: UIView {
     // MARK: - Configure
 
     func configure(cards: [ColorCard], currentIndex: Int) {
+        self.currentIndex = currentIndex
+        self.totalCount = cards.count
         let total = cards.count
 
         let frontCardData = cards[currentIndex]

@@ -48,7 +48,7 @@ final class PaginationView: UIView {
                 : UIColor(hex: "#B0B8C1")
         }
         // layoutIfNeeded()를 애니메이션 블록 안에서 호출해야 크기 변경이 애니메이션됨
-        UIView.animate(withDuration: 0.2, delay: 1.0, options: .curveEaseInOut) {
+        UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut) {
             self.stackView.layoutIfNeeded()
         }
     }

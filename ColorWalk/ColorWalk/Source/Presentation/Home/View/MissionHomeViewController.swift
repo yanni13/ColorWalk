@@ -718,8 +718,8 @@ final class MissionHomeViewController: BaseViewController {
 
     private func advanceIndex(by delta: Int) {
         guard !cards.isEmpty else { return }
-        let next = (currentIndex + delta + cards.count) % cards.count
-        guard next != currentIndex else { return }
+        let next = currentIndex + delta
+        guard next >= 0 && next < cards.count else { return }
         currentIndex = next
         paginationView.setActive(index: currentIndex)
         carouselView.configure(cards: cards, currentIndex: currentIndex)
