@@ -564,7 +564,7 @@ final class MissionHomeViewController: BaseViewController {
 
         changeMissionButton.rx.tap
             .subscribe(onNext: { [weak self] in
-                self?.presentColorPickerSheet()
+                self?.handleColorPickerTap()
             })
             .disposed(by: disposeBag)
 
@@ -684,6 +684,23 @@ final class MissionHomeViewController: BaseViewController {
         present(alert, animated: true)
     }
 
+    private func handleColorPickerTap() {
+        guard !cards.isEmpty else {
+            presentColorPickerSheet()
+            return
+        }
+        let alert = UIAlertController(
+            title: "미션 색상 변경",
+            message: "현재 촬영한 사진이 모두 초기화되며 저장되지 않습니다. 계속하시겠습니까?",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+        alert.addAction(UIAlertAction(title: "확인", style: .destructive) { [weak self] _ in
+            self?.presentColorPickerSheet()
+        })
+        present(alert, animated: true)
+    }
+
     private func advanceIndex(by delta: Int) {
         guard !cards.isEmpty else { return }
         let next = currentIndex + delta
@@ -767,6 +784,8 @@ final class MissionHomeViewController: BaseViewController {
     }
 
     private func applyCustomColor(_ color: UIColor, hex: String, name: String) {
+        ColorCardStore.shared.clearAll()
+
         UIView.animate(withDuration: 0.3) {
             self.colorDotView.backgroundColor = color
             self.progressFill.backgroundColor = color
