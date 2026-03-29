@@ -8,6 +8,7 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import CoreLocation
 
 final class GalleryColorViewController: UIViewController {
 
@@ -222,23 +223,49 @@ final class GalleryColorViewController: UIViewController {
 
     // MARK: - Collect Success
     private func showCollectSuccess(color: UIColor, hex: String, match: Int) {
-        let card = ColorCard(
-            id: UUID().uuidString,
-            imageURL: nil,
-            capturedImage: image,
-            colorName: missionName,
-            hexColor: hex,
-            dotColor: color,
-            locationName: "갤러리",
-            captureDate: Self.currentDateString(),
-            matchPercentage: match,
-            missionCurrent: 0,
-            missionTotal: 9,
-            latitude: latitude,
-            longitude: longitude
-        )
-        ColorCardStore.shared.add(card)
+        fetchAddress(lat: latitude, lon: longitude) { [weak self] address in
+            guard let self else { return }
+            let card = ColorCard(
+                id: UUID().uuidString,
+                imageURL: nil,
+                capturedImage: self.image,
+                colorName: self.missionName,
+                hexColor: hex,
+                dotColor: color,
+                locationName: address,
+                captureDate: Self.currentDateString(),
+                matchPercentage: match,
+                missionCurrent: 0,
+                missionTotal: 9,
+                latitude: self.latitude,
+                longitude: self.longitude
+            )
+            ColorCardStore.shared.add(card)
+            self.showCollectToast(match: match)
+        }
+    }
 
+    private func fetchAddress(lat: Double, lon: Double, completion: @escaping (String) -> Void) {
+        guard lat != 0.0 || lon != 0.0 else {
+            completion("현재 위치")
+            return
+        }
+        let geocoder = CLGeocoder()
+        geocoder.reverseGeocodeLocation(
+            CLLocation(latitude: lat, longitude: lon),
+            preferredLocale: Locale(identifier: "ko_KR")
+        ) { placemarks, _ in
+            if let pm = placemarks?.first {
+                let locality    = pm.locality ?? ""
+                let subLocality = pm.subLocality ?? ""
+                completion(locality.isEmpty ? "현재 위치" : "\(locality) \(subLocality)")
+            } else {
+                completion("현재 위치")
+            }
+        }
+    }
+
+    private func showCollectToast(match: Int) {
         let toast = UIView()
         toast.backgroundColor = UIColor(hex: "#1A1A1A").withAlphaComponent(0.85)
         toast.layer.cornerRadius = 20
@@ -249,11 +276,12 @@ final class GalleryColorViewController: UIViewController {
         label.font = UIFont(name: "Pretendard-SemiBold", size: 14)
         label.textColor = .white
         toast.addSubview(label)
-        label.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 12, left: 20, bottom: 12, right: 20)) }
-
-        toast.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(80)
+        label.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 12, left: 20, bottom: 12, right: 20))
+        }
+        toast.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(80)
         }
         toast.alpha = 0
         toast.transform = CGAffineTransform(translationX: 0, y: 10)

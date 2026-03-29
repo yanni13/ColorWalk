@@ -10,6 +10,8 @@ import RxSwift
 import RxCocoa
 import PhotosUI
 import CoreLocation
+import ImageIO
+import UniformTypeIdentifiers
 
 final class CameraViewController: BaseViewController {
 
@@ -502,21 +504,42 @@ extension CameraViewController: PHPickerViewControllerDelegate {
         guard let provider = results.first?.itemProvider,
               provider.canLoadObject(ofClass: UIImage.self) else { return }
 
-        provider.loadObject(ofClass: UIImage.self) { [weak self] obj, _ in
+        provider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { [weak self] data, _ in
+            guard let self else { return }
+
+            let exifCoordinate = data.flatMap { Self.extractGPSCoordinate(from: $0) }
+
+            guard let image = data.flatMap({ UIImage(data: $0) }) else { return }
             DispatchQueue.main.async {
-                guard let self, let image = obj as? UIImage else { return }
-                let location = self.locationManager.location?.coordinate
+                let coordinate = exifCoordinate ?? self.locationManager.location?.coordinate
                 let galleryVC = GalleryColorViewController(
                     image: image,
                     missionName: self.viewModel.missionName.value,
                     missionColor: self.viewModel.missionColor.value,
                     missionHex:   self.viewModel.detectedHex.value,
-                    latitude: location?.latitude ?? 0.0,
-                    longitude: location?.longitude ?? 0.0
+                    latitude: coordinate?.latitude ?? 0.0,
+                    longitude: coordinate?.longitude ?? 0.0
                 )
                 self.present(galleryVC, animated: true)
             }
         }
+    }
+
+    private static func extractGPSCoordinate(from data: Data) -> CLLocationCoordinate2D? {
+        guard
+            let source = CGImageSourceCreateWithData(data as CFData, nil),
+            let props  = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [String: Any],
+            let gps    = props[kCGImagePropertyGPSDictionary as String] as? [String: Any],
+            let lat    = gps[kCGImagePropertyGPSLatitude as String] as? Double,
+            let lon    = gps[kCGImagePropertyGPSLongitude as String] as? Double
+        else { return nil }
+
+        let latRef = gps[kCGImagePropertyGPSLatitudeRef as String] as? String ?? "N"
+        let lonRef = gps[kCGImagePropertyGPSLongitudeRef as String] as? String ?? "E"
+        return CLLocationCoordinate2D(
+            latitude:  latRef == "S" ? -lat : lat,
+            longitude: lonRef == "W" ? -lon : lon
+        )
     }
 }
 
