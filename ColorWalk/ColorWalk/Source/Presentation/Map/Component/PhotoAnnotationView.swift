@@ -28,19 +28,32 @@ final class PhotoAnnotationView: MKAnnotationView {
 
     private let badgeView: UIView = {
         let v = UIView()
-        v.backgroundColor = UIColor.App.accentBlue
         v.layer.cornerRadius = 10
         v.layer.shadowColor = UIColor.black.cgColor
-        v.layer.shadowOpacity = 0.2
+        v.layer.shadowOpacity = 0.12
         v.layer.shadowRadius = 4
         v.layer.shadowOffset = CGSize(width: 0, height: 2)
         v.isHidden = true
+
+        let blur = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
+        blur.layer.cornerRadius = 10
+        blur.clipsToBounds = true
+        
+        let whiteOverlay = UIView()
+        whiteOverlay.backgroundColor = UIColor.white.withAlphaComponent(0.65)
+        whiteOverlay.layer.cornerRadius = 10
+        whiteOverlay.clipsToBounds = true
+
+        v.addSubview(blur)
+        v.addSubview(whiteOverlay)
+        blur.snp.makeConstraints { $0.edges.equalToSuperview() }
+        whiteOverlay.snp.makeConstraints { $0.edges.equalToSuperview() }
         return v
     }()
 
     private let badgeLabel: UILabel = {
         let l = UILabel()
-        l.textColor = .white
+        l.textColor = UIColor.App.accentBlue
         l.font = UIFont(name: "Inter-Bold", size: 10) ?? .boldSystemFont(ofSize: 10)
         l.textAlignment = .center
         return l
@@ -138,25 +151,38 @@ final class PhotoClusterAnnotationView: MKAnnotationView {
 
     private let badgeView: UIView = {
         let v = UIView()
-        v.backgroundColor = UIColor.App.accentBlue
         v.layer.cornerRadius = 11
         v.layer.shadowColor = UIColor.black.cgColor
-        v.layer.shadowOpacity = 0.18
+        v.layer.shadowOpacity = 0.12
         v.layer.shadowRadius = 6
         v.layer.shadowOffset = CGSize(width: 0, height: 2)
+
+        let blur = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
+        blur.layer.cornerRadius = 11
+        blur.clipsToBounds = true
+        
+        let whiteOverlay = UIView()
+        whiteOverlay.backgroundColor = UIColor.white.withAlphaComponent(0.65)
+        whiteOverlay.layer.cornerRadius = 11
+        whiteOverlay.clipsToBounds = true
+
+        v.addSubview(blur)
+        v.addSubview(whiteOverlay)
+        blur.snp.makeConstraints { $0.edges.equalToSuperview() }
+        whiteOverlay.snp.makeConstraints { $0.edges.equalToSuperview() }
         return v
     }()
 
     private let badgeIcon: UIImageView = {
         let iv = UIImageView(image: UIImage(systemName: "camera.fill"))
-        iv.tintColor = .white
+        iv.tintColor = UIColor.App.accentBlue
         iv.contentMode = .scaleAspectFit
         return iv
     }()
 
     private let countLabel: UILabel = {
         let l = UILabel()
-        l.textColor = .white
+        l.textColor = UIColor.App.accentBlue
         l.font = UIFont(name: "Inter-Bold", size: 11) ?? .boldSystemFont(ofSize: 11)
         l.textAlignment = .center
         return l
