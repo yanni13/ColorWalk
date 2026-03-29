@@ -26,6 +26,26 @@ final class PhotoAnnotationView: MKAnnotationView {
         return iv
     }()
 
+    private let badgeView: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor.App.accentBlue
+        v.layer.cornerRadius = 10
+        v.layer.shadowColor = UIColor.black.cgColor
+        v.layer.shadowOpacity = 0.2
+        v.layer.shadowRadius = 4
+        v.layer.shadowOffset = CGSize(width: 0, height: 2)
+        v.isHidden = true
+        return v
+    }()
+
+    private let badgeLabel: UILabel = {
+        let l = UILabel()
+        l.textColor = .white
+        l.font = UIFont(name: "Inter-Bold", size: 10) ?? .boldSystemFont(ofSize: 10)
+        l.textAlignment = .center
+        return l
+    }()
+
     override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
         clusteringIdentifier = "photo"
@@ -48,6 +68,19 @@ final class PhotoAnnotationView: MKAnnotationView {
         imageView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(2)
         }
+
+        addSubview(badgeView)
+        badgeView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(-6)
+            make.trailing.equalToSuperview().offset(6)
+            make.height.equalTo(20)
+            make.width.greaterThanOrEqualTo(20)
+        }
+
+        badgeView.addSubview(badgeLabel)
+        badgeLabel.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
+        }
     }
 
     override var annotation: MKAnnotation? {
@@ -62,6 +95,10 @@ final class PhotoAnnotationView: MKAnnotationView {
 
         containerView.backgroundColor = targetColor
         imageView.backgroundColor = capturedColor
+
+        let count = ann.photos.count
+        badgeView.isHidden = count <= 1
+        badgeLabel.text = "\(count)"
 
         guard !photo.imagePath.isEmpty else { return }
 

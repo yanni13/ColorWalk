@@ -19,6 +19,7 @@
 		D82CC62A2F74336000211DB3 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D82CC6292F74336000211DB3 /* RealmSwift */; };
 		D82CC62B2F74339300211DB3 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D82CC6292F74336000211DB3 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D85CE9D22F74C2B6002DB279 /* CLAUDE.md in Resources */ = {isa = PBXBuildFile; fileRef = D85CE9D12F74C2B6002DB279 /* CLAUDE.md */; };
+		D89DEDAE2F796E2100DCC565 /* GEMINI.md in Resources */ = {isa = PBXBuildFile; fileRef = D89DEDAD2F796E2100DCC565 /* GEMINI.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +65,7 @@
 		D82CC51B2F73D0E700211DB3 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		D82CC51D2F73D0E800211DB3 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		D85CE9D12F74C2B6002DB279 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
+		D89DEDAD2F796E2100DCC565 /* GEMINI.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = GEMINI.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -130,6 +132,7 @@
 		D82CC0672F710D1B00211DB3 = {
 			isa = PBXGroup;
 			children = (
+				D89DEDAD2F796E2100DCC565 /* GEMINI.md */,
 				D82CC09D2F71136D00211DB3 /* AtomicDesign.md */,
 				D85CE9D12F74C2B6002DB279 /* CLAUDE.md */,
 				D82CC0882F710D6100211DB3 /* .gitignore */,
@@ -263,6 +266,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D82CC0892F710D6100211DB3 /* .gitignore in Resources */,
+				D89DEDAE2F796E2100DCC565 /* GEMINI.md in Resources */,
 				D85CE9D22F74C2B6002DB279 /* CLAUDE.md in Resources */,
 				D82CC09E2F71136D00211DB3 /* AtomicDesign.md in Resources */,
 			);

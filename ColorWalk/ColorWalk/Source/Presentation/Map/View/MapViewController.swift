@@ -150,22 +150,11 @@ extension MapViewController: MKMapViewDelegate {
         let photos: [Photo]
 
         if let cluster = view.annotation as? MKClusterAnnotation {
-            // 클러스터인 경우 포함된 모든 사진 수집
             photos = cluster.memberAnnotations
                 .compactMap { $0 as? PhotoAnnotation }
-                .map { $0.photo }
+                .flatMap { $0.photos }
         } else if let single = view.annotation as? PhotoAnnotation {
-            // 개별 마커인 경우, 해당 좌표와 아주 가까운(사실상 겹쳐 있는) 모든 어노테이션 탐색
-            let coordinate = single.coordinate
-            photos = mapView.annotations
-                .compactMap { $0 as? PhotoAnnotation }
-                .filter {
-                    let latDiff = abs($0.coordinate.latitude - coordinate.latitude)
-                    let lonDiff = abs($0.coordinate.longitude - coordinate.longitude)
-                    // 약 1미터 이내의 아주 미세한 차이만 허용 (사실상 동일 위치)
-                    return latDiff < 0.00001 && lonDiff < 0.00001
-                }
-                .map { $0.photo }
+            photos = single.photos
         } else {
             return
         }

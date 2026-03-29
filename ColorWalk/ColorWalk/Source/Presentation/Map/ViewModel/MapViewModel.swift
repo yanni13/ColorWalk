@@ -39,9 +39,21 @@ final class MapViewModel: ViewModelType {
                     .sorted { $0.createdAt > $1.createdAt }
                     .filter { $0.latitude != 0 || $0.longitude != 0 }
 
-                return realmPhotos.map { photo in
-                    let targetHex = RealmManager.shared.findMissionColor(for: photo)
-                    return PhotoAnnotation(photo: photo, targetHex: targetHex)
+                let groups = realmPhotos.reduce(into: [[Photo]]()) { groups, photo in
+                    if let idx = groups.firstIndex(where: { group in
+                        guard let first = group.first else { return false }
+                        return abs(first.latitude - photo.latitude) < 0.00001 &&
+                               abs(first.longitude - photo.longitude) < 0.00001
+                    }) {
+                        groups[idx].append(photo)
+                    } else {
+                        groups.append([photo])
+                    }
+                }
+                return groups.compactMap { photos in
+                    guard let first = photos.first else { return nil }
+                    let targetHex = RealmManager.shared.findMissionColor(for: first)
+                    return PhotoAnnotation(photos: photos, targetHex: targetHex)
                 }
             }
             .asDriver(onErrorJustReturn: [])

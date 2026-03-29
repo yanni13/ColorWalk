@@ -1,8 +1,10 @@
 import MapKit
 
 final class PhotoAnnotation: NSObject, MKAnnotation {
-    let photo: Photo
+    let photos: [Photo]
     let targetHex: String?
+
+    var photo: Photo { photos[0] }
 
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: photo.latitude, longitude: photo.longitude)
@@ -10,8 +12,8 @@ final class PhotoAnnotation: NSObject, MKAnnotation {
 
     var title: String? { photo.capturedHex }
 
-    init(photo: Photo, targetHex: String? = nil) {
-        self.photo = photo
+    init(photos: [Photo], targetHex: String? = nil) {
+        self.photos = photos
         self.targetHex = targetHex
     }
 }
