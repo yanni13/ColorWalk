@@ -76,18 +76,10 @@ struct ColorWalkWidgetLiveActivity: Widget {
                     .padding(.leading, 4)
 
             } compactTrailing: {
-                if let timerEnd = context.state.timerEnd {
-                    Text(timerInterval: Date()...timerEnd, countsDown: true, showsHours: false)
-                        .font(.system(size: 11, weight: .semibold, design: .monospaced))
-                        .foregroundColor(.white)
-                        .monospacedDigit()
-                        .padding(.trailing, 4)
-                } else {
-                    Text("\(context.state.matchPercent)%")
-                        .font(.system(size: 11, weight: .semibold, design: .monospaced))
-                        .foregroundColor(.white)
-                        .padding(.trailing, 4)
-                }
+                Text("\(context.state.matchPercent)%")
+                    .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                    .foregroundColor(.white)
+                    .padding(.trailing, 4)
 
             } minimal: {
                 Circle()

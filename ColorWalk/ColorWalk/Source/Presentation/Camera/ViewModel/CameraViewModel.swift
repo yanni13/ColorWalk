@@ -43,6 +43,19 @@ final class CameraViewModel: NSObject {
     private let ciContext = CIContext(options: [.useSoftwareRenderer: false])
     private let disposeBag = DisposeBag()
 
+    // MARK: - Color Matching
+    private let areaAvgFilter: CIFilter? = CIFilter(name: "CIAreaAverage")
+    private var frameCount = 0
+    private var lastMatchPercent = 0
+    private let unitRect = CGRect(x: 0, y: 0, width: 1, height: 1)
+    private var missionUIColor: UIColor = ColorMissionStore.shared.mission.value.color
+
+    private enum Constants {
+        static let deltaEFrameInterval: Int = 6
+        static let maxHueDegrees: CGFloat  = 60.0
+        static let maxSatDiff: CGFloat     = 0.7
+    }
+
     override init() {
         super.init()
         
@@ -50,10 +63,16 @@ final class CameraViewModel: NSObject {
             .map { $0.name }
             .bind(to: missionName)
             .disposed(by: disposeBag)
-            
+
         ColorMissionStore.shared.mission
             .map { $0.color }
             .bind(to: missionColor)
+            .disposed(by: disposeBag)
+
+        ColorMissionStore.shared.mission
+            .subscribe(onNext: { [weak self] mission in
+                self?.missionUIColor = mission.color
+            })
             .disposed(by: disposeBag)
     }
 
@@ -78,6 +97,7 @@ final class CameraViewModel: NSObject {
             self.videoOutput.videoSettings = [
                 kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA
             ]
+            self.videoOutput.alwaysDiscardsLateVideoFrames = true
             self.videoOutput.setSampleBufferDelegate(self, queue: self.renderQueue)
             if self.session.canAddOutput(self.videoOutput) {
                 self.session.addOutput(self.videoOutput)
@@ -133,25 +153,24 @@ final class CameraViewModel: NSObject {
 
     private func detectColor(from image: CIImage) {
         let ext = image.extent
-        let rect = CGRect(x: ext.midX - 1, y: ext.midY - 1, width: 2, height: 2).intersection(ext)
-        guard !rect.isEmpty,
-              let avg = CIFilter(name: "CIAreaAverage", parameters: [
-                  kCIInputImageKey: image.cropped(to: rect),
-                  "inputExtent": CIVector(cgRect: rect)
-              ])?.outputImage
-        else { return }
+        let sampleRect = CGRect(x: ext.midX - 1, y: ext.midY - 1, width: 2, height: 2).intersection(ext)
+        guard !sampleRect.isEmpty else { return }
+
+        areaAvgFilter?.setValue(image.cropped(to: sampleRect), forKey: kCIInputImageKey)
+        areaAvgFilter?.setValue(CIVector(cgRect: sampleRect), forKey: "inputExtent")
+        guard let avgImage = areaAvgFilter?.outputImage else { return }
 
         var px = [UInt8](repeating: 0, count: 4)
-        ciContext.render(avg, toBitmap: &px, rowBytes: 4,
-                         bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+        ciContext.render(avgImage, toBitmap: &px, rowBytes: 4,
+                         bounds: unitRect,
                          format: .RGBA8, colorSpace: CGColorSpaceCreateDeviceRGB())
 
-        let r = CGFloat(px[0]) / 255
-        let g = CGFloat(px[1]) / 255
-        let b = CGFloat(px[2]) / 255
-        let color = UIColor(red: r, green: g, blue: b, alpha: 1)
+        let color = UIColor(red: CGFloat(px[0]) / 255,
+                            green: CGFloat(px[1]) / 255,
+                            blue: CGFloat(px[2]) / 255,
+                            alpha: 1)
         let hex   = String(format: "#%02X%02X%02X", px[0], px[1], px[2])
-        let match = colorMatch(r: r, g: g, b: b)
+        let match = computeHSBMatch(detected: color)
 
         DispatchQueue.main.async { [weak self] in
             self?.detectedColor.accept(color)
@@ -160,11 +179,26 @@ final class CameraViewModel: NSObject {
         }
     }
 
-    private func colorMatch(r: CGFloat, g: CGFloat, b: CGFloat) -> Int {
-        var mr: CGFloat = 0, mg: CGFloat = 0, mb: CGFloat = 0, a: CGFloat = 0
-        missionColor.value.getRed(&mr, green: &mg, blue: &mb, alpha: &a)
-        let dist = sqrt(pow(r - mr, 2) + pow(g - mg, 2) + pow(b - mb, 2))
-        return max(0, min(100, Int((1 - dist / sqrt(3)) * 100)))
+    // Brightness를 완전히 제외하고 Hue·Saturation만 비교 → 조명 무관
+    private func computeHSBMatch(detected: UIColor) -> Int {
+        var dH: CGFloat = 0, dS: CGFloat = 0, dB: CGFloat = 0
+        var mH: CGFloat = 0, mS: CGFloat = 0, mB: CGFloat = 0
+
+        guard detected.getHue(&dH, saturation: &dS, brightness: &dB, alpha: nil),
+              missionUIColor.getHue(&mH, saturation: &mS, brightness: &mB, alpha: nil)
+        else { return lastMatchPercent }
+
+        // 원형 색상환 거리 (0.0 ~ 0.5) → 도 단위 변환
+        let rawDiff = abs(dH - mH)
+        let hueDiff = min(rawDiff, 1.0 - rawDiff) * 360.0
+        let satDiff = abs(dS - mS)
+
+        let hueScore = max(0.0, 1.0 - hueDiff / Constants.maxHueDegrees)
+        let satScore = max(0.0, 1.0 - satDiff / Constants.maxSatDiff)
+
+        let match = Int(round((hueScore * 0.75 + satScore * 0.25) * 100))
+        lastMatchPercent = match
+        return match
     }
 
     // MARK: - Filter Application
@@ -220,17 +254,22 @@ extension CameraViewModel: AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput,
                        didOutput sampleBuffer: CMSampleBuffer,
                        from connection: AVCaptureConnection) {
-        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-        let original = CIImage(cvPixelBuffer: pixelBuffer)
+        autoreleasepool {
+            guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+            let original = CIImage(cvPixelBuffer: pixelBuffer)
 
-        detectColor(from: original)
+            frameCount += 1
+            if frameCount % Constants.deltaEFrameInterval == 0 {
+                detectColor(from: original)
+            }
 
-        let filtered  = apply(currentFilter.value, to: original)
-        guard let cg  = ciContext.createCGImage(filtered, from: filtered.extent) else { return }
-        let uiImage   = UIImage(cgImage: cg)
+            let filtered = apply(currentFilter.value, to: original)
+            guard let cg = ciContext.createCGImage(filtered, from: filtered.extent) else { return }
+            let uiImage  = UIImage(cgImage: cg)
 
-        DispatchQueue.main.async { [weak self] in
-            self?.previewImage.accept(uiImage)
+            DispatchQueue.main.async { [weak self] in
+                self?.previewImage.accept(uiImage)
+            }
         }
     }
 }
