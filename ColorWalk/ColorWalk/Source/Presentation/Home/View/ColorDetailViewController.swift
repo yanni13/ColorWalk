@@ -8,6 +8,7 @@ import SnapKit
 import Kingfisher
 import RxSwift
 import RxCocoa
+import LinkPresentation
 
 final class ColorDetailViewController: BaseViewController {
 
@@ -229,16 +230,28 @@ final class ColorDetailViewController: BaseViewController {
     // MARK: - Share
 
     private func presentShareSheet(for card: ColorCard) {
-        var items: [Any] = ["\(card.colorName)  \(card.hexColor)\n\(card.captureDate) · \(card.locationName)"]
+        // 1. UI 컨트롤 일시 숨김 (네비게이션 바 영역 및 아이콘 제외)
+        let controls: [UIView] = [backButton, shareButton, pageCounterView, swipeChevron]
+        controls.forEach { $0.alpha = 0 }
 
-        if let image = card.capturedImage ?? backgroundImageView.image {
-            items.append(image)
+        // 2. 렌더링할 임시 뷰 생성
+        let renderer = UIGraphicsImageRenderer(bounds: view.bounds)
+        let image = renderer.image { _ in
+            view.drawHierarchy(in: view.bounds, afterScreenUpdates: true)
         }
 
-        let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        // 3. UI 컨트롤 복구
+        controls.forEach { $0.alpha = 1 }
+
+        // 4. 공유 항목 및 메타데이터 구성 (Thumbnail 표시 포함)
+        let shareText = "친구가 오늘의 컬러를 공유하고 싶어해요!"
+        let itemSource = ColorShareItemSource(image: image, text: shareText, title: card.colorName)
+
+        let activityViewController = UIActivityViewController(activityItems: [itemSource, shareText], applicationActivities: nil)
+
         if let popover = activityViewController.popoverPresentationController {
-            popover.sourceView = view
-            popover.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.maxY, width: 0, height: 0)
+            popover.sourceView = self.view
+            popover.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.maxY, width: 0, height: 0)
             popover.permittedArrowDirections = []
         }
         present(activityViewController, animated: true)
@@ -261,5 +274,36 @@ final class ColorDetailViewController: BaseViewController {
 
         hexCodeLabel.text = card.hexColor
         metaLabel.text = "\(card.captureDate) · \(card.locationName)"
+    }
+}
+
+// MARK: - UIActivityItemSource
+
+final class ColorShareItemSource: NSObject, UIActivityItemSource {
+    let image: UIImage
+    let text: String
+    let title: String
+
+    init(image: UIImage, text: String, title: String) {
+        self.image = image
+        self.text = text
+        self.title = title
+        super.init()
+    }
+
+    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
+        return image
+    }
+
+    func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
+        return image
+    }
+
+    func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
+        let metadata = LPLinkMetadata()
+        metadata.title = title
+        metadata.imageProvider = NSItemProvider(object: image)
+        metadata.iconProvider = NSItemProvider(object: image)
+        return metadata
     }
 }
