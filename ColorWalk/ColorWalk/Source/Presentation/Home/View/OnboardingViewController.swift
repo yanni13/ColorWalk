@@ -19,7 +19,7 @@ final class OnboardingViewController: BaseViewController {
 
     private let titleLabel: UILabel = {
         let l = UILabel()
-        l.text = "담아"
+        l.text = "담아,"
         l.font = UIFont(name: "Pretendard-Bold", size: 32) ?? .boldSystemFont(ofSize: 32)
         l.textColor = UIColor(hex: "#191F28")
         return l
@@ -27,7 +27,7 @@ final class OnboardingViewController: BaseViewController {
 
     private let subtitleLabel: UILabel = {
         let l = UILabel()
-        l.text = "당신만의 색으로 일상을 가득 채워보세요"
+        l.text = "당신의 시선이 머문 자리를, 당신만의 색으로 가득 채워보세요"
         l.font = UIFont(name: "Pretendard-Regular", size: 13) ?? .systemFont(ofSize: 13)
         l.textColor = UIColor(hex: "#6B7684")
         return l

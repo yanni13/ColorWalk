@@ -26,7 +26,7 @@ final class MissionHomeViewController: BaseViewController {
 
     private let titleLabel: UILabel = {
         let l = UILabel()
-        l.text = "담아"
+        l.text = "담아,"
         l.font = UIFont(name: "Pretendard-Bold", size: 28)
         l.textColor = UIColor(hex: "#191F28")
         return l
@@ -603,7 +603,7 @@ final class MissionHomeViewController: BaseViewController {
                 self.paginationView.isHidden = isEmpty
                 self.actionRow.isHidden = isEmpty
 
-                self.progressCountLabel.text = "\(newCards.count) / 9 완료"
+                self.progressCountLabel.text = "현재 9칸 중 \(newCards.count)칸을 담았어요"
                 self.updateProgressBar(count: newCards.count)
 
                 guard !isEmpty else { return }
@@ -636,7 +636,7 @@ final class MissionHomeViewController: BaseViewController {
     private func handleSaveResult(_ result: GallerySaveResult) {
         switch result {
         case .success:
-            showSaveAlert(title: "저장 완료", message: "사진이 갤러리에 저장되었습니다.", showSettings: false)
+            showSaveAlert(title: "저장 완료!", message: "사진이 갤러리에 저장되었습니다.", showSettings: false)
         case .failure:
             showSaveAlert(title: "저장 실패", message: "사진 저장 중 오류가 발생했습니다.", showSettings: false)
         case .permissionDenied:
@@ -665,7 +665,7 @@ final class MissionHomeViewController: BaseViewController {
         }
         let alert = UIAlertController(
             title: "미션 색상 변경",
-            message: "현재 촬영한 사진이 모두 초기화되며 저장되지 않습니다. 계속하시겠습니까?",
+            message: "⚠️ 미션 색상 변경: 현재 촬영한 사진이 모두 초기화되며 저장되지 않습니다. 계속하시겠습니까?",
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "취소", style: .cancel))
@@ -683,7 +683,7 @@ final class MissionHomeViewController: BaseViewController {
         }
         let alert = UIAlertController(
             title: "미션 색상 변경",
-            message: "현재 촬영한 사진이 모두 초기화되며 저장되지 않습니다. 계속하시겠습니까?",
+            message: "⚠️ 미션 색상 변경: 현재 촬영한 사진이 모두 초기화되며 저장되지 않습니다. 계속하시겠습니까?",
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "취소", style: .cancel))

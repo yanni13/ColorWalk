@@ -145,7 +145,7 @@ final class MissionHomeViewModel: ViewModelType {
                     name: base.name,
                     hexColor: base.hexColor,
                     color: base.color,
-                    weatherInfo: "오늘의 날씨: \(weatherInfo)",
+                    weatherInfo: "오늘의 날씨는 \(weatherInfo)이에요",
                     progress: base.progress
                 )
             }
@@ -169,7 +169,7 @@ final class MissionHomeViewModel: ViewModelType {
                         name: custom.name,
                         hexColor: custom.hexColor,
                         color: custom.color,
-                        weatherInfo: "오늘의 날씨: \(weatherInfo)",
+                        weatherInfo: "오늘의 날씨는 \(weatherInfo)이에요",
                         progress: custom.progress
                     )
                 }

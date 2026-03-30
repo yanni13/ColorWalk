@@ -43,7 +43,7 @@ final class ColorActivityManager {
                 pushType: nil
             )
         } catch {
-            print("[Dynamic Island] 시작 실패: \(error.localizedDescription)")
+            print("[Dynamic Island] 활성화 실패: \(error.localizedDescription)")
         }
     }
 
@@ -77,7 +77,7 @@ final class ColorActivityManager {
                 pushType: nil
             )
         } catch {
-            print("[Dynamic Island] 타임드 세션 시작 실패: \(error.localizedDescription)")
+            print("[Dynamic Island] 시간 제한 미션 시작 실패: \(error.localizedDescription)")
             return
         }
 

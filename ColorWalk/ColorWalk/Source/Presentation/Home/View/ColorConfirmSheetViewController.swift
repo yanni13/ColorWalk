@@ -212,7 +212,7 @@ final class ColorConfirmSheetViewController: UIViewController {
 
     private let tipLabel: UILabel = {
         let l = UILabel()
-        l.text = "선택한 색상으로 오늘의 미션이 변경됩니다"
+        l.text = "선택한 색상으로 오늘의 미션이 변경됩니다."
         l.font = UIFont(name: "Pretendard-Medium", size: 12)
         l.textColor = UIColor(hex: "#9B6B5A")
         l.numberOfLines = 0

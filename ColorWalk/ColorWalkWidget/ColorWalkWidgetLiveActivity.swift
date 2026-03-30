@@ -24,7 +24,7 @@ struct ColorWalkWidgetLiveActivity: Widget {
                             .frame(width: 32, height: 32)
                             .shadow(color: missionColor(context.attributes).opacity(0.6), radius: 6)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(context.attributes.missionHex)
+                            Text("\(context.attributes.missionHex) 포착 중")
                                 .font(.system(size: 13, weight: .bold, design: .monospaced))
                                 .foregroundColor(.white)
                             Text("\(context.state.matchPercent)% 일치")
@@ -51,7 +51,7 @@ struct ColorWalkWidgetLiveActivity: Widget {
                             Text("미션")
                                 .font(.system(size: 9))
                                 .foregroundColor(.white.opacity(0.45))
-                            Text(context.attributes.missionName)
+                            Text(": \(context.attributes.missionName)")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundColor(.white)
                                 .lineLimit(1)
@@ -70,9 +70,7 @@ struct ColorWalkWidgetLiveActivity: Widget {
                 }
 
             } compactLeading: {
-                Circle()
-                    .fill(missionColor(context.attributes))
-                    .frame(width: 14, height: 14)
+                Text("🎨")
                     .padding(.leading, 4)
 
             } compactTrailing: {
@@ -82,8 +80,7 @@ struct ColorWalkWidgetLiveActivity: Widget {
                     .padding(.trailing, 4)
 
             } minimal: {
-                Circle()
-                    .fill(missionColor(context.attributes))
+                Text("🎨")
             }
             .contentMargins(.all, 0, for: .minimal)
         }
@@ -105,13 +102,13 @@ private struct LockScreenBannerView: View {
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
             VStack(alignment: .leading, spacing: 6) {
-                Text("⚠️ 지금 색상을 찾아라! ⚠️")
+                Text("지금 주변의 색을 찾아보세요! 🔍")
                     .font(.system(size: 17, weight: .bold))
                     .foregroundColor(.white)
 
                 if let timerEnd = state.timerEnd {
                     HStack(spacing: 6) {
-                        Text(attrs.missionHex)
+                        Text("목표 색상 \(attrs.missionHex)")
                             .font(.system(size: 13, weight: .semibold, design: .monospaced))
                             .foregroundColor(color)
                         Text("·")
@@ -125,7 +122,7 @@ private struct LockScreenBannerView: View {
                             .foregroundColor(.white.opacity(0.55))
                     }
                 } else {
-                    Text("목표 \(attrs.missionHex)  ·  \(state.matchPercent)% 일치")
+                    Text("목표 \(attrs.missionHex)와 \(state.matchPercent)% 일치하는 중")
                         .font(.system(size: 13))
                         .foregroundColor(.white.opacity(0.65))
                 }
@@ -160,7 +157,7 @@ private struct MatchProgressBar: View {
     var body: some View {
         VStack(spacing: 5) {
             HStack {
-                Text("목표 \(missionHex)")
+                Text("목표 색상 \(missionHex)까지")
                     .font(.system(size: 10))
                     .foregroundColor(.white.opacity(0.45))
                 Spacer()
