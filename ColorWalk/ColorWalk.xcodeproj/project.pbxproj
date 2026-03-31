@@ -318,6 +318,7 @@
 				DEVELOPMENT_TEAM = W5Z68U98HJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ColorWalk/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "담아,";
 				INFOPLIST_KEY_NSCameraUsageDescription = "주변의 아름다운 색을 카메라로 촬영하기 위해 카메라 접근 권한이 필요합니다.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "사용자의 위치를 기반으로 사진 정보를 제공하기 위해 필요합니다.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "갤러리에서 사진을 가져와 색상을 수집하기 위해 사진 접근 권한이 필요합니다.";
@@ -359,6 +360,7 @@
 				DEVELOPMENT_TEAM = W5Z68U98HJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ColorWalk/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "담아,";
 				INFOPLIST_KEY_NSCameraUsageDescription = "주변의 아름다운 색을 카메라로 촬영하기 위해 카메라 접근 권한이 필요합니다.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "사용자의 위치를 기반으로 사진 정보를 제공하기 위해 필요합니다.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "갤러리에서 사진을 가져와 색상을 수집하기 위해 사진 접근 권한이 필요합니다.";

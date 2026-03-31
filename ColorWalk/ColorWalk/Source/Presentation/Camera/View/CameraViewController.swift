@@ -428,6 +428,7 @@ final class CameraViewController: BaseViewController {
         // Preview frames
         viewModel.previewImage
             .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] img in self?.previewView.image = img })
             .disposed(by: disposeBag)
 
@@ -435,11 +436,10 @@ final class CameraViewController: BaseViewController {
         Observable.combineLatest(
             viewModel.detectedColor,
             viewModel.matchPercent,
-            viewModel.missionColor,
-            ColorCardStore.shared.cards
+            viewModel.missionColor
         )
         .throttle(.milliseconds(100), scheduler: MainScheduler.instance)
-        .subscribe(onNext: { [weak self] detectedColor, match, missionColor, cards in
+        .subscribe(onNext: { [weak self] detectedColor, match, missionColor in
             guard let self else { return }
             
             // 중앙 알약: 고정 미션 색상(점), 고정 미션 헥스(텍스트), 실시간 일치율
@@ -465,6 +465,7 @@ final class CameraViewController: BaseViewController {
 
         // Mission label
         viewModel.missionName
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] name in
                 self?.missionLabel.text = "오늘의 미션: \(name)를 찾아보세요"
             })
