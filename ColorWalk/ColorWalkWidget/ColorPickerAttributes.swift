@@ -20,5 +20,6 @@ struct ColorPickerAttributes: ActivityAttributes {
     struct ContentState: Codable, Hashable {
         var matchPercent: Int
         var timerEnd: Date?
+        var isExpired: Bool
     }
 }

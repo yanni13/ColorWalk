@@ -34,7 +34,7 @@ final class ColorActivityManager {
             green:       Double(g),
             blue:        Double(b)
         )
-        let state = ColorPickerAttributes.ContentState(matchPercent: match, timerEnd: nil)
+        let state = ColorPickerAttributes.ContentState(matchPercent: match, timerEnd: nil, isExpired: false)
 
         do {
             currentActivity = try Activity.request(
@@ -68,7 +68,7 @@ final class ColorActivityManager {
             green:       Double(g),
             blue:        Double(b)
         )
-        let state = ColorPickerAttributes.ContentState(matchPercent: 0, timerEnd: timerEnd)
+        let state = ColorPickerAttributes.ContentState(matchPercent: 0, timerEnd: timerEnd, isExpired: false)
 
         do {
             currentActivity = try Activity.request(
@@ -88,7 +88,10 @@ final class ColorActivityManager {
 
     func update(match: Int) {
         guard let activity = currentActivity else { return }
-        let state = ColorPickerAttributes.ContentState(matchPercent: match, timerEnd: sessionTimerEnd)
+        
+        let isExpired = sessionTimerEnd != nil && Date() >= sessionTimerEnd!
+        let state = ColorPickerAttributes.ContentState(matchPercent: match, timerEnd: sessionTimerEnd, isExpired: isExpired)
+        
         Task { await activity.update(.init(state: state, staleDate: sessionTimerEnd)) }
     }
 
@@ -107,7 +110,18 @@ final class ColorActivityManager {
 
     private func scheduleExpiry(after duration: TimeInterval) {
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
-            self?.stop()
+            guard let self = self, let activity = self.currentActivity else { return }
+            
+            // 타이머 종료 시 isExpired를 true로 업데이트 (세션은 유지하여 잠금화면 문구 변경 유도)
+            let state = ColorPickerAttributes.ContentState(
+                matchPercent: 0, // 초기값 또는 현재 값 유지 가능
+                timerEnd: self.sessionTimerEnd,
+                isExpired: true
+            )
+            
+            Task {
+                await activity.update(.init(state: state, staleDate: nil))
+            }
         }
     }
 }
