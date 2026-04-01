@@ -4,12 +4,14 @@
 //
 
 import UIKit
+import CoreLocation
 
 final class AppCoordinator {
 
     // MARK: - Properties
 
     private let window: UIWindow
+    private let locationManager = CLLocationManager()
 
     private enum Keys {
         static let hasLaunchedBefore = "hasLaunchedBefore"
@@ -45,6 +47,9 @@ final class AppCoordinator {
     }
 
     private func showTabBar() {
+        if locationManager.authorizationStatus == .notDetermined {
+            locationManager.requestWhenInUseAuthorization()
+        }
         window.rootViewController = MainTabBarController()
         window.makeKeyAndVisible()
     }

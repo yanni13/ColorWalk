@@ -2,7 +2,6 @@
 //  HomeViewController.swift
 //  ColorWalk
 //
-
 import UIKit
 import SnapKit
 import RxSwift
@@ -15,7 +14,13 @@ final class OnboardingViewController: BaseViewController {
     private let viewModel: OnboardingViewModel
     var onOnboardingComplete: (() -> Void)?
 
-    // MARK: - UI: Header
+    // MARK: - Lifecycle
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+
+    // MARK: - Setup
 
     private let titleLabel: UILabel = {
         let l = UILabel()

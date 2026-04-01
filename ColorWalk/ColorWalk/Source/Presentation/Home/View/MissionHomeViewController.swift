@@ -342,9 +342,11 @@ final class MissionHomeViewController: BaseViewController {
     private func setupLocationManager() {
         locationManager.delegate = self
         let status = locationManager.authorizationStatus
+        
         if status == .authorizedWhenInUse || status == .authorizedAlways {
             locationManager.requestLocation()
         }
+        
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(appDidEnterForeground),
