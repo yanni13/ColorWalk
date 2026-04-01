@@ -1,6 +1,7 @@
 import Foundation
 import RxSwift
 import RxCocoa
+import RealmSwift
 
 enum MissionState {
     case noMission
@@ -83,7 +84,7 @@ final class CollectionViewModel: ViewModelType {
                 let mission = RealmManager.shared.fetchDailyMission(
                     for: DateManager.storedString(from: date)
                 )
-                return (date, mission)
+                return (date, mission?.freeze())
             }
             .share(replay: 1)
     }
@@ -131,23 +132,30 @@ final class CollectionViewModel: ViewModelType {
         missionData
             .map { (_, mission) -> MissionState in
                 guard let mission else { return .noMission }
-                let sortedSlots = Array(mission.slots)
-                    .map { slot -> SlotDisplayInfo in
+
+                let capturedSlots = Array(mission.slots)
+                    .sorted { $0.index < $1.index }
+                    .filter { $0.linkedPhoto != nil }
+                    .enumerated()
+                    .map { index, slot -> SlotDisplayInfo in
                         SlotDisplayInfo(
-                            index: slot.index,
+                            index: index,
                             imagePath: slot.linkedPhoto?.imagePath,
                             capturedHex: slot.linkedPhoto?.capturedHex,
-                            isCaptured: slot.linkedPhoto != nil
+                            isCaptured: true
                         )
                     }
-                    .sorted { $0.index < $1.index }
 
-                let capturedCount = sortedSlots.filter { $0.isCaptured }.count
-                let total = sortedSlots.count
+                let emptySlots = (capturedSlots.count..<9).map { index -> SlotDisplayInfo in
+                    SlotDisplayInfo(index: index, imagePath: nil, capturedHex: nil, isCaptured: false)
+                }
 
-                return (capturedCount == total && total > 0)
-                    ? .completed(slots: sortedSlots)
-                    : .inProgress(capturedCount: capturedCount, slots: sortedSlots)
+                let displaySlots = capturedSlots + emptySlots
+                let capturedCount = capturedSlots.count
+
+                return capturedCount == 9
+                    ? .completed(slots: displaySlots)
+                    : .inProgress(capturedCount: capturedCount, slots: displaySlots)
             }
             .asDriver(onErrorJustReturn: .noMission)
     }

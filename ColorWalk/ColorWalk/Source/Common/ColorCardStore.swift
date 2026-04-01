@@ -82,8 +82,7 @@ final class ColorCardStore {
     }
 
     func clearAll() {
-        repository.deleteAllPhotos()
-        RealmManager.shared.resetTodayMissionState()
+        RealmManager.shared.deleteAllPhotosAndResetMission()
         cards.accept([])
     }
 

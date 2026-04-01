@@ -115,12 +115,11 @@ final class RealmManager {
     }
 
     func deletePhoto(_ photo: Photo) {
-        let fileName = photo.imagePath
         write { realm in
+            guard !photo.isInvalidated else { return }
+            let fileName = photo.imagePath
             ImageFileManager.shared.deleteImage(fileName: fileName)
-            if !photo.isInvalidated {
-                realm.delete(photo)
-            }
+            realm.delete(photo)
         }
     }
 
@@ -129,6 +128,23 @@ final class RealmManager {
             let photos = realm.objects(Photo.self)
             photos.forEach { ImageFileManager.shared.deleteImage(fileName: $0.imagePath) }
             realm.delete(photos)
+        }
+    }
+
+    func deleteAllPhotosAndResetMission() {
+        let today = DateManager.storedString(from: Date())
+        write { realm in
+            let photos = realm.objects(Photo.self)
+            photos.forEach { ImageFileManager.shared.deleteImage(fileName: $0.imagePath) }
+            realm.delete(photos)
+
+            guard let mission = realm.object(ofType: DailyMission.self, forPrimaryKey: today) else { return }
+            mission.isPaletteCompleted = false
+            mission.recommendedHex = ""
+            mission.slots.forEach { slot in
+                slot.isCaptured = false
+                slot.linkedPhoto = nil
+            }
         }
     }
 
