@@ -119,6 +119,8 @@ final class MissionDetailSheetViewController: UIViewController {
         return l
     }()
 
+    private let weatherAttributionView = WeatherAttributionView()
+
     private let closeButton: UIButton = {
         let b = UIButton(type: .system)
         b.setTitle("확인", for: .normal)
@@ -176,6 +178,7 @@ final class MissionDetailSheetViewController: UIViewController {
         weatherInfoContainer.addSubview(weatherIconView)
         weatherInfoContainer.addSubview(weatherStatusLabel)
         weatherInfoContainer.addSubview(weatherDetailLabel)
+        sheetView.addSubview(weatherAttributionView)
         
         sheetView.addSubview(closeButton)
         
@@ -248,6 +251,11 @@ final class MissionDetailSheetViewController: UIViewController {
         weatherDetailLabel.snp.makeConstraints {
             $0.leading.equalTo(weatherStatusLabel)
             $0.top.equalTo(weatherStatusLabel.snp.bottom).offset(4)
+        }
+        
+        weatherAttributionView.snp.makeConstraints {
+            $0.top.equalTo(weatherInfoContainer.snp.bottom).offset(8)
+            $0.trailing.equalTo(weatherInfoContainer)
         }
         
         closeButton.snp.makeConstraints {

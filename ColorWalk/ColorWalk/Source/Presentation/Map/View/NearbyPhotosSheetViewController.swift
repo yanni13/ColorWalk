@@ -85,6 +85,7 @@ final class NearbyPhotosSheetViewController: UIViewController {
     private let paginationDotsView = PaginationDotsView()
     private let colorInfoCard = InfoCardView()
     private let weatherInfoCard = InfoCardView()
+    private let weatherAttributionView = WeatherAttributionView()
 
     // MARK: - Init
 
@@ -126,6 +127,7 @@ final class NearbyPhotosSheetViewController: UIViewController {
         view.addSubview(paginationDotsView)
         view.addSubview(colorInfoCard)
         view.addSubview(weatherInfoCard)
+        view.addSubview(weatherAttributionView)
 
         colorInfoCard.titleLabel.text = "색상 정보"
 
@@ -134,6 +136,7 @@ final class NearbyPhotosSheetViewController: UIViewController {
         weatherInfoCard.iconImageView.isHidden = false
         weatherInfoCard.iconImageView.tintColor = UIColor(hex: "#3A3A3A")
         weatherInfoCard.alpha = 0
+        weatherAttributionView.alpha = 0
     }
 
     private func setupConstraints() {
@@ -171,6 +174,11 @@ final class NearbyPhotosSheetViewController: UIViewController {
             make.top.equalTo(colorInfoCard.snp.bottom).offset(12)
             make.leading.equalToSuperview().offset(16)
             make.trailing.equalToSuperview().inset(16)
+        }
+        
+        weatherAttributionView.snp.makeConstraints { make in
+            make.top.equalTo(weatherInfoCard.snp.bottom).offset(8)
+            make.trailing.equalTo(weatherInfoCard).inset(12)
             make.bottom.lessThanOrEqualTo(view.safeAreaLayoutGuide.snp.bottom).inset(16)
         }
     }
@@ -237,6 +245,7 @@ final class NearbyPhotosSheetViewController: UIViewController {
                 weatherInfoCard.rightLabel.text = "현재"
                 UIView.animate(withDuration: 0.3) {
                     self.weatherInfoCard.alpha = 1
+                    self.weatherAttributionView.alpha = 1
                 }
             }
         }

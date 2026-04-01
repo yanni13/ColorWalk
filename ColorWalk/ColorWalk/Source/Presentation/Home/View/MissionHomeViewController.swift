@@ -283,6 +283,7 @@ final class MissionHomeViewController: BaseViewController {
 
     private let carouselView = CardCarouselView()
     private let paginationView = PaginationView()
+    private let weatherAttributionView = WeatherAttributionView()
 
     // MARK: - UI: Action Row
 
@@ -418,6 +419,7 @@ final class MissionHomeViewController: BaseViewController {
         homeContainerView.addSubview(carouselView)
         homeContainerView.addSubview(paginationView)
         homeContainerView.addSubview(actionRow)
+        homeContainerView.addSubview(weatherAttributionView)
 
         carSectionHeader.isHidden = true
         carouselView.isHidden = true
@@ -540,7 +542,12 @@ final class MissionHomeViewController: BaseViewController {
             make.top.equalTo(paginationView.snp.bottom).offset(24)
             make.leading.trailing.equalToSuperview().inset(24)
             make.height.equalTo(Constants.actionRowHeight)
-            make.bottom.equalToSuperview()
+        }
+        
+        weatherAttributionView.snp.makeConstraints { make in
+            make.top.equalTo(actionRow.snp.bottom).offset(24)
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().inset(24)
         }
     }
 
