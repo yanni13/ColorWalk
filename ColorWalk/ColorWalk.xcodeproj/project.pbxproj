@@ -522,7 +522,7 @@
 				DEVELOPMENT_TEAM = W5Z68U98HJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ColorWalkWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = ColorWalkWidget;
+				INFOPLIST_KEY_CFBundleDisplayName = "담아,";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -552,7 +552,7 @@
 				DEVELOPMENT_TEAM = W5Z68U98HJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ColorWalkWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = ColorWalkWidget;
+				INFOPLIST_KEY_CFBundleDisplayName = "담아,";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

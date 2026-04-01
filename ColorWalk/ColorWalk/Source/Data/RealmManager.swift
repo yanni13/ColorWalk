@@ -19,7 +19,26 @@ final class RealmManager {
         Realm.Configuration.defaultConfiguration = config
     }
 
+    private var mainRealm: Realm? {
+        if Thread.isMainThread {
+            if let r = _mainRealm { return r }
+            do {
+                let r = try Realm()
+                _mainRealm = r
+                return r
+            } catch {
+                print("Main Realm initialization failed: \(error)")
+                return nil
+            }
+        }
+        return nil
+    }
+    private var _mainRealm: Realm?
+
     private var realm: Realm {
+        if Thread.isMainThread, let r = mainRealm {
+            return r
+        }
         do {
             return try Realm()
         } catch {
@@ -30,10 +49,15 @@ final class RealmManager {
     // MARK: - Write
 
     func write(_ block: (Realm) -> Void) {
-        do {
-            try realm.write { block(realm) }
-        } catch {
-            print("[Realm] 쓰기 실패: \(error)")
+        let r = realm
+        if r.isInWriteTransaction {
+            block(r)
+        } else {
+            do {
+                try r.write { block(r) }
+            } catch {
+                print("[Realm] 쓰기 실패: \(error)")
+            }
         }
     }
 
@@ -76,11 +100,11 @@ final class RealmManager {
     // MARK: - Photo
 
     func savePhoto(_ photo: Photo, toSlotIndex index: Int, missionId: String) {
-        guard let mission = fetchDailyMission(for: missionId),
-              index < mission.slots.count else { return }
-
         write { realm in
-            realm.add(photo) // 사진 객체 먼저 추가
+            guard let mission = realm.object(ofType: DailyMission.self, forPrimaryKey: missionId),
+                  index < mission.slots.count else { return }
+
+            realm.add(photo) 
             let slot = mission.slots[index]
             slot.linkedPhoto = photo
             slot.isCaptured = true
@@ -94,13 +118,15 @@ final class RealmManager {
         let fileName = photo.imagePath
         write { realm in
             ImageFileManager.shared.deleteImage(fileName: fileName)
-            realm.delete(photo)
+            if !photo.isInvalidated {
+                realm.delete(photo)
+            }
         }
     }
 
     func deleteAllPhotos() {
-        let photos = realm.objects(Photo.self)
         write { realm in
+            let photos = realm.objects(Photo.self)
             photos.forEach { ImageFileManager.shared.deleteImage(fileName: $0.imagePath) }
             realm.delete(photos)
         }
@@ -108,8 +134,8 @@ final class RealmManager {
 
     func resetTodayMissionState() {
         let today = DateManager.storedString(from: Date())
-        guard let mission = fetchDailyMission(for: today) else { return }
-        write { _ in
+        write { realm in
+            guard let mission = realm.object(ofType: DailyMission.self, forPrimaryKey: today) else { return }
             mission.isPaletteCompleted = false
             mission.recommendedHex = ""
             mission.slots.forEach { slot in
@@ -121,16 +147,16 @@ final class RealmManager {
 
     func updateTodayMissionHex(_ hex: String) {
         let today = DateManager.storedString(from: Date())
-        guard let mission = fetchDailyMission(for: today) else { return }
-        write { _ in
+        write { realm in
+            guard let mission = realm.object(ofType: DailyMission.self, forPrimaryKey: today) else { return }
             mission.recommendedHex = hex
         }
     }
 
     func updateTodayMission(hex: String, name: String) {
         let today = DateManager.storedString(from: Date())
-        guard let mission = fetchDailyMission(for: today) else { return }
-        write { _ in
+        write { realm in
+            guard let mission = realm.object(ofType: DailyMission.self, forPrimaryKey: today) else { return }
             mission.recommendedHex = hex
             mission.recommendedMissionName = name
         }
