@@ -33,6 +33,7 @@ final class CollectionViewModel: ViewModelType {
         let missionMetaText: Driver<String>
         let missionState: Driver<MissionState>
         let canGoNext: Driver<Bool>
+        let missionDateIdentifier: Driver<String>
     }
 
     // MARK: - Properties
@@ -51,7 +52,8 @@ final class CollectionViewModel: ViewModelType {
             missionColorHex: makeMissionColorHexDriver(missionData: missionData),
             missionMetaText: makeMissionMetaTextDriver(missionData: missionData),
             missionState: makeMissionStateDriver(missionData: missionData),
-            canGoNext: makeCanGoNextDriver()
+            canGoNext: makeCanGoNextDriver(),
+            missionDateIdentifier: makeMissionDateIdentifierDriver(missionData: missionData)
         )
     }
 
@@ -164,5 +166,11 @@ final class CollectionViewModel: ViewModelType {
         dayOffsetRelay
             .map { $0 < 0 }
             .asDriver(onErrorJustReturn: false)
+    }
+
+    private func makeMissionDateIdentifierDriver(missionData: Observable<(Date, DailyMission?)>) -> Driver<String> {
+        missionData
+            .map { (date, _) in DateManager.storedString(from: date) }
+            .asDriver(onErrorJustReturn: "")
     }
 }

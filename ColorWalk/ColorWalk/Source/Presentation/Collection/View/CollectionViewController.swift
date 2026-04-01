@@ -21,6 +21,7 @@ final class CollectionViewController: BaseViewController {
     private var currentSlots: [SlotDisplayInfo] = []
     private var currentMissionHex: String = ""
     private var currentShareDateText: String = ""
+    private var currentMissionDateIdentifier: String = ""
     
     // MARK: - UI: Scroll
 
@@ -319,7 +320,9 @@ final class CollectionViewController: BaseViewController {
         emptyStateStack.isHidden = true
         
         shareIconButton.isHidden = true
-        editIconButton.isHidden = true
+        editIconButton.isHidden = false
+        editIconButton.isEnabled = true
+        editIconButton.alpha = 1.0
     }
 
     // MARK: - Constraints
@@ -410,6 +413,12 @@ final class CollectionViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
 
+        output.missionDateIdentifier
+            .drive(onNext: { [weak self] identifier in
+                self?.currentMissionDateIdentifier = identifier
+            })
+            .disposed(by: disposeBag)
+
         shareIconButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 self?.presentShareSheet()
@@ -461,8 +470,8 @@ final class CollectionViewController: BaseViewController {
             shareIconButton.alpha = 0.3
             
             editIconButton.isHidden = false
-            editIconButton.isEnabled = capturedCount > 0
-            editIconButton.alpha = capturedCount > 0 ? 1.0 : 0.3
+            editIconButton.isEnabled = true
+            editIconButton.alpha = 1.0
 
         case .completed(let slots):
             currentSlots = slots
@@ -486,7 +495,8 @@ final class CollectionViewController: BaseViewController {
     // MARK: - Action
 
     private func navigateToEdit() {
-        coordinator?.presentEdit(slots: currentSlots)
+        guard !currentMissionDateIdentifier.isEmpty else { return }
+        coordinator?.presentEdit(missionDateIdentifier: currentMissionDateIdentifier)
     }
 
     private func presentShareSheet() {

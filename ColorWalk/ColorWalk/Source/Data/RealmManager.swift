@@ -178,6 +178,23 @@ final class RealmManager {
         }
     }
 
+    func reassignMissionSlots(missionId: String, photos: [Photo]) {
+        write { realm in
+            guard let mission = realm.object(ofType: DailyMission.self, forPrimaryKey: missionId) else { return }
+            let sortedSlots = Array(mission.slots).sorted { $0.index < $1.index }
+            sortedSlots.forEach { slot in
+                slot.linkedPhoto = nil
+                slot.isCaptured = false
+            }
+            for (i, photo) in photos.enumerated() where i < sortedSlots.count {
+                guard let livePhoto = realm.object(ofType: Photo.self, forPrimaryKey: photo.id) else { continue }
+                sortedSlots[i].linkedPhoto = livePhoto
+                sortedSlots[i].isCaptured = true
+            }
+            mission.isPaletteCompleted = mission.slots.allSatisfy { $0.isCaptured }
+        }
+    }
+
     // MARK: - All Photos
 
     func fetchAllPhotos() -> [Photo] {
