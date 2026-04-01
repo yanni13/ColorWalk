@@ -81,14 +81,14 @@ final class MissionHomeViewModel: ViewModelType {
     struct Output {
         let mission: Driver<ColorMission>
         let saveResult: Driver<GallerySaveResult>
+        let weatherData: Driver<WeatherData>
     }
 
     private let repository: ColorMissionRepositoryProtocol
     private let weatherService: WeatherServiceProtocol
     private let missions: [ColorMission]
     private let indexRelay: BehaviorRelay<Int>
-    private let weatherInfoRelay = BehaviorRelay<String>(value: "날씨 정보 없음")
-    private let savedCustomMission: ColorMission?
+    private let weatherDataRelay = BehaviorRelay<WeatherData>(value: WeatherData(displayText: "날씨 정보 없음", symbolName: "sun.max", celsius: "0°C", humidity: "0%"))
     private let disposeBag = DisposeBag()
 
     init(
@@ -97,94 +97,38 @@ final class MissionHomeViewModel: ViewModelType {
     ) {
         self.repository = repository
         self.weatherService = weatherService
-        let fetchedMissions = repository.fetchMissions()
-        self.missions = fetchedMissions
-
-        let today = DateManager.storedString(from: Date())
-        let daily = RealmManager.shared.fetchDailyMission(for: today)
-        let savedHex = daily?.recommendedHex ?? ""
-
-        if let idx = fetchedMissions.firstIndex(where: { $0.hexColor == savedHex }) {
-            self.indexRelay = BehaviorRelay<Int>(value: idx)
-            self.savedCustomMission = nil
-        } else if !savedHex.isEmpty {
-            let savedName = daily?.recommendedMissionName ?? ""
-            self.indexRelay = BehaviorRelay<Int>(value: 0)
-            self.savedCustomMission = ColorMission(
-                name: savedName.isEmpty ? savedHex : savedName,
-                hexColor: savedHex,
-                color: UIColor(hex: savedHex),
-                weatherInfo: "날씨 정보 없음",
-                progress: 0
-            )
-        } else {
-            self.indexRelay = BehaviorRelay<Int>(value: 0)
-            self.savedCustomMission = nil
-        }
+        self.missions = repository.fetchMissions()
+        self.indexRelay = BehaviorRelay<Int>(value: 0)
     }
 
     func transform(input: Input) -> Output {
-        let count = missions.count
-
         input.location
             .distinctUntilChanged { $0.distance(from: $1) < 1000 }
-            .flatMapLatest { [weak self] location -> Observable<String> in
-                guard let self else { return .just("날씨 정보 없음") }
+            .flatMapLatest { [weak self] location -> Observable<WeatherData> in
+                guard let self else { return .empty() }
                 return self.weatherService.fetchWeatherInfo(for: location)
                     .asObservable()
-                    .catchAndReturn("날씨 정보 없음")
             }
-            .bind(to: weatherInfoRelay)
+            .bind(to: weatherDataRelay)
             .disposed(by: disposeBag)
 
-        let indexBasedMission = Observable.combineLatest(indexRelay, weatherInfoRelay)
-            .map { [weak self] idx, weatherInfo -> ColorMission in
-                guard let self else { return ColorMission.mockMissions[0] }
-                let base = self.missions[idx]
-                return ColorMission(
-                    name: base.name,
-                    hexColor: base.hexColor,
-                    color: base.color,
-                    weatherInfo: "오늘의 날씨는 \(weatherInfo)이에요",
-                    progress: base.progress
-                )
-            }
+        // 미션 생성 및 셔플 로직
+        let missionSubject = BehaviorSubject<ColorMission>(value: ColorMission.mockMissions[0])
 
-        let missionObservable: Observable<ColorMission>
-
-        if let custom = savedCustomMission {
-            let hasShuffledSubject = PublishSubject<Void>()
-
-            Observable.merge(input.shuffleTap, input.changeMissionTap)
-                .do(onNext: { hasShuffledSubject.onNext(()) })
-                .withLatestFrom(indexRelay)
-                .map { ($0 + 1) % count }
-                .bind(to: indexRelay)
-                .disposed(by: disposeBag)
-
-            let hasShuffled = hasShuffledSubject.take(1).share()
-            let customWithWeather = weatherInfoRelay
-                .map { weatherInfo -> ColorMission in
-                    ColorMission(
-                        name: custom.name,
-                        hexColor: custom.hexColor,
-                        color: custom.color,
-                        weatherInfo: "오늘의 날씨는 \(weatherInfo)이에요",
-                        progress: custom.progress
-                    )
-                }
-                .takeUntil(hasShuffled)
-            let indexAfterShuffle = indexBasedMission.skipUntil(hasShuffled)
-            missionObservable = Observable.merge(customWithWeather, indexAfterShuffle).share(replay: 1)
-        } else {
-            Observable.merge(input.shuffleTap, input.changeMissionTap)
-                .withLatestFrom(indexRelay)
-                .map { ($0 + 1) % count }
-                .bind(to: indexRelay)
-                .disposed(by: disposeBag)
-
-            missionObservable = indexBasedMission.share(replay: 1)
+        // 셔플이나 날씨 변경 시 새 미션 생성
+        Observable.merge(
+            input.shuffleTap,
+            input.changeMissionTap,
+            weatherDataRelay.skip(1).map { _ in () }
+        )
+        .withLatestFrom(weatherDataRelay)
+        .map { weatherData in
+            MissionGenerator.generate(weatherSymbol: weatherData.symbolName, weatherText: "오늘의 날씨는 \(weatherData.displayText)이에요")
         }
+        .bind(to: missionSubject)
+        .disposed(by: disposeBag)
+
+        let missionObservable = missionSubject.asObservable().share(replay: 1)
 
         missionObservable
             .bind(onNext: { ColorMissionStore.shared.setMission($0) })
@@ -209,7 +153,11 @@ final class MissionHomeViewModel: ViewModelType {
             }
             .asDriver(onErrorJustReturn: .failure)
 
-        return Output(mission: mission, saveResult: saveResult)
+        return Output(
+            mission: mission,
+            saveResult: saveResult,
+            weatherData: weatherDataRelay.asDriver()
+        )
     }
 
     // MARK: - Private

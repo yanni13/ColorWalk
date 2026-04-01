@@ -15,6 +15,7 @@ final class MissionHomeViewController: BaseViewController {
 
     private let viewModel: MissionHomeViewModel
     private var currentDisplayedMission: ColorMission = ColorMission.mockMissions[0]
+    private var currentWeatherData: WeatherData?
     private var cards: [ColorCard] = []
     private var currentIndex: Int = 0
     private let locationManager = CLLocationManager()
@@ -139,6 +140,7 @@ final class MissionHomeViewController: BaseViewController {
         let l = UILabel()
         l.font = UIFont(name: "Pretendard-Regular", size: 13)
         l.textColor = UIColor(hex: "#6B7684")
+        l.numberOfLines = 0 // 날씨 정보 잘림 방지
         return l
     }()
 
@@ -147,6 +149,7 @@ final class MissionHomeViewController: BaseViewController {
         s.axis = .vertical
         s.spacing = 4
         s.alignment = .leading
+        s.isLayoutMarginsRelativeArrangement = true
         return s
     }()
 
@@ -542,6 +545,15 @@ final class MissionHomeViewController: BaseViewController {
     // MARK: - Bind
 
     override func bind() {
+        // 카드뷰 탭 시 상세 모달 표시
+        let cardTap = UITapGestureRecognizer()
+        cardView.addGestureRecognizer(cardTap)
+        cardTap.rx.event
+            .subscribe(onNext: { [weak self] _ in
+                self?.presentMissionDetailSheet()
+            })
+            .disposed(by: disposeBag)
+
         shuffleButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 self?.handleShuffleTap()
@@ -585,9 +597,9 @@ final class MissionHomeViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
 
-        output.saveResult
-            .drive(onNext: { [weak self] result in
-                self?.handleSaveResult(result)
+        output.weatherData
+            .drive(onNext: { [weak self] data in
+                self?.currentWeatherData = data
             })
             .disposed(by: disposeBag)
 
@@ -741,6 +753,15 @@ final class MissionHomeViewController: BaseViewController {
         present(alert, animated: true)
     }
 
+
+    private func presentMissionDetailSheet() {
+        guard let weather = currentWeatherData else { return }
+        let sheet = MissionDetailSheetViewController(mission: currentDisplayedMission, weatherData: weather)
+        sheet.onNameUpdate = { [weak self] newName in
+            self?.updateMissionName(newName)
+        }
+        present(sheet, animated: false)
+    }
 
     // MARK: - Apply
 

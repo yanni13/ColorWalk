@@ -110,7 +110,7 @@ private struct LockScreenBannerView: View {
         HStack(alignment: .top, spacing: 14) {
             VStack(alignment: .leading, spacing: 6) {
                 // 타이머 종료 여부에 따른 타이틀 변경
-                Text(state.isExpired ? "늦은 ColorWalk! 당신의 색상을 담아보세요." : "지금 주변의 색을 찾아보세요! 🔍")
+                Text(state.isExpired ? "당신의 색상을 담아보세요." : "지금 주변의 색을 찾아보세요! 🔍")
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.white)
 
