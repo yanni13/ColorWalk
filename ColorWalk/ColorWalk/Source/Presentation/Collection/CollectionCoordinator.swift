@@ -11,6 +11,15 @@ final class CollectionCoordinator: Coordinator {
     func start() {
         let viewModel = CollectionViewModel()
         let viewController = CollectionViewController(viewModel: viewModel)
+        viewController.coordinator = self
         navigationController.setViewControllers([viewController], animated: false)
+    }
+
+    func presentEdit(slots: [SlotDisplayInfo]) {
+        let viewModel = CollectionEditViewModel(slots: slots)
+        let viewController = CollectionEditViewController(viewModel: viewModel)
+        let nav = UINavigationController(rootViewController: viewController)
+        nav.modalPresentationStyle = .fullScreen
+        navigationController.present(nav, animated: true)
     }
 }

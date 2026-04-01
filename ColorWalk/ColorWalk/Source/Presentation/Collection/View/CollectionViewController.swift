@@ -15,6 +15,7 @@ final class CollectionViewController: BaseViewController {
 
     // MARK: - Properties
 
+    weak var coordinator: CollectionCoordinator?
     private let viewModel: CollectionViewModel
     private let viewWillAppearRelay = PublishRelay<Void>()
     private var currentSlots: [SlotDisplayInfo] = []
@@ -125,13 +126,14 @@ final class CollectionViewController: BaseViewController {
     private let dateNavRow: UIStackView = {
         let stack = UIStackView()
         stack.axis = .horizontal
-        stack.distribution = .equalSpacing
+        stack.spacing = 8
         stack.alignment = .center
+        stack.distribution = .fill
         return stack
     }()
 
     private let prevButton: UIButton = {
-        let config = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+        let config = UIImage.SymbolConfiguration(pointSize: 18, weight: .medium)
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "chevron.left", withConfiguration: config), for: .normal)
         button.tintColor = UIColor(hex: "#B0B8C1")
@@ -139,7 +141,7 @@ final class CollectionViewController: BaseViewController {
     }()
 
     private let nextButton: UIButton = {
-        let config = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+        let config = UIImage.SymbolConfiguration(pointSize: 18, weight: .medium)
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "chevron.right", withConfiguration: config), for: .normal)
         button.tintColor = UIColor(hex: "#B0B8C1")
@@ -184,6 +186,24 @@ final class CollectionViewController: BaseViewController {
         return label
     }()
 
+    // MARK: - UI: Action Icons
+
+    private let shareIconButton: UIButton = {
+        let button = UIButton(type: .system)
+        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
+        button.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: config), for: .normal)
+        button.tintColor = UIColor(hex: "#191F28")
+        return button
+    }()
+
+    private let editIconButton: UIButton = {
+        let button = UIButton(type: .system)
+        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
+        button.setImage(UIImage(systemName: "pencil", withConfiguration: config), for: .normal)
+        button.tintColor = UIColor(hex: "#191F28")
+        return button
+    }()
+
     // MARK: - UI: State & Share
 
     private let stateLabel: UILabel = {
@@ -203,8 +223,6 @@ final class CollectionViewController: BaseViewController {
         label.textAlignment = .center
         return label
     }()
-
-    private let shareButton = AppButton(style: .primary, title: "공유하기")
 
     // MARK: - Init
 
@@ -245,11 +263,43 @@ final class CollectionViewController: BaseViewController {
         // Archive Grid (hRzrP)
         contentStackView.addArrangedSubview(archiveGridCard)
         archiveGridCard.addSubview(gridCardStack)
-        gridCardStack.addArrangedSubview(dateNavRow)
-        dateNavRow.addArrangedSubview(prevButton)
-        dateNavRow.addArrangedSubview(dateLabel)
-        dateNavRow.addArrangedSubview(nextButton)
+        
+        // Header Row (Buttons at edges, Date perfectly centered)
+        let navContainer = UIView()
+        navContainer.addSubview(prevButton)
+        navContainer.addSubview(dateLabel)
+        navContainer.addSubview(nextButton)
+        
+        prevButton.snp.makeConstraints { make in
+            make.leading.centerY.equalToSuperview()
+            make.width.height.equalTo(24)
+        }
+        
+        dateLabel.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        
+        nextButton.snp.makeConstraints { make in
+            make.trailing.centerY.equalToSuperview()
+            make.width.height.equalTo(24)
+        }
+        
+        navContainer.snp.makeConstraints { make in
+            make.height.equalTo(24)
+        }
+        
+        // Action Row (Bottom Right)
+        let actionStack = UIStackView(arrangedSubviews: [shareIconButton, editIconButton])
+        actionStack.axis = .horizontal
+        actionStack.spacing = 16
+        actionStack.alignment = .center
+        
+        let actionRow = UIStackView(arrangedSubviews: [UIView(), actionStack])
+        actionRow.axis = .horizontal
+        
+        gridCardStack.addArrangedSubview(navContainer)
         gridCardStack.addArrangedSubview(photoGridView)
+        gridCardStack.addArrangedSubview(actionRow)
         gridCardStack.addArrangedSubview(emptyStateStack)
         
         emptyStateStack.addArrangedSubview(emptyIconImageView)
@@ -257,7 +307,6 @@ final class CollectionViewController: BaseViewController {
         emptyStateStack.addArrangedSubview(emptySubtitleLabel)
         
         contentStackView.addArrangedSubview(stateLabel)
-        contentStackView.addArrangedSubview(shareButton)
         
         configureInitialState()
     }
@@ -267,8 +316,10 @@ final class CollectionViewController: BaseViewController {
         missionHeaderCard.isHidden = true
         photoGridView.isHidden = true
         stateLabel.isHidden = true
-        shareButton.isHidden = true
         emptyStateStack.isHidden = true
+        
+        shareIconButton.isHidden = true
+        editIconButton.isHidden = true
     }
 
     // MARK: - Constraints
@@ -295,14 +346,18 @@ final class CollectionViewController: BaseViewController {
         gridCardStack.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-        dateNavRow.snp.makeConstraints { make in
-            make.height.equalTo(24)
-        }
+        
         prevButton.snp.makeConstraints { make in
             make.width.height.equalTo(24)
         }
         nextButton.snp.makeConstraints { make in
             make.width.height.equalTo(24)
+        }
+        shareIconButton.snp.makeConstraints { make in
+            make.width.height.equalTo(32)
+        }
+        editIconButton.snp.makeConstraints { make in
+            make.width.height.equalTo(32)
         }
         
         photoGridView.snp.makeConstraints { make in
@@ -310,9 +365,6 @@ final class CollectionViewController: BaseViewController {
         }
         emptyStateStack.snp.makeConstraints { make in
             make.height.greaterThanOrEqualTo(200)
-        }
-        shareButton.snp.makeConstraints { make in
-            make.height.equalTo(52)
         }
     }
 
@@ -358,9 +410,15 @@ final class CollectionViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
 
-        shareButton.rx.tap
+        shareIconButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 self?.presentShareSheet()
+            })
+            .disposed(by: disposeBag)
+
+        editIconButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                self?.navigateToEdit()
             })
             .disposed(by: disposeBag)
     }
@@ -382,20 +440,29 @@ final class CollectionViewController: BaseViewController {
             missionHeaderCard.isHidden = true
             photoGridView.isHidden = true
             stateLabel.isHidden = true
-            shareButton.isHidden = true
             emptyStateStack.isHidden = false
             photoGridView.clearSlots()
+            currentSlots = []
+            
+            shareIconButton.isHidden = true
+            editIconButton.isHidden = true
 
-        case .inProgress(_, let slots):
+        case .inProgress(let capturedCount, let slots):
+            currentSlots = slots
             shareHintLabel.isHidden = false
             missionHeaderCard.isHidden = false
             photoGridView.isHidden = false
             stateLabel.isHidden = false
-            shareButton.isHidden = false
-            shareButton.isEnabled = false
-            shareButton.alpha = 0.4
             emptyStateStack.isHidden = true
             photoGridView.configure(with: slots)
+            
+            shareIconButton.isHidden = false
+            shareIconButton.isEnabled = false
+            shareIconButton.alpha = 0.3
+            
+            editIconButton.isHidden = false
+            editIconButton.isEnabled = capturedCount > 0
+            editIconButton.alpha = capturedCount > 0 ? 1.0 : 0.3
 
         case .completed(let slots):
             currentSlots = slots
@@ -403,15 +470,24 @@ final class CollectionViewController: BaseViewController {
             missionHeaderCard.isHidden = false
             photoGridView.isHidden = false
             stateLabel.isHidden = true
-            shareButton.isHidden = false
-            shareButton.isEnabled = true
-            shareButton.alpha = 1.0
             emptyStateStack.isHidden = true
             photoGridView.configure(with: slots)
+            
+            shareIconButton.isHidden = false
+            shareIconButton.isEnabled = true
+            shareIconButton.alpha = 1.0
+            
+            editIconButton.isHidden = false
+            editIconButton.isEnabled = true
+            editIconButton.alpha = 1.0
         }
     }
 
     // MARK: - Action
+
+    private func navigateToEdit() {
+        coordinator?.presentEdit(slots: currentSlots)
+    }
 
     private func presentShareSheet() {
         guard !currentSlots.isEmpty else { return }
@@ -434,7 +510,11 @@ final class CollectionViewController: BaseViewController {
 
         let itemSource = GridShareItemSource(image: image, title: "담아, 미션 그리드", date: currentShareDateText)
         let activityVC = UIActivityViewController(activityItems: [itemSource], applicationActivities: nil)
-        activityVC.popoverPresentationController?.sourceView = shareButton
+        
+        if let popover = activityVC.popoverPresentationController {
+            popover.sourceView = shareIconButton
+        }
+        
         present(activityVC, animated: true)
     }
 }
