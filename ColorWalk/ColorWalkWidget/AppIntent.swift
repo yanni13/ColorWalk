@@ -1,18 +1,7 @@
-//
-//  AppIntent.swift
-//  ColorWalkWidget
-//
-//  Created by 아우신얀 on 3/25/26.
-//
-
 import WidgetKit
 import AppIntents
 
 struct ConfigurationAppIntent: WidgetConfigurationIntent {
-    static var title: LocalizedStringResource { "Configuration" }
-    static var description: IntentDescription { "This is an example widget." }
-
-    // An example configurable parameter.
-    @Parameter(title: "Favorite Emoji", default: "😃")
-    var favoriteEmoji: String
+    static var title: LocalizedStringResource { "담아 위젯" }
+    static var description: IntentDescription { "오늘 걷다 마주친 색을 홈 화면에 담아두세요." }
 }

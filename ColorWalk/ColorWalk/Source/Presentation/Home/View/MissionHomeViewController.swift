@@ -791,6 +791,7 @@ final class MissionHomeViewController: BaseViewController {
 
         ColorMissionStore.shared.setMission(mission)
         RealmManager.shared.updateTodayMission(hex: mission.hexColor, name: mission.name)
+        WidgetDataWriter.shared.updateWidgetData(with: mission)
     }
 
     private func updateProgressBar(count: Int) {
@@ -827,6 +828,7 @@ final class MissionHomeViewController: BaseViewController {
         currentDisplayedMission = updated
         ColorMissionStore.shared.setMission(updated)
         RealmManager.shared.updateTodayMission(hex: hex, name: name)
+        WidgetDataWriter.shared.updateWidgetData(with: updated)
     }
 
     private func updateMissionName(_ name: String) {
@@ -840,6 +842,7 @@ final class MissionHomeViewController: BaseViewController {
         )
         currentDisplayedMission = updated
         ColorMissionStore.shared.setMission(updated)
+        WidgetDataWriter.shared.updateWidgetData(with: updated)
     }
 }
 

@@ -191,17 +191,17 @@ final class CollectionViewController: BaseViewController {
 
     private let shareIconButton: UIButton = {
         let button = UIButton(type: .system)
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
+        let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)
         button.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: config), for: .normal)
-        button.tintColor = UIColor(hex: "#191F28")
+        button.tintColor = .gray
         return button
     }()
 
     private let editIconButton: UIButton = {
         let button = UIButton(type: .system)
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
+        let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)
         button.setImage(UIImage(systemName: "pencil", withConfiguration: config), for: .normal)
-        button.tintColor = UIColor(hex: "#191F28")
+        button.tintColor = .gray
         return button
     }()
 
@@ -322,7 +322,7 @@ final class CollectionViewController: BaseViewController {
         shareIconButton.isHidden = true
         editIconButton.isHidden = false
         editIconButton.isEnabled = true
-        editIconButton.alpha = 1.0
+        editIconButton.tintColor = .gray
     }
 
     // MARK: - Constraints
@@ -357,10 +357,10 @@ final class CollectionViewController: BaseViewController {
             make.width.height.equalTo(24)
         }
         shareIconButton.snp.makeConstraints { make in
-            make.width.height.equalTo(32)
+            make.width.height.equalTo(24)
         }
         editIconButton.snp.makeConstraints { make in
-            make.width.height.equalTo(32)
+            make.width.height.equalTo(24)
         }
         
         photoGridView.snp.makeConstraints { make in
@@ -467,11 +467,11 @@ final class CollectionViewController: BaseViewController {
             
             shareIconButton.isHidden = false
             shareIconButton.isEnabled = false
-            shareIconButton.alpha = 0.3
-            
+            shareIconButton.tintColor = .lightGray
+
             editIconButton.isHidden = false
             editIconButton.isEnabled = true
-            editIconButton.alpha = 1.0
+            editIconButton.tintColor = .gray
 
         case .completed(let slots):
             currentSlots = slots
@@ -484,11 +484,11 @@ final class CollectionViewController: BaseViewController {
             
             shareIconButton.isHidden = false
             shareIconButton.isEnabled = true
-            shareIconButton.alpha = 1.0
-            
+            shareIconButton.tintColor = .gray
+
             editIconButton.isHidden = false
             editIconButton.isEnabled = true
-            editIconButton.alpha = 1.0
+            editIconButton.tintColor = .gray
         }
     }
 

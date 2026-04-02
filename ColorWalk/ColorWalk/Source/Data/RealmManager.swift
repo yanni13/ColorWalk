@@ -162,17 +162,15 @@ final class RealmManager {
     }
 
     func updateTodayMissionHex(_ hex: String) {
-        let today = DateManager.storedString(from: Date())
-        write { realm in
-            guard let mission = realm.object(ofType: DailyMission.self, forPrimaryKey: today) else { return }
+        let mission = fetchOrCreateTodayMission()
+        write { _ in
             mission.recommendedHex = hex
         }
     }
 
     func updateTodayMission(hex: String, name: String) {
-        let today = DateManager.storedString(from: Date())
-        write { realm in
-            guard let mission = realm.object(ofType: DailyMission.self, forPrimaryKey: today) else { return }
+        let mission = fetchOrCreateTodayMission()
+        write { _ in
             mission.recommendedHex = hex
             mission.recommendedMissionName = name
         }

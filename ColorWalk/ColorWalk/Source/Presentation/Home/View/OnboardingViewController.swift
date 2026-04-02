@@ -32,16 +32,17 @@ final class OnboardingViewController: BaseViewController {
 
     private let subtitleLabel: UILabel = {
         let l = UILabel()
-        l.text = "당신의 시선이 머문 자리를, 당신만의 색으로 가득 채워보세요"
+        l.text = "당신의 시선이 머문 자리를,\n당신만의 색으로 가득 채워보세요"
         l.font = UIFont(name: "Pretendard-Regular", size: 13) ?? .systemFont(ofSize: 13)
         l.textColor = UIColor(hex: "#6B7684")
+        l.numberOfLines = 0
         return l
     }()
 
     private lazy var titleStack: UIStackView = {
         let s = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         s.axis = .vertical
-        s.spacing = 4
+        s.spacing = 10
         s.alignment = .leading
         return s
     }()

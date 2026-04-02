@@ -1,0 +1,122 @@
+import Foundation
+import UIKit
+import WidgetKit
+import RxCocoa
+internal import Realm
+
+// MARK: - Shared Widget Models (Main App Side)
+
+struct WidgetPhotoInfo: Codable {
+    let imageFileName: String
+    let capturedHex: String
+    let colorName: String
+    let locationName: String
+    let createdAt: Date
+}
+
+struct WidgetDailyData: Codable {
+    let dateString: String
+    let missionColorHex: String
+    let missionColorName: String
+    let photos: [WidgetPhotoInfo]
+}
+
+// MARK: - WidgetDataWriter
+
+final class WidgetDataWriter {
+
+    static let shared = WidgetDataWriter()
+
+    private enum Constants {
+        static let appGroupID = "group.com.yanni13.ColorWalk"
+        static let dailyDataKey = "widgetDailyData"
+        static let imageDirName = "WidgetImages"
+        static let thumbnailSize = CGSize(width: 300, height: 300)
+        static let maxPhotoCount = 3
+    }
+
+    private init() {}
+
+    func updateWidgetData(with mission: ColorMission? = nil) {
+        let photos = Array(RealmManager.shared.fetchAllPhotos().prefix(Constants.maxPhotoCount))
+        let currentMission = mission ?? ColorMissionStore.shared.mission.value
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = AppConstants.DateFormat.displayShort
+        let dateString = formatter.string(from: Date())
+
+        let photoInfos: [WidgetPhotoInfo] = photos.compactMap { photo in
+            let thumbnailFileName = "widget_\(photo.id.stringValue).jpg"
+            copyThumbnailToAppGroup(imagePath: photo.imagePath, fileName: thumbnailFileName)
+            return WidgetPhotoInfo(
+                imageFileName: thumbnailFileName,
+                capturedHex: photo.capturedHex,
+                colorName: colorName(for: photo.capturedHex),
+                locationName: photo.locationName,
+                createdAt: photo.createdAt
+            )
+        }
+
+        let missionHex = currentMission.hexColor
+        let missionName = currentMission.name
+
+        let dailyData = WidgetDailyData(
+            dateString: dateString,
+            missionColorHex: missionHex,
+            missionColorName: missionName,
+            photos: photoInfos
+        )
+
+        guard let defaults = UserDefaults(suiteName: Constants.appGroupID),
+              let encoded = try? JSONEncoder().encode(dailyData) else { return }
+
+        defaults.set(encoded, forKey: Constants.dailyDataKey)
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+
+    // MARK: - Private
+
+    private func copyThumbnailToAppGroup(imagePath: String, fileName: String) {
+        guard let thumbnail = ImageFileManager.shared.loadThumbnail(
+            fileName: imagePath,
+            size: Constants.thumbnailSize
+        ) else { return }
+
+        guard let containerURL = FileManager.default.containerURL(
+            forSecurityApplicationGroupIdentifier: Constants.appGroupID
+        ) else { return }
+
+        let dirURL = containerURL.appendingPathComponent(Constants.imageDirName)
+        try? FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: true)
+
+        let fileURL = dirURL.appendingPathComponent(fileName)
+        guard let data = thumbnail.jpegData(compressionQuality: 0.8) else { return }
+        try? data.write(to: fileURL)
+    }
+
+    private func colorName(for hex: String) -> String {
+        switch hex.lowercased() {
+        case "#ffd700": return "노랑"
+        case "#87ceeb": return "하늘"
+        case "#ffa500": return "주황"
+        case "#ff7eb3": return "핑크"
+        case "#fde047": return "노랑"
+        case "#708090": return "회색"
+        case "#b0c4de": return "파랑"
+        case "#94a3b8": return "회색"
+        case "#64748b": return "슬레이트"
+        case "#e2e8f0": return "연회색"
+        case "#34d399": return "초록"
+        case "#4682b4": return "파랑"
+        case "#10b981": return "초록"
+        case "#064e3b": return "진초록"
+        case "#0f172a": return "남색"
+        case "#483d8b": return "보라"
+        case "#ff4500": return "오렌지"
+        case "#4b0082": return "인디고"
+        case "#dc2626": return "빨강"
+        case "#1e293b": return "회청색"
+        default: return "색상"
+        }
+    }
+}

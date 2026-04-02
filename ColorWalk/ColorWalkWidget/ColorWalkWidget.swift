@@ -1,88 +1,85 @@
-//
-//  ColorWalkWidget.swift
-//  ColorWalkWidget
-//
-//  Created by 아우신얀 on 3/25/26.
-//
-
 import WidgetKit
 import SwiftUI
 
-struct Provider: AppIntentTimelineProvider {
-    func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), configuration: ConfigurationAppIntent())
-    }
+// MARK: - Entry
 
-    func snapshot(for configuration: ConfigurationAppIntent, in context: Context) async -> SimpleEntry {
-        SimpleEntry(date: Date(), configuration: configuration)
-    }
-    
-    func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<SimpleEntry> {
-        var entries: [SimpleEntry] = []
-
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, configuration: configuration)
-            entries.append(entry)
-        }
-
-        return Timeline(entries: entries, policy: .atEnd)
-    }
-
-//    func relevances() async -> WidgetRelevances<ConfigurationAppIntent> {
-//        // Generate a list containing the contexts this widget is relevant in.
-//    }
-}
-
-struct SimpleEntry: TimelineEntry {
+struct ColorWalkEntry: TimelineEntry {
     let date: Date
-    let configuration: ConfigurationAppIntent
+    let dailyData: WidgetDailyData
+
+    static var placeholder: ColorWalkEntry {
+        ColorWalkEntry(
+            date: .now,
+            dailyData: WidgetDailyData(
+                dateString: "오늘",
+                missionColorHex: "#5B8DEF",
+                missionColorName: "오늘의 색상",
+                photos: []
+            )
+        )
+    }
 }
 
-struct ColorWalkWidgetEntryView : View {
-    var entry: Provider.Entry
+// MARK: - Provider
+
+struct ColorWalkProvider: AppIntentTimelineProvider {
+
+    func placeholder(in context: Context) -> ColorWalkEntry {
+        .placeholder
+    }
+
+    func snapshot(for configuration: ConfigurationAppIntent, in context: Context) async -> ColorWalkEntry {
+        loadEntry()
+    }
+
+    func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<ColorWalkEntry> {
+        let entry = loadEntry()
+        let nextMidnight = Calendar.current.startOfDay(for: Date().addingTimeInterval(86400))
+        return Timeline(entries: [entry], policy: .after(nextMidnight))
+    }
+
+    private func loadEntry() -> ColorWalkEntry {
+        guard let data = WidgetDataStore.shared.loadDailyData() else { return .placeholder }
+        return ColorWalkEntry(date: .now, dailyData: data)
+    }
+}
+
+// MARK: - Entry View
+
+struct ColorWalkWidgetEntryView: View {
+    @Environment(\.widgetFamily) var family
+    var entry: ColorWalkEntry
 
     var body: some View {
-        VStack {
-            Text("Time:")
-            Text(entry.date, style: .time)
-
-            Text("Favorite Emoji:")
-            Text(entry.configuration.favoriteEmoji)
+        switch family {
+        case .systemSmall:
+            SmallWidgetView(entry: entry)
+        case .systemMedium:
+            MediumWidgetView(entry: entry)
+        case .systemLarge:
+            LargeWidgetView(entry: entry)
+        default:
+            SmallWidgetView(entry: entry)
         }
     }
 }
+
+// MARK: - Widget
 
 struct ColorWalkWidget: Widget {
     let kind: String = "ColorWalkWidget"
 
     var body: some WidgetConfiguration {
-        AppIntentConfiguration(kind: kind, intent: ConfigurationAppIntent.self, provider: Provider()) { entry in
+        AppIntentConfiguration(
+            kind: kind,
+            intent: ConfigurationAppIntent.self,
+            provider: ColorWalkProvider()
+        ) { entry in
             ColorWalkWidgetEntryView(entry: entry)
-                .containerBackground(.fill.tertiary, for: .widget)
+                .containerBackground(.clear, for: .widget)
         }
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+        .configurationDisplayName("오늘의 컬러워크")
+        .description("오늘 수집한 색상을 확인하세요.")
     }
-}
-
-extension ConfigurationAppIntent {
-    fileprivate static var smiley: ConfigurationAppIntent {
-        let intent = ConfigurationAppIntent()
-        intent.favoriteEmoji = "😀"
-        return intent
-    }
-    
-    fileprivate static var starEyes: ConfigurationAppIntent {
-        let intent = ConfigurationAppIntent()
-        intent.favoriteEmoji = "🤩"
-        return intent
-    }
-}
-
-#Preview(as: .systemSmall) {
-    ColorWalkWidget()
-} timeline: {
-    SimpleEntry(date: .now, configuration: .smiley)
-    SimpleEntry(date: .now, configuration: .starEyes)
 }

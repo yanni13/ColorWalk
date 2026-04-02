@@ -61,7 +61,9 @@ final class ColorCardStore {
                 }
             }
         }
-        
+
+        WidgetDataWriter.shared.updateWidgetData(with: ColorMissionStore.shared.mission.value)
+
         var current = cards.value
         current.insert(card, at: 0)
         cards.accept(current)
