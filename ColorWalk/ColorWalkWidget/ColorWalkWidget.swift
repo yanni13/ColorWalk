@@ -79,6 +79,7 @@ struct ColorWalkWidget: Widget {
                 .containerBackground(.clear, for: .widget)
         }
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+        .contentMarginsDisabled()
         .configurationDisplayName("오늘의 컬러워크")
         .description("오늘 수집한 색상을 확인하세요.")
     }

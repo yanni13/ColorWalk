@@ -21,7 +21,6 @@ struct LargeWidgetView: View {
                 emptyState
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: 20))
     }
 
     // MARK: - Background

@@ -17,7 +17,6 @@ struct MediumWidgetView: View {
             photoSection
             infoSection
         }
-        .clipShape(RoundedRectangle(cornerRadius: 20))
     }
 
     // MARK: - Photo
@@ -48,15 +47,15 @@ struct MediumWidgetView: View {
     private var infoSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             titleRow
-                .padding(.bottom, 10)
+                .padding(.bottom, 16)
             colorRow
                 .padding(.bottom, 8)
             Spacer()
             locationRow
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.trailing, 16)
+        .padding(.vertical, 14)
         .background(Color(.systemBackground))
     }
 
