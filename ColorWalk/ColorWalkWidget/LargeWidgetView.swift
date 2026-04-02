@@ -104,7 +104,7 @@ private struct ColorPaletteItem: View {
                 .shadow(color: Color(hex: photoInfo.capturedHex).opacity(0.5), radius: 4)
                 .overlay(Circle().stroke(.white.opacity(0.4), lineWidth: 1))
             Text(photoInfo.colorName)
-                .font(.system(size: 10, weight: .medium))
+                .font(.system(size: 9, weight: .bold, design: .monospaced))
                 .foregroundColor(.white)
                 .lineLimit(1)
         }

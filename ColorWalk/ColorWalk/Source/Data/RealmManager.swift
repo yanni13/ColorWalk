@@ -73,12 +73,11 @@ final class RealmManager {
         realm.object(ofType: DailyMission.self, forPrimaryKey: dateIdentifier)
     }
 
-    func fetchOrCreateTodayMission() -> DailyMission {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        let today = formatter.string(from: Date())
+    func fetchOrCreateTodayMission(in specificRealm: Realm? = nil) -> DailyMission {
+        let r = specificRealm ?? realm
+        let today = DateManager.storedString(from: Date())
 
-        if let existing = fetchDailyMission(for: today) {
+        if let existing = r.object(ofType: DailyMission.self, forPrimaryKey: today) {
             return existing
         }
 
@@ -90,9 +89,15 @@ final class RealmManager {
             slot.index = i
             return slot
         }
-        write { realm in
-            realm.add(mission)
+        
+        if r.isInWriteTransaction {
+            r.add(mission)
             mission.slots.append(objectsIn: slots)
+        } else {
+            try? r.write {
+                r.add(mission)
+                mission.slots.append(objectsIn: slots)
+            }
         }
         return mission
     }
@@ -101,8 +106,10 @@ final class RealmManager {
 
     func savePhoto(_ photo: Photo, toSlotIndex index: Int, missionId: String) {
         write { realm in
-            guard let mission = realm.object(ofType: DailyMission.self, forPrimaryKey: missionId),
-                  index < mission.slots.count else { return }
+            let today = DateManager.storedString(from: Date())
+            let mission = fetchOrCreateTodayMission(in: realm)
+            
+            guard index < mission.slots.count else { return }
 
             realm.add(photo) 
             let slot = mission.slots[index]
@@ -132,13 +139,12 @@ final class RealmManager {
     }
 
     func deleteAllPhotosAndResetMission() {
-        let today = DateManager.storedString(from: Date())
         write { realm in
             let photos = realm.objects(Photo.self)
             photos.forEach { ImageFileManager.shared.deleteImage(fileName: $0.imagePath) }
             realm.delete(photos)
 
-            guard let mission = realm.object(ofType: DailyMission.self, forPrimaryKey: today) else { return }
+            let mission = fetchOrCreateTodayMission(in: realm)
             mission.isPaletteCompleted = false
             mission.recommendedHex = ""
             mission.slots.forEach { slot in
@@ -149,9 +155,8 @@ final class RealmManager {
     }
 
     func resetTodayMissionState() {
-        let today = DateManager.storedString(from: Date())
         write { realm in
-            guard let mission = realm.object(ofType: DailyMission.self, forPrimaryKey: today) else { return }
+            let mission = fetchOrCreateTodayMission(in: realm)
             mission.isPaletteCompleted = false
             mission.recommendedHex = ""
             mission.slots.forEach { slot in
@@ -162,17 +167,18 @@ final class RealmManager {
     }
 
     func updateTodayMissionHex(_ hex: String) {
-        let mission = fetchOrCreateTodayMission()
-        write { _ in
+        write { realm in
+            let mission = fetchOrCreateTodayMission(in: realm)
             mission.recommendedHex = hex
         }
     }
 
-    func updateTodayMission(hex: String, name: String) {
-        let mission = fetchOrCreateTodayMission()
-        write { _ in
+    func updateTodayMission(hex: String, name: String, weather: String) {
+        write { realm in
+            let mission = fetchOrCreateTodayMission(in: realm)
             mission.recommendedHex = hex
             mission.recommendedMissionName = name
+            mission.weatherStatus = weather
         }
     }
 

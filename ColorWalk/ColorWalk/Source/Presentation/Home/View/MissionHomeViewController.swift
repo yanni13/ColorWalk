@@ -612,6 +612,12 @@ final class MissionHomeViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
 
+        output.saveResult
+            .drive(onNext: { [weak self] result in
+                self?.handleSaveResult(result)
+            })
+            .disposed(by: disposeBag)
+
         ColorCardStore.shared.cards
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] newCards in
@@ -790,7 +796,7 @@ final class MissionHomeViewController: BaseViewController {
         updateProgressBar(count: count)
 
         ColorMissionStore.shared.setMission(mission)
-        RealmManager.shared.updateTodayMission(hex: mission.hexColor, name: mission.name)
+        RealmManager.shared.updateTodayMission(hex: mission.hexColor, name: mission.name, weather: mission.weatherInfo)
         WidgetDataWriter.shared.updateWidgetData(with: mission)
     }
 
@@ -827,7 +833,7 @@ final class MissionHomeViewController: BaseViewController {
         )
         currentDisplayedMission = updated
         ColorMissionStore.shared.setMission(updated)
-        RealmManager.shared.updateTodayMission(hex: hex, name: name)
+        RealmManager.shared.updateTodayMission(hex: hex, name: name, weather: updated.weatherInfo)
         WidgetDataWriter.shared.updateWidgetData(with: updated)
     }
 
@@ -842,6 +848,7 @@ final class MissionHomeViewController: BaseViewController {
         )
         currentDisplayedMission = updated
         ColorMissionStore.shared.setMission(updated)
+        RealmManager.shared.updateTodayMission(hex: updated.hexColor, name: updated.name, weather: updated.weatherInfo)
         WidgetDataWriter.shared.updateWidgetData(with: updated)
     }
 }

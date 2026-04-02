@@ -27,7 +27,7 @@ struct SmallWidgetView: View {
            let image = WidgetDataStore.shared.loadImage(fileName: photoInfo.imageFileName) {
             Image(uiImage: image)
                 .resizable()
-                .scaledToFill()
+                .aspectRatio(contentMode: .fill)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .clipped()
         } else {

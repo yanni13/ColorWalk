@@ -64,7 +64,6 @@
 		D82CC5192F73D0E700211DB3 /* ColorWalkWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ColorWalkWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D82CC51B2F73D0E700211DB3 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		D82CC51D2F73D0E800211DB3 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		D82CC53F2F73D0E800211DB3 /* ColorWalkWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ColorWalkWidget.entitlements; sourceTree = "<group>"; };
 		D85CE9D12F74C2B6002DB279 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
 		D89DEDAD2F796E2100DCC565 /* GEMINI.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = GEMINI.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */

@@ -28,7 +28,7 @@ final class MapViewController: BaseViewController {
         b.setImage(UIImage(systemName: "location.fill", withConfiguration: config), for: .normal)
         b.tintColor = UIColor.App.accentBlue
         
-        // Glassmorphism
+        // Glassmorphism (배경 뷰 생성)
         let blur = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
         blur.layer.cornerRadius = 24
         blur.clipsToBounds = true
@@ -40,8 +40,10 @@ final class MapViewController: BaseViewController {
         dim.clipsToBounds = true
         dim.isUserInteractionEnabled = false
 
-        b.addSubview(blur)
-        b.addSubview(dim)
+        // 배경을 아이콘보다 뒤에 배치 (중요: insertSubview at: 0)
+        b.insertSubview(blur, at: 0)
+        b.insertSubview(dim, at: 1)
+        
         blur.snp.makeConstraints { $0.edges.equalToSuperview() }
         dim.snp.makeConstraints { $0.edges.equalToSuperview() }
         

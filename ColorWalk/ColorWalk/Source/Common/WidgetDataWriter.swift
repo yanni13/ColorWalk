@@ -47,7 +47,7 @@ final class WidgetDataWriter {
 
         let photoInfos: [WidgetPhotoInfo] = photos.compactMap { photo in
             let thumbnailFileName = "widget_\(photo.id.stringValue).jpg"
-            copyThumbnailToAppGroup(imagePath: photo.imagePath, fileName: thumbnailFileName)
+            createAndSaveWidgetThumbnail(imagePath: photo.imagePath, fileName: thumbnailFileName)
             return WidgetPhotoInfo(
                 imageFileName: thumbnailFileName,
                 capturedHex: photo.capturedHex,
@@ -76,12 +76,18 @@ final class WidgetDataWriter {
 
     // MARK: - Private
 
-    private func copyThumbnailToAppGroup(imagePath: String, fileName: String) {
-        guard let thumbnail = ImageFileManager.shared.loadThumbnail(
-            fileName: imagePath,
-            size: Constants.thumbnailSize
-        ) else { return }
-
+    private func createAndSaveWidgetThumbnail(imagePath: String, fileName: String) {
+        // 1. 원본 이미지 로딩 (FileManager에서 로드)
+        guard let originalImage = ImageFileManager.shared.loadImage(fileName: imagePath) else { return }
+        
+        // 2. 1:1 중앙 크롭
+        guard let squareImage = originalImage.cropToSquare() else { return }
+        
+        // 3. 위젯 최적화 크기로 리사이징 (예: 600x600 px)
+        let targetSize = Constants.thumbnailSize // 이미 300x300으로 정의됨
+        guard let resizedImage = squareImage.resized(to: targetSize) else { return }
+        
+        // 4. App Group 경로 확보
         guard let containerURL = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: Constants.appGroupID
         ) else { return }
@@ -89,8 +95,9 @@ final class WidgetDataWriter {
         let dirURL = containerURL.appendingPathComponent(Constants.imageDirName)
         try? FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: true)
 
+        // 5. JPEG 압축 및 저장
         let fileURL = dirURL.appendingPathComponent(fileName)
-        guard let data = thumbnail.jpegData(compressionQuality: 0.8) else { return }
+        guard let data = resizedImage.jpegData(compressionQuality: 0.8) else { return }
         try? data.write(to: fileURL)
     }
 
@@ -116,7 +123,7 @@ final class WidgetDataWriter {
         case "#4b0082": return "인디고"
         case "#dc2626": return "빨강"
         case "#1e293b": return "회청색"
-        default: return "색상"
+        default: return hex.uppercased()
         }
     }
 }

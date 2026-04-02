@@ -43,21 +43,22 @@ struct MediumWidgetView: View {
     }
 
     // MARK: - Info Panel
-
-    private var infoSection: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            titleRow
-                .padding(.bottom, 16)
-            colorRow
-                .padding(.bottom, 8)
-            Spacer()
-            locationRow
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.trailing, 16)
-        .padding(.vertical, 14)
-        .background(Color(.systemBackground))
+private var infoSection: some View {
+    VStack(alignment: .leading, spacing: 0) {
+        titleRow
+            .padding(.bottom, 16)
+        colorRow
+            .padding(.bottom, 8)
+        Spacer()
+        locationRow
     }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .padding(.leading, 0)
+    .padding(.trailing, 16)
+    .padding(.vertical, 14)
+    .background(Color(.systemBackground))
+}
+
 
     private var titleRow: some View {
         VStack(alignment: .leading, spacing: 2) {
