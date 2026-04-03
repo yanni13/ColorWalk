@@ -107,7 +107,6 @@ final class MissionAlertScheduler {
         content.title = "⚠️ 지금 색상을 찾아라! ⚠️"
         content.body = "목표 색상 \(missionHex) — 3분 안에 찾아봐요"
         content.sound = .default
-        content.interruptionLevel = .timeSensitive
         content.userInfo = [
             AppConstants.Notification.missionHexKey: missionHex,
             AppConstants.Notification.missionNameKey: "오늘의 색상 미션"

@@ -110,18 +110,8 @@ final class ColorActivityManager {
 
     private func scheduleExpiry(after duration: TimeInterval) {
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
-            guard let self = self, let activity = self.currentActivity else { return }
-            
-            // 타이머 종료 시 isExpired를 true로 업데이트 (세션은 유지하여 잠금화면 문구 변경 유도)
-            let state = ColorPickerAttributes.ContentState(
-                matchPercent: 0, // 초기값 또는 현재 값 유지 가능
-                timerEnd: self.sessionTimerEnd,
-                isExpired: true
-            )
-            
-            Task {
-                await activity.update(.init(state: state, staleDate: nil))
-            }
+            guard let self else { return }
+            self.stop()
         }
     }
 }
