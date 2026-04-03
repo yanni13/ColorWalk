@@ -12,6 +12,10 @@ final class RealmPhotoRepository: PhotoRepositoryProtocol {
         RealmManager.shared.savePhoto(photo, toSlotIndex: index, missionId: missionId)
     }
 
+    func savePhotoOnly(_ photo: Photo) {
+        RealmManager.shared.savePhotoOnly(photo)
+    }
+
     func deletePhoto(_ photo: Photo) {
         RealmManager.shared.deletePhoto(photo)
     }

@@ -199,6 +199,12 @@ final class RealmManager {
         }
     }
 
+    func savePhotoOnly(_ photo: Photo) {
+        write { realm in
+            realm.add(photo)
+        }
+    }
+
     // MARK: - All Photos
 
     func fetchAllPhotos() -> [Photo] {

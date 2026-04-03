@@ -55,9 +55,11 @@ final class ColorCardStore {
                 
                 // 슬롯 인덱스 결정: 0이면 첫 번째 빈 슬롯 찾기
                 let slotIndex = (card.missionCurrent > 0) ? (card.missionCurrent - 1) : cards.value.count
-                
+
                 if slotIndex < 9 {
                     repository.savePhoto(photo, toSlotIndex: slotIndex, missionId: today)
+                } else {
+                    repository.savePhotoOnly(photo)
                 }
             }
         }

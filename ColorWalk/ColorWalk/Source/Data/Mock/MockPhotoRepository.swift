@@ -23,6 +23,8 @@ final class MockPhotoRepository: PhotoRepositoryProtocol {
 
     func savePhoto(_ photo: Photo, toSlotIndex index: Int, missionId: String) {}
 
+    func savePhotoOnly(_ photo: Photo) {}
+
     // MARK: - Mock Data
 
     private static func makeMockPhotos() -> [Photo] {
