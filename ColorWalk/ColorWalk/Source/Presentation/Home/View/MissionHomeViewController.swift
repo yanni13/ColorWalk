@@ -8,7 +8,6 @@ import SnapKit
 import RxSwift
 import RxCocoa
 import CoreLocation
-import UserNotifications
 
 final class MissionHomeViewController: BaseViewController {
 
@@ -299,41 +298,6 @@ final class MissionHomeViewController: BaseViewController {
         return s
     }()
 
-    // MARK: - DEBUG
-
-    private let debugPanel: UIView = {
-        let v = UIView()
-        v.backgroundColor = UIColor.black.withAlphaComponent(0.75)
-        v.layer.cornerRadius = 12
-        return v
-    }()
-
-    private let debugLiveActivityButton: UIButton = {
-        let b = UIButton(type: .system)
-        b.setTitle("Dynamic Island", for: .normal)
-        b.titleLabel?.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
-        b.tintColor = UIColor(hex: "#34D399")
-        b.accessibilityLabel = "Dynamic Island 테스트"
-        return b
-    }()
-
-    private let debugAlarmButton: UIButton = {
-        let b = UIButton(type: .system)
-        b.setTitle("알람 5초", for: .normal)
-        b.titleLabel?.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
-        b.tintColor = UIColor(hex: "#FFB347")
-        b.accessibilityLabel = "알람 테스트"
-        return b
-    }()
-
-    private lazy var debugStack: UIStackView = {
-        let s = UIStackView(arrangedSubviews: [debugLiveActivityButton, debugAlarmButton])
-        s.axis = .vertical
-        s.spacing = 2
-        s.alignment = .center
-        return s
-    }()
-
     // MARK: - Rx
 
     private let shuffleSubject = PublishSubject<Void>()
@@ -462,8 +426,6 @@ final class MissionHomeViewController: BaseViewController {
         paginationView.isHidden = true
         actionRow.isHidden = true
 
-        view.addSubview(debugPanel)
-        debugPanel.addSubview(debugStack)
     }
 
     override func setupConstraints() {
@@ -589,13 +551,6 @@ final class MissionHomeViewController: BaseViewController {
             make.bottom.equalToSuperview().inset(24)
         }
 
-        debugPanel.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(16)
-            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
-        }
-        debugStack.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 14, bottom: 8, right: 14))
-        }
     }
 
     // MARK: - Bind
@@ -702,14 +657,6 @@ final class MissionHomeViewController: BaseViewController {
                 guard let self else { return }
                 self.onCardTap?(self.currentIndex)
             })
-            .disposed(by: disposeBag)
-
-        debugLiveActivityButton.rx.tap
-            .subscribe(onNext: { [weak self] in self?.testLiveActivity() })
-            .disposed(by: disposeBag)
-
-        debugAlarmButton.rx.tap
-            .subscribe(onNext: { [weak self] in self?.testAlarm() })
             .disposed(by: disposeBag)
 
     }
@@ -906,28 +853,6 @@ final class MissionHomeViewController: BaseViewController {
         ColorMissionStore.shared.setMission(updated)
         RealmManager.shared.updateTodayMission(hex: updated.hexColor, name: updated.name, weather: updated.weatherInfo)
         WidgetDataWriter.shared.updateWidgetData(with: updated)
-    }
-
-    // MARK: - DEBUG Actions
-
-    private func testLiveActivity() {
-        guard #available(iOS 16.1, *) else { return }
-        let mission = ColorMissionStore.shared.mission.value
-        ColorActivityManager.shared.startTimedSession(
-            missionName: mission.name,
-            missionHex: mission.hexColor,
-            missionColor: mission.color,
-            duration: 180
-        )
-    }
-
-    private func testAlarm() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
-            guard granted else { return }
-            DispatchQueue.main.async {
-                MissionAlertScheduler.shared.scheduleImmediateTest(after: 5)
-            }
-        }
     }
 
 }

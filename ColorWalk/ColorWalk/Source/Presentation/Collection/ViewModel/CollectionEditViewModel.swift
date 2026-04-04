@@ -24,6 +24,7 @@ final class CollectionEditViewModel: ViewModelType {
     struct Input {
         let photoTap: Observable<Int>
         let doneTap: Observable<Void>
+        let deselectAllTap: Observable<Void>
     }
 
     struct Output {
@@ -75,6 +76,10 @@ final class CollectionEditViewModel: ViewModelType {
     func transform(input: Input) -> Output {
         bindPhotoTap(input.photoTap)
 
+        input.deselectAllTap
+            .subscribe(onNext: { [weak self] in self?.deselectAll() })
+            .disposed(by: disposeBag)
+
         let selectedCount = photoItemsRelay
             .map { $0.filter { $0.isSelected }.count }
             .asDriver(onErrorJustReturn: 0)
@@ -120,6 +125,15 @@ final class CollectionEditViewModel: ViewModelType {
                 photoItemsRelay.accept(items)
             })
             .disposed(by: disposeBag)
+    }
+
+    private func deselectAll() {
+        var items = photoItemsRelay.value
+        for i in items.indices {
+            items[i].isSelected = false
+            items[i].selectionOrder = nil
+        }
+        photoItemsRelay.accept(items)
     }
 
     private func saveSelectedPhotos() {

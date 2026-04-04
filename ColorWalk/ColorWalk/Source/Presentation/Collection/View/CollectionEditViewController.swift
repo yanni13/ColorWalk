@@ -61,13 +61,13 @@ final class CollectionEditViewController: BaseViewController {
 
     private let doneButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("완료", for: .normal)
+        button.setTitle("전체 해제", for: .normal)
         button.titleLabel?.font = UIFont(name: "Pretendard-Bold", size: 14)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = UIColor(hex: "#191F28")
+        button.setTitleColor(UIColor(hex: "#6B7684"), for: .normal)
+        button.backgroundColor = UIColor(hex: "#F5F7FA")
         button.layer.cornerRadius = 17
         button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 18, bottom: 10, right: 18)
-        button.accessibilityLabel = "완료"
+        button.accessibilityLabel = "전체 해제"
         return button
     }()
 
@@ -248,10 +248,10 @@ final class CollectionEditViewController: BaseViewController {
         }
 
         completeButton.snp.makeConstraints { make in
-            make.top.equalTo(selectedTitleLabel.snp.bottom).offset(12)
+            make.top.equalTo(selectedTitleLabel.snp.bottom).offset(24)
             make.leading.trailing.equalToSuperview().inset(20)
             make.height.equalTo(Constants.completeButtonHeight)
-            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(Constants.bottomBarBottomPadding)
+            make.bottom.equalToSuperview().inset(34)
         }
 
         collectionView.snp.makeConstraints { make in
@@ -266,10 +266,8 @@ final class CollectionEditViewController: BaseViewController {
     override func bind() {
         let output = viewModel.transform(input: CollectionEditViewModel.Input(
             photoTap: photoTapRelay.asObservable(),
-            doneTap: Observable.merge(
-                doneButton.rx.tap.asObservable(),
-                completeButton.rx.tap.asObservable()
-            )
+            doneTap: completeButton.rx.tap.asObservable(),
+            deselectAllTap: doneButton.rx.tap.asObservable()
         ))
 
         output.photoItems

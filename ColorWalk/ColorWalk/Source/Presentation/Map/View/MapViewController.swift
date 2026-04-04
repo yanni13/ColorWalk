@@ -27,26 +27,8 @@ final class MapViewController: BaseViewController {
         let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
         b.setImage(UIImage(systemName: "location.fill", withConfiguration: config), for: .normal)
         b.tintColor = UIColor.App.accentBlue
-        
-        // Glassmorphism (배경 뷰 생성)
-        let blur = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
-        blur.layer.cornerRadius = 24
-        blur.clipsToBounds = true
-        blur.isUserInteractionEnabled = false
-        
-        let dim = UIView()
-        dim.backgroundColor = UIColor.white.withAlphaComponent(0.65)
-        dim.layer.cornerRadius = 24
-        dim.clipsToBounds = true
-        dim.isUserInteractionEnabled = false
-
-        // 배경을 아이콘보다 뒤에 배치 (중요: insertSubview at: 0)
-        b.insertSubview(blur, at: 0)
-        b.insertSubview(dim, at: 1)
-        
-        blur.snp.makeConstraints { $0.edges.equalToSuperview() }
-        dim.snp.makeConstraints { $0.edges.equalToSuperview() }
-        
+        b.backgroundColor = .white
+        b.layer.cornerRadius = 24
         b.layer.shadowColor = UIColor.black.cgColor
         b.layer.shadowOpacity = 0.12
         b.layer.shadowRadius = 8
