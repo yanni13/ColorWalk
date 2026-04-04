@@ -47,6 +47,47 @@ private final class GridView: UIView {
     }
 }
 
+private final class FocusSquareView: UIView {
+    private enum Constants {
+        static let cornerLength: CGFloat = 12
+        static let lineWidth: CGFloat    = 2
+        static let size: CGFloat         = 70
+    }
+
+    init() {
+        super.init(frame: CGRect(x: 0, y: 0, width: Constants.size, height: Constants.size))
+        backgroundColor = .clear
+        isUserInteractionEnabled = false
+        alpha = 0
+    }
+    required init?(coder: NSCoder) { fatalError() }
+
+    override func draw(_ rect: CGRect) {
+        guard let ctx = UIGraphicsGetCurrentContext() else { return }
+        ctx.setStrokeColor(UIColor.white.cgColor)
+        ctx.setLineWidth(Constants.lineWidth)
+
+        let cl = Constants.cornerLength
+        ctx.move(to: CGPoint(x: rect.minX, y: rect.minY + cl))
+        ctx.addLine(to: CGPoint(x: rect.minX, y: rect.minY))
+        ctx.addLine(to: CGPoint(x: rect.minX + cl, y: rect.minY))
+
+        ctx.move(to: CGPoint(x: rect.maxX - cl, y: rect.minY))
+        ctx.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+        ctx.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + cl))
+
+        ctx.move(to: CGPoint(x: rect.maxX, y: rect.maxY - cl))
+        ctx.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        ctx.addLine(to: CGPoint(x: rect.maxX - cl, y: rect.maxY))
+
+        ctx.move(to: CGPoint(x: rect.minX + cl, y: rect.maxY))
+        ctx.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        ctx.addLine(to: CGPoint(x: rect.minX, y: rect.maxY - cl))
+
+        ctx.strokePath()
+    }
+}
+
 final class CameraViewController: BaseViewController {
 
     // MARK: - Callbacks
@@ -81,10 +122,12 @@ final class CameraViewController: BaseViewController {
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
         iv.backgroundColor = .black
+        iv.isUserInteractionEnabled = true
         return iv
     }()
 
     private let gridView = GridView()
+    private let focusSquareView = FocusSquareView()
 
     // MARK: - Navigation Bar
     private let navBar = UIView()
@@ -260,6 +303,7 @@ final class CameraViewController: BaseViewController {
         view.addSubview(shutterButton)
         view.addSubview(flipButton)
         view.addSubview(countdownLabel)
+        view.addSubview(focusSquareView)
 
         setupGestures()
         requestPermissionAndSetup()
@@ -268,6 +312,9 @@ final class CameraViewController: BaseViewController {
     private func setupGestures() {
         let pinch = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
         view.addGestureRecognizer(pinch)
+
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleFocusTap(_:)))
+        previewView.addGestureRecognizer(tap)
     }
 
     @objc private func handlePinch(_ gesture: UIPinchGestureRecognizer) {
@@ -674,6 +721,42 @@ final class CameraViewController: BaseViewController {
         let picker = PHPickerViewController(configuration: config)
         picker.delegate = self
         present(picker, animated: true)
+    }
+
+    // MARK: - Focus
+
+    private enum FocusConstants {
+        static let animDuration: TimeInterval  = 0.2
+        static let fadeDelay: TimeInterval     = 1.2
+        static let fadeDuration: TimeInterval  = 0.4
+        static let initialScale: CGFloat       = 1.3
+    }
+
+    @objc private func handleFocusTap(_ gesture: UITapGestureRecognizer) {
+        let tapPoint = gesture.location(in: previewView)
+        let normalizedX = tapPoint.x / previewView.bounds.width
+        let normalizedY = tapPoint.y / previewView.bounds.height
+        let adjustedX = viewModel.isFrontCamera ? 1 - normalizedX : normalizedX
+        viewModel.setFocusPoint(CGPoint(x: adjustedX, y: normalizedY))
+        showFocusIndicator(at: tapPoint)
+    }
+
+    private func showFocusIndicator(at point: CGPoint) {
+        focusSquareView.layer.removeAllAnimations()
+        focusSquareView.center = point
+        focusSquareView.alpha = 1
+        focusSquareView.transform = CGAffineTransform(scaleX: FocusConstants.initialScale, y: FocusConstants.initialScale)
+
+        UIView.animate(withDuration: FocusConstants.animDuration) { [weak self] in
+            self?.focusSquareView.transform = .identity
+        } completion: { [weak self] _ in
+            UIView.animate(
+                withDuration: FocusConstants.fadeDuration,
+                delay: FocusConstants.fadeDelay
+            ) { [weak self] in
+                self?.focusSquareView.alpha = 0
+            }
+        }
     }
 
 }

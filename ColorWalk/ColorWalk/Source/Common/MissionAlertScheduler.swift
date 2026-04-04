@@ -7,14 +7,9 @@ final class MissionAlertScheduler {
     static let shared = MissionAlertScheduler()
 
     private enum Constants {
-        static let identifierPrefix = "colorwalk.mission.alert"
-        static let morningHourRange = 8...10
-        static let eveningHourRange = 18...20
+        static let identifierPrefix  = "colorwalk.mission.alert"
+        static let alertHourRange    = 9...11
         static let scheduleDaysAhead = 14
-    }
-
-    private enum Session: String {
-        case morning, evening
     }
 
     private init() {}
@@ -31,15 +26,9 @@ final class MissionAlertScheduler {
             for dayOffset in 0..<Constants.scheduleDaysAhead {
                 guard let date = calendar.date(byAdding: .day, value: dayOffset, to: today) else { continue }
                 let dateStr = DateManager.storedString(from: date)
-
-                let morningId = "\(Constants.identifierPrefix).\(Session.morning.rawValue).\(dateStr)"
-                if !pendingIds.contains(morningId) {
-                    self.scheduleRandomAlert(for: date, hourRange: Constants.morningHourRange, identifier: morningId)
-                }
-
-                let eveningId = "\(Constants.identifierPrefix).\(Session.evening.rawValue).\(dateStr)"
-                if !pendingIds.contains(eveningId) {
-                    self.scheduleRandomAlert(for: date, hourRange: Constants.eveningHourRange, identifier: eveningId)
+                let id = "\(Constants.identifierPrefix).\(dateStr)"
+                if !pendingIds.contains(id) {
+                    self.scheduleAlert(for: date, identifier: id)
                 }
             }
         }
@@ -47,7 +36,7 @@ final class MissionAlertScheduler {
 
     func scheduleImmediateTest(after delay: TimeInterval = 5) {
         let mission = RealmManager.shared.fetchOrCreateTodayMission()
-        let missionHex = mission.recommendedHex.isEmpty ? "#5B8DEF" : mission.recommendedHex
+        let missionHex = mission.recommendedHex.isEmpty ? "" : mission.recommendedHex
 
         let content = makeContent(missionHex: missionHex)
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: delay, repeats: false)
@@ -72,22 +61,22 @@ final class MissionAlertScheduler {
 
     // MARK: - Private
 
-    private func scheduleRandomAlert(for date: Date, hourRange: ClosedRange<Int>, identifier: String) {
+    private func scheduleAlert(for date: Date, identifier: String) {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
 
-            let randomHour = Int.random(in: hourRange)
+            let randomHour   = Int.random(in: Constants.alertHourRange)
             let randomMinute = Int.random(in: 0...59)
 
             let calendar = Calendar.current
             var components = calendar.dateComponents([.year, .month, .day], from: date)
-            components.hour = randomHour
+            components.hour   = randomHour
             components.minute = randomMinute
 
             guard let fireDate = calendar.date(from: components),
                   fireDate > Date() else { return }
 
-            let mission = RealmManager.shared.fetchOrCreateTodayMission()
+            let mission    = RealmManager.shared.fetchOrCreateTodayMission()
             let missionHex = mission.recommendedHex.isEmpty ? "#5B8DEF" : mission.recommendedHex
 
             let content = self.makeContent(missionHex: missionHex)
@@ -104,11 +93,11 @@ final class MissionAlertScheduler {
 
     private func makeContent(missionHex: String) -> UNMutableNotificationContent {
         let content = UNMutableNotificationContent()
-        content.title = "⚠️ 지금 색상을 찾아라! ⚠️"
-        content.body = "목표 색상 \(missionHex) — 3분 안에 찾아봐요"
+        content.title = "주변의 아름다운 색을 담아보세요."
+        content.body  = "오늘 하루 스쳐간 색을 남겨볼까요?"
         content.sound = .default
         content.userInfo = [
-            AppConstants.Notification.missionHexKey: missionHex,
+            AppConstants.Notification.missionHexKey:  missionHex,
             AppConstants.Notification.missionNameKey: "오늘의 색상 미션"
         ]
         return content

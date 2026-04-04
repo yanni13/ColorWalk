@@ -32,7 +32,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
-        MissionAlertScheduler.shared.reschedule()
         handlePendingNotificationIfNeeded()
     }
 

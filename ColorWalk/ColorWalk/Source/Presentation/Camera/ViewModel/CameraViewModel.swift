@@ -51,9 +51,12 @@ final class CameraViewModel: NSObject {
     private var missionUIColor: UIColor = ColorMissionStore.shared.mission.value.color
 
     private enum Constants {
-        static let deltaEFrameInterval: Int = 6
-        static let maxHueDegrees: CGFloat  = 60.0
-        static let maxSatDiff: CGFloat     = 0.7
+        static let deltaEFrameInterval: Int      = 6
+        static let maxHueDegrees: CGFloat        = 60.0
+        static let maxSatDiff: CGFloat           = 0.7
+        static let achromaticThreshold: CGFloat  = 0.12
+        static let maxBrightnessDiff: CGFloat    = 0.35
+        static let maxAchromaticSatDiff: CGFloat = 0.20
     }
 
     override init() {
@@ -93,6 +96,7 @@ final class CameraViewModel: NSObject {
             }
             self.session.addInput(input)
             self.currentInput = input
+            self.configureFocusForCurrentDevice()
 
             self.videoOutput.videoSettings = [
                 kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA
@@ -137,6 +141,7 @@ final class CameraViewModel: NSObject {
             if self.session.canAddInput(newInput) {
                 self.session.addInput(newInput)
                 self.currentInput = newInput
+                self.configureFocusForCurrentDevice()
             }
             if let conn = self.videoOutput.connection(with: .video) {
                 conn.videoOrientation = .portrait
@@ -169,6 +174,81 @@ final class CameraViewModel: NSObject {
         return currentInput?.device.videoZoomFactor ?? 1.0
     }
 
+    var isFrontCamera: Bool {
+        return currentInput?.device.position == .front
+    }
+
+    // MARK: - Focus
+
+    private func configureFocusForCurrentDevice() {
+        guard let device = currentInput?.device else { return }
+        NotificationCenter.default.removeObserver(
+            self,
+            name: AVCaptureDevice.subjectAreaDidChangeNotification,
+            object: nil
+        )
+        do {
+            try device.lockForConfiguration()
+            if device.isFocusModeSupported(.continuousAutoFocus) {
+                device.focusMode = .continuousAutoFocus
+            }
+            if device.isExposureModeSupported(.continuousAutoExposure) {
+                device.exposureMode = .continuousAutoExposure
+            }
+            device.isSubjectAreaChangeMonitoringEnabled = true
+            device.unlockForConfiguration()
+        } catch {}
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleSubjectAreaChange),
+            name: AVCaptureDevice.subjectAreaDidChangeNotification,
+            object: device
+        )
+    }
+
+    func setFocusPoint(_ normalized: CGPoint) {
+        sessionQueue.async { [weak self] in
+            guard let self, let device = self.currentInput?.device else { return }
+            let clamped = CGPoint(
+                x: min(max(normalized.x, 0), 1),
+                y: min(max(normalized.y, 0), 1)
+            )
+            do {
+                try device.lockForConfiguration()
+                if device.isFocusModeSupported(.autoFocus) {
+                    device.focusPointOfInterest = clamped
+                    device.focusMode = .autoFocus
+                }
+                if device.isExposureModeSupported(.autoExpose) {
+                    device.exposurePointOfInterest = clamped
+                    device.exposureMode = .autoExpose
+                }
+                device.isSubjectAreaChangeMonitoringEnabled = true
+                device.unlockForConfiguration()
+            } catch {}
+        }
+    }
+
+    @objc private func handleSubjectAreaChange(_ notification: Notification) {
+        sessionQueue.async { [weak self] in
+            guard let self, let device = self.currentInput?.device else { return }
+            do {
+                try device.lockForConfiguration()
+                if device.isFocusModeSupported(.continuousAutoFocus) {
+                    device.focusMode = .continuousAutoFocus
+                }
+                if device.isExposureModeSupported(.continuousAutoExposure) {
+                    device.exposureMode = .continuousAutoExposure
+                }
+                device.unlockForConfiguration()
+            } catch {}
+        }
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
     // MARK: - Color Detection
 
     private func detectColor(from image: CIImage) {
@@ -199,7 +279,6 @@ final class CameraViewModel: NSObject {
         }
     }
 
-    // Brightness를 완전히 제외하고 Hue·Saturation만 비교 → 조명 무관
     private func computeHSBMatch(detected: UIColor) -> Int {
         var dH: CGFloat = 0, dS: CGFloat = 0, dB: CGFloat = 0
         var mH: CGFloat = 0, mS: CGFloat = 0, mB: CGFloat = 0
@@ -208,15 +287,29 @@ final class CameraViewModel: NSObject {
               missionUIColor.getHue(&mH, saturation: &mS, brightness: &mB, alpha: nil)
         else { return lastMatchPercent }
 
-        // 원형 색상환 거리 (0.0 ~ 0.5) → 도 단위 변환
-        let rawDiff = abs(dH - mH)
-        let hueDiff = min(rawDiff, 1.0 - rawDiff) * 360.0
-        let satDiff = abs(dS - mS)
+        let mIsAchromatic = mS < Constants.achromaticThreshold
+        let dIsAchromatic = dS < Constants.achromaticThreshold
 
-        let hueScore = max(0.0, 1.0 - hueDiff / Constants.maxHueDegrees)
-        let satScore = max(0.0, 1.0 - satDiff / Constants.maxSatDiff)
+        let match: Int
+        if mIsAchromatic && dIsAchromatic {
+            let briDiff = abs(dB - mB)
+            let satDiff = abs(dS - mS)
+            let briScore = max(0.0, 1.0 - briDiff / Constants.maxBrightnessDiff)
+            let satScore = max(0.0, 1.0 - satDiff / Constants.maxAchromaticSatDiff)
+            match = Int(round((briScore * 0.8 + satScore * 0.2) * 100))
+        } else if mIsAchromatic || dIsAchromatic {
+            let satRef = mIsAchromatic ? dS : mS
+            let penalty = max(0.0, 1.0 - satRef / 0.3)
+            match = Int(round(penalty * 40))
+        } else {
+            let rawDiff = abs(dH - mH)
+            let hueDiff = min(rawDiff, 1.0 - rawDiff) * 360.0
+            let satDiff = abs(dS - mS)
+            let hueScore = max(0.0, 1.0 - hueDiff / Constants.maxHueDegrees)
+            let satScore = max(0.0, 1.0 - satDiff / Constants.maxSatDiff)
+            match = Int(round((hueScore * 0.75 + satScore * 0.25) * 100))
+        }
 
-        let match = Int(round((hueScore * 0.75 + satScore * 0.25) * 100))
         lastMatchPercent = match
         return match
     }
