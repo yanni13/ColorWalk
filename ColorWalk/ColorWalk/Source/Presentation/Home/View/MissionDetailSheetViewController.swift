@@ -85,7 +85,7 @@ final class MissionDetailSheetViewController: UIViewController {
 
     private let weatherSectionTitle: UILabel = {
         let l = UILabel()
-        l.text = "실시간 날씨 정보"
+        l.text = L10n.missionDetailWeatherTitle
         l.font = UIFont(name: "Pretendard-SemiBold", size: 14)
         l.textColor = UIColor(hex: "#8B95A1")
         return l
@@ -123,7 +123,7 @@ final class MissionDetailSheetViewController: UIViewController {
 
     private let closeButton: UIButton = {
         let b = UIButton(type: .system)
-        b.setTitle("확인", for: .normal)
+        b.setTitle(L10n.buttonConfirm, for: .normal)
         b.titleLabel?.font = UIFont(name: "Pretendard-Bold", size: 16)
         b.tintColor = .white
         b.backgroundColor = UIColor(hex: "#191F28")
@@ -274,7 +274,7 @@ final class MissionDetailSheetViewController: UIViewController {
         
         weatherIconView.image = UIImage(systemName: weatherData.symbolName)
         weatherStatusLabel.text = weatherData.displayText
-        weatherDetailLabel.text = "기온 \(weatherData.celsius) · 습도 \(weatherData.humidity)"
+        weatherDetailLabel.text = L10n.missionDetailWeatherDetail(celsius: weatherData.celsius, humidity: weatherData.humidity)
     }
 
     private func bind() {
@@ -290,13 +290,13 @@ final class MissionDetailSheetViewController: UIViewController {
     }
 
     private func presentEditNameAlert() {
-        let alert = UIAlertController(title: "이름 수정", message: "새로운 미션 이름을 입력해주세요", preferredStyle: .alert)
+        let alert = UIAlertController(title: L10n.alertEditNameTitle, message: L10n.alertEditNameMessage, preferredStyle: .alert)
         alert.addTextField { [weak self] tf in
             tf.text = self?.mission.name
-            tf.placeholder = "미션 이름"
+            tf.placeholder = L10n.textFieldMissionNamePlaceholder
         }
-        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
-        alert.addAction(UIAlertAction(title: "변경", style: .default) { [weak self] _ in
+        alert.addAction(UIAlertAction(title: L10n.buttonCancel, style: .cancel))
+        alert.addAction(UIAlertAction(title: L10n.buttonChange, style: .default) { [weak self] _ in
             guard let name = alert.textFields?.first?.text, !name.isEmpty else { return }
             self?.updateName(name)
         })

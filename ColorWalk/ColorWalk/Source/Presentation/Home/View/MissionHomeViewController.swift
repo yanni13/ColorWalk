@@ -14,7 +14,7 @@ final class MissionHomeViewController: BaseViewController {
     // MARK: - Properties
 
     private let viewModel: MissionHomeViewModel
-    private var currentDisplayedMission: ColorMission = ColorMission.mockMissions[0]
+    private var currentDisplayedMission: ColorMission = ColorMission.placeholder
     private var currentWeatherData: WeatherData?
     private var cards: [ColorCard] = []
     private var currentIndex: Int = 0
@@ -27,7 +27,7 @@ final class MissionHomeViewController: BaseViewController {
 
     private let titleLabel: UILabel = {
         let l = UILabel()
-        l.text = "담아,"
+        l.text = L10n.homeTitle
         l.font = UIFont(name: "Pretendard-Bold", size: 28)
         l.textColor = UIColor(hex: "#191F28")
         return l
@@ -64,7 +64,7 @@ final class MissionHomeViewController: BaseViewController {
 
     private let bannerLabel: UILabel = {
         let l = UILabel()
-        l.text = "자정이 지났어요! 새로운 미션이 도착했습니다"
+        l.text = L10n.homeMidnightBanner
         l.font = UIFont(name: "Pretendard-SemiBold", size: 13)
         l.textColor = UIColor(hex: "#333333")
         l.numberOfLines = 0
@@ -87,7 +87,7 @@ final class MissionHomeViewController: BaseViewController {
 
     private let missionSectionLabel: UILabel = {
         let l = UILabel()
-        l.text = "오늘의 미션"
+        l.text = L10n.homeMissionSection
         l.font = UIFont(name: "Pretendard-SemiBold", size: 13)
         l.textColor = UIColor(hex: "#6B7684")
         return l
@@ -124,7 +124,7 @@ final class MissionHomeViewController: BaseViewController {
             for: .normal
         )
         b.tintColor = UIColor(hex: "#B0B8C1")
-        b.accessibilityLabel = "이름 수정"
+        b.accessibilityLabel = L10n.accessibilityEditName
         return b
     }()
 
@@ -161,7 +161,7 @@ final class MissionHomeViewController: BaseViewController {
             for: .normal
         )
         b.tintColor = UIColor(hex: "#B0B8C1")
-        b.accessibilityLabel = "미션 셔플"
+        b.accessibilityLabel = L10n.accessibilityShuffleMission
         return b
     }()
 
@@ -169,7 +169,7 @@ final class MissionHomeViewController: BaseViewController {
 
     private let progressSectionLabel: UILabel = {
         let l = UILabel()
-        l.text = "수집 현황"
+        l.text = L10n.homeProgressSection
         l.font = UIFont(name: "Pretendard-Medium", size: 12)
         l.textColor = UIColor(hex: "#6B7684")
         return l
@@ -177,7 +177,7 @@ final class MissionHomeViewController: BaseViewController {
 
     private let progressCountLabel: UILabel = {
         let l = UILabel()
-        l.text = "0 / 9 완료"
+        l.text = L10n.homePhotosCount(0)
         l.font = UIFont(name: "Pretendard-Bold", size: 12)
         l.textColor = UIColor(hex: "#34D399")
         return l
@@ -208,10 +208,10 @@ final class MissionHomeViewController: BaseViewController {
 
     private let changeMissionButton: UIButton = {
         let b = UIButton(type: .system)
-        b.setTitle("색상이 마음에 안 드시나요?  →", for: .normal)
+        b.setTitle(L10n.homeChangeMissionButton, for: .normal)
         b.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 14)
         b.tintColor = UIColor(hex: "#6B7684")
-        b.accessibilityLabel = "미션 색상 변경"
+        b.accessibilityLabel = L10n.alertMissionChangeTitle
         return b
     }()
 
@@ -241,7 +241,7 @@ final class MissionHomeViewController: BaseViewController {
 
     private let heroPlaceholderLabel: UILabel = {
         let l = UILabel()
-        l.text = "새로운 색상을 찾으세요"
+        l.text = L10n.homePlaceholder
         l.font = UIFont(name: "Pretendard-Medium", size: 13)
         l.textColor = UIColor(hex: "#B0B8C1")
         l.textAlignment = .center
@@ -260,7 +260,7 @@ final class MissionHomeViewController: BaseViewController {
 
     private let photoSectionLabel: UILabel = {
         let l = UILabel()
-        l.text = "촬영한 사진"
+        l.text = L10n.homePhotosSection
         l.font = UIFont(name: "Pretendard-Bold", size: 16)
         l.textColor = UIColor(hex: "#191F28")
         return l
@@ -287,8 +287,8 @@ final class MissionHomeViewController: BaseViewController {
 
     // MARK: - UI: Action Row
 
-    private let deleteButton = AppButton(style: .secondary, title: "삭제하기")
-    private let saveButton = AppButton(style: .primary, title: "저장하기")
+    private let deleteButton = AppButton(style: .secondary, title: L10n.buttonDeleteAction)
+    private let saveButton = AppButton(style: .primary, title: L10n.buttonSave)
 
     private lazy var actionRow: UIStackView = {
         let s = UIStackView(arrangedSubviews: [deleteButton, saveButton])
@@ -632,12 +632,12 @@ final class MissionHomeViewController: BaseViewController {
                 self.paginationView.isHidden = isEmpty
                 self.actionRow.isHidden = isEmpty
 
-                self.progressCountLabel.text = "현재 9칸 중 \(newCards.count)칸을 담았어요"
+                self.progressCountLabel.text = L10n.homeProgressCount(newCards.count)
                 self.updateProgressBar(count: newCards.count)
 
                 guard !isEmpty else { return }
                 if self.currentIndex >= newCards.count { self.currentIndex = 0 }
-                self.photoCountLabel.text = "\(newCards.count) / 9장"
+                self.photoCountLabel.text = L10n.homePhotosCount(newCards.count)
                 self.paginationView.setup(count: newCards.count)
                 self.paginationView.setActive(index: self.currentIndex)
                 self.carouselView.configure(cards: newCards, currentIndex: self.currentIndex)
@@ -666,24 +666,24 @@ final class MissionHomeViewController: BaseViewController {
     private func handleSaveResult(_ result: GallerySaveResult) {
         switch result {
         case .success:
-            showSaveAlert(title: "저장 완료!", message: "사진이 갤러리에 저장되었습니다.", showSettings: false)
+            showSaveAlert(title: L10n.alertSaveSuccessTitle, message: L10n.alertSaveSuccessMessage, showSettings: false)
         case .failure:
-            showSaveAlert(title: "저장 실패", message: "사진 저장 중 오류가 발생했습니다.", showSettings: false)
+            showSaveAlert(title: L10n.alertSaveFailureTitle, message: L10n.alertSaveFailureMessage, showSettings: false)
         case .permissionDenied:
-            showSaveAlert(title: "사진 저장 권한 필요", message: "설정에서 사진 접근 권한을 허용해주세요.", showSettings: true)
+            showSaveAlert(title: L10n.alertSavePermissionTitle, message: L10n.alertSavePermissionMessage, showSettings: true)
         }
     }
 
     private func showSaveAlert(title: String, message: String, showSettings: Bool) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         if showSettings {
-            alert.addAction(UIAlertAction(title: "취소", style: .cancel))
-            alert.addAction(UIAlertAction(title: "설정으로 이동", style: .default) { _ in
+            alert.addAction(UIAlertAction(title: L10n.buttonCancel, style: .cancel))
+            alert.addAction(UIAlertAction(title: L10n.buttonOpenSettings, style: .default) { _ in
                 guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
                 UIApplication.shared.open(url)
             })
         } else {
-            alert.addAction(UIAlertAction(title: "확인", style: .default))
+            alert.addAction(UIAlertAction(title: L10n.buttonConfirm, style: .default))
         }
         present(alert, animated: true)
     }
@@ -694,12 +694,12 @@ final class MissionHomeViewController: BaseViewController {
             return
         }
         let alert = UIAlertController(
-            title: "미션 색상 변경",
-            message: "⚠️ 미션 색상 변경: 현재 촬영한 사진이 모두 초기화되며 저장되지 않습니다. 계속하시겠습니까?",
+            title: L10n.alertMissionChangeTitle,
+            message: L10n.alertMissionChangeMessage,
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
-        alert.addAction(UIAlertAction(title: "확인", style: .destructive) { [weak self] _ in
+        alert.addAction(UIAlertAction(title: L10n.buttonCancel, style: .cancel))
+        alert.addAction(UIAlertAction(title: L10n.buttonConfirm, style: .destructive) { [weak self] _ in
             ColorCardStore.shared.clearAll()
             self?.shuffleSubject.onNext(())
         })
@@ -712,12 +712,12 @@ final class MissionHomeViewController: BaseViewController {
             return
         }
         let alert = UIAlertController(
-            title: "미션 색상 변경",
-            message: "⚠️ 미션 색상 변경: 현재 촬영한 사진이 모두 초기화되며 저장되지 않습니다. 계속하시겠습니까?",
+            title: L10n.alertMissionChangeTitle,
+            message: L10n.alertMissionChangeMessage,
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
-        alert.addAction(UIAlertAction(title: "확인", style: .destructive) { [weak self] _ in
+        alert.addAction(UIAlertAction(title: L10n.buttonCancel, style: .cancel))
+        alert.addAction(UIAlertAction(title: L10n.buttonConfirm, style: .destructive) { [weak self] _ in
             self?.presentColorPickerSheet()
         })
         present(alert, animated: true)
@@ -736,12 +736,12 @@ final class MissionHomeViewController: BaseViewController {
 
     private func presentDeleteConfirmAlert() {
         let alert = UIAlertController(
-            title: "사진 삭제",
-            message: "해당 사진을 정말 삭제하시겠습니까?",
+            title: L10n.alertPhotoDeleteTitle,
+            message: L10n.alertPhotoDeleteMessage,
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
-        alert.addAction(UIAlertAction(title: "삭제", style: .destructive) { [weak self] _ in
+        alert.addAction(UIAlertAction(title: L10n.buttonCancel, style: .cancel))
+        alert.addAction(UIAlertAction(title: L10n.buttonDelete, style: .destructive) { [weak self] _ in
             guard let self else { return }
             ColorCardStore.shared.remove(at: self.currentIndex)
         })
@@ -758,13 +758,13 @@ final class MissionHomeViewController: BaseViewController {
     }
 
     private func presentEditNameAlert() {
-        let alert = UIAlertController(title: "이름 수정", message: "미션의 이름을 입력해주세요", preferredStyle: .alert)
+        let alert = UIAlertController(title: L10n.alertEditNameTitle, message: L10n.alertEditNameMessage, preferredStyle: .alert)
         alert.addTextField { [weak self] tf in
             tf.text = self?.currentDisplayedMission.name
-            tf.placeholder = "미션 이름"
+            tf.placeholder = L10n.textFieldMissionNamePlaceholder
         }
-        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
-        alert.addAction(UIAlertAction(title: "변경", style: .default) { [weak self] _ in
+        alert.addAction(UIAlertAction(title: L10n.buttonCancel, style: .cancel))
+        alert.addAction(UIAlertAction(title: L10n.buttonChange, style: .default) { [weak self] _ in
             guard let name = alert.textFields?.first?.text, !name.isEmpty else { return }
             self?.updateMissionName(name)
         })

@@ -171,7 +171,7 @@ final class CollectionViewController: BaseViewController {
 
     private let emptyTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "텅~"
+        label.text = L10n.emptyTitle
         label.font = UIFont(name: "Pretendard-Bold", size: 28)
         label.textColor = UIColor(hex: "#191F28")
         label.textAlignment = .center
@@ -180,7 +180,7 @@ final class CollectionViewController: BaseViewController {
 
     private let emptySubtitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "이 날은 산책을 하지 않았어요."
+        label.text = L10n.emptySubtitle
         label.font = UIFont(name: "Pretendard-Medium", size: 14)
         label.textColor = UIColor(hex: "#6B7684")
         label.textAlignment = .center
@@ -209,7 +209,7 @@ final class CollectionViewController: BaseViewController {
 
     private let stateLabel: UILabel = {
         let label = UILabel()
-        label.text = "아쉬워요 😢 미션을 완성하지 못했어요."
+        label.text = L10n.missionStatusInProgress
         label.font = UIFont(name: "Pretendard-Medium", size: 13)
         label.textColor = UIColor(hex: "#B0B8C1")
         label.textAlignment = .center
@@ -218,7 +218,7 @@ final class CollectionViewController: BaseViewController {
 
     private let shareHintLabel: UILabel = {
         let label = UILabel()
-        label.text = "9개의 미션을 수행하면 그리드를 공유할 수 있어요!"
+        label.text = L10n.collectionShareHint
         label.font = UIFont(name: "Pretendard-Medium", size: 13)
         label.textColor = UIColor(hex: "#6B7684")
         label.textAlignment = .center
@@ -385,7 +385,7 @@ final class CollectionViewController: BaseViewController {
                 guard let self else { return }
                 self.currentMissionHex = hex
                 self.colorDotView.backgroundColor = UIColor(hex: hex)
-                self.missionNameLabel.text = "오늘의 미션 색상"
+                self.missionNameLabel.text = L10n.collectionMissionColor
             })
             .disposed(by: disposeBag)
 
@@ -518,7 +518,7 @@ final class CollectionViewController: BaseViewController {
             container.layer.render(in: context.cgContext)
         }
 
-        let itemSource = GridShareItemSource(image: image, title: "담아, 미션 그리드", date: currentShareDateText)
+        let itemSource = GridShareItemSource(image: image, title: L10n.collectionShareTitle, date: currentShareDateText)
         let activityVC = UIActivityViewController(activityItems: [itemSource], applicationActivities: nil)
         
         if let popover = activityVC.popoverPresentationController {

@@ -20,7 +20,7 @@ final class WeatherKitService: WeatherServiceProtocol {
                     single(.success(data))
                 } catch {
                     // 기본 에러 데이터
-                    single(.success(WeatherData(displayText: "날씨 정보 없음", symbolName: "sun.max", celsius: "0°C", humidity: "0%")))
+                    single(.success(WeatherData(displayText: L10n.weatherDefault, symbolName: "sun.max", celsius: "0°C", humidity: "0%")))
                 }
             }
             return Disposables.create { task.cancel() }

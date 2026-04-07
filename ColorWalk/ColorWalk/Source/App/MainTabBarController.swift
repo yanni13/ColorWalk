@@ -24,7 +24,7 @@ final class MainTabBarController: UITabBarController {
         coordinators.append(homeCoordinator)
         homeCoordinator.start()
         homeNav.tabBarItem = UITabBarItem(
-            title: "홈",
+            title: L10n.tabHome,
             image: UIImage(systemName: "house"),
             selectedImage: UIImage(systemName: "house.fill")
         )
@@ -36,7 +36,7 @@ final class MainTabBarController: UITabBarController {
         coordinators.append(cameraCoordinator)
         cameraCoordinator.start()
         cameraNav.tabBarItem = UITabBarItem(
-            title: "촬영",
+            title: L10n.tabCamera,
             image: UIImage(systemName: "camera"),
             selectedImage: UIImage(systemName: "camera.fill")
         )
@@ -48,7 +48,7 @@ final class MainTabBarController: UITabBarController {
         coordinators.append(collectionCoordinator)
         collectionCoordinator.start()
         collectionNav.tabBarItem = UITabBarItem(
-            title: "컬렉션",
+            title: L10n.tabCollection,
             image: UIImage(systemName: "rectangle.grid.2x2"),
             selectedImage: UIImage(systemName: "rectangle.grid.2x2.fill")
         )
@@ -60,7 +60,7 @@ final class MainTabBarController: UITabBarController {
         coordinators.append(mapCoordinator)
         mapCoordinator.start()
         mapNav.tabBarItem = UITabBarItem(
-            title: "지도",
+            title: L10n.tabMap,
             image: UIImage(systemName: "mappin.and.ellipse"),
             selectedImage: UIImage(systemName: "mappin.and.ellipse")
         )

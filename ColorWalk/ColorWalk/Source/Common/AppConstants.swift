@@ -16,11 +16,11 @@ enum AppConstants {
     }
 
     enum Text {
-        static let missionComplete = "완성"
-        static let missionIncomplete = "미완성"
-        static let noMissionTitle = "텅~"
-        static let noMissionSubtitle = "이 날은 산책을 하지 않았어요."
-        static let inProgressMessage = "아쉬워요 😢 미션을 완성하지 못했어요."
-        static let shareButtonTitle = "공유하기"
+        static var missionComplete: String { L10n.missionStatusComplete }
+        static var missionIncomplete: String { L10n.missionStatusIncomplete }
+        static var noMissionTitle: String { L10n.emptyTitle }
+        static var noMissionSubtitle: String { L10n.emptySubtitle }
+        static var inProgressMessage: String { L10n.missionStatusInProgress }
+        static var shareButtonTitle: String { L10n.buttonShare }
     }
 }

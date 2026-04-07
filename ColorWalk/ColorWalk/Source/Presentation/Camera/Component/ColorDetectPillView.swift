@@ -75,6 +75,6 @@ final class ColorDetectPillView: UIView {
     func update(missionColor: UIColor, missionHex: String, match: Int) {
         colorDot.backgroundColor = missionColor
         hexLabel.text = missionHex
-        matchLabel.text = "\(match)% 일치"
+        matchLabel.text = L10n.cameraMatch(match)
     }
 }

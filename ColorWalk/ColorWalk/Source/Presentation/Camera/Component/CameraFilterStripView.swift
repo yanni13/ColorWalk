@@ -56,7 +56,7 @@ final class CameraFilterStripView: UIView {
         cfg.background.cornerRadius = 15
         cfg.contentInsets = NSDirectionalEdgeInsets(top: 6, leading: 14, bottom: 6, trailing: 14)
 
-        var title = AttributedString(filter.rawValue)
+        var title = AttributedString(filter.displayName)
         title.font = UIFont(name: "Pretendard-Medium", size: 13) ?? .systemFont(ofSize: 13)
         cfg.attributedTitle = title
         cfg.baseForegroundColor = .white

@@ -83,6 +83,13 @@
 			);
 			target = D82CC5182F73D0E700211DB3 /* ColorWalkWidgetExtension */;
 		};
+		D8B75B8E2F8352EE003BF264 /* Exceptions for "ColorWalk" folder in "ColorWalkWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Resource/Assets.xcassets,
+			);
+			target = D82CC5182F73D0E700211DB3 /* ColorWalkWidgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -90,6 +97,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				D82CC0822F710D1D00211DB3 /* Exceptions for "ColorWalk" folder in "ColorWalk" target */,
+				D8B75B8E2F8352EE003BF264 /* Exceptions for "ColorWalk" folder in "ColorWalkWidgetExtension" target */,
 			);
 			path = ColorWalk;
 			sourceTree = "<group>";
@@ -332,7 +340,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yanni13.ColorWalk;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -374,7 +382,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yanni13.ColorWalk;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;

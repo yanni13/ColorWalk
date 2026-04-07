@@ -24,7 +24,7 @@ final class OnboardingViewController: BaseViewController {
 
     private let titleLabel: UILabel = {
         let l = UILabel()
-        l.text = "담아,"
+        l.text = L10n.homeTitle
         l.font = UIFont(name: "Pretendard-Bold", size: 32) ?? .boldSystemFont(ofSize: 32)
         l.textColor = UIColor(hex: "#191F28")
         return l
@@ -32,7 +32,7 @@ final class OnboardingViewController: BaseViewController {
 
     private let subtitleLabel: UILabel = {
         let l = UILabel()
-        l.text = "당신의 시선이 머문 자리를,\n당신만의 색으로 가득 채워보세요"
+        l.text = L10n.onboardingSubtitle
         l.font = UIFont(name: "Pretendard-Regular", size: 13) ?? .systemFont(ofSize: 13)
         l.textColor = UIColor(hex: "#6B7684")
         l.numberOfLines = 0
@@ -69,7 +69,7 @@ final class OnboardingViewController: BaseViewController {
 
     private let emptyTitleLabel: UILabel = {
         let l = UILabel()
-        l.text = "아직 수집한 색이 없어요"
+        l.text = L10n.onboardingEmptyTitle
         l.font = UIFont(name: "Pretendard-Bold", size: 18) ?? .boldSystemFont(ofSize: 18)
         l.textColor = UIColor(hex: "#191F28")
         l.textAlignment = .center
@@ -78,7 +78,7 @@ final class OnboardingViewController: BaseViewController {
 
     private let emptyDescLabel: UILabel = {
         let l = UILabel()
-        l.text = "산책하면서 주변의 아름다운 색을\n카메라로 담아보세요"
+        l.text = L10n.onboardingEmptyDesc
         l.font = UIFont(name: "Pretendard-Regular", size: 13) ?? .systemFont(ofSize: 13)
         l.textColor = UIColor(hex: "#6B7684")
         l.textAlignment = .center
@@ -96,7 +96,7 @@ final class OnboardingViewController: BaseViewController {
         let iconConfig = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
         config.image = UIImage(systemName: "camera", withConfiguration: iconConfig)
         config.baseForegroundColor = .white
-        var title = AttributedString("오늘의 첫 번째 색을 찾아볼까요?")
+        var title = AttributedString(L10n.onboardingCTAButton)
         title.font = UIFont(name: "Pretendard-SemiBold", size: 15) ?? .systemFont(ofSize: 15, weight: .semibold)
         title.foregroundColor = .white
         config.attributedTitle = title

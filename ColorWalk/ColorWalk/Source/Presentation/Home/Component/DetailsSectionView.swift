@@ -17,7 +17,7 @@ final class DetailsSectionView: UIView {
     // MARK: - Match Row
     private let matchLabel: UILabel = {
         let l = UILabel()
-        l.text = "색상 정확도"
+        l.text = L10n.detailsColorAccuracy
         l.font = UIFont(name: "Pretendard-Medium", size: 13)
         l.textColor = UIColor(hex: "#6B7684")
         return l
@@ -52,7 +52,7 @@ final class DetailsSectionView: UIView {
     // MARK: - Mission Row
     private let missionLabel: UILabel = {
         let l = UILabel()
-        l.text = "미션 진행"
+        l.text = L10n.detailsMissionProgress
         l.font = UIFont(name: "Pretendard-Medium", size: 13)
         l.textColor = UIColor(hex: "#6B7684")
         return l
@@ -86,7 +86,7 @@ final class DetailsSectionView: UIView {
     // MARK: - Action Buttons
     private let shareButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        config.title = "공유"
+        config.title = L10n.buttonShare
         config.image = UIImage(systemName: "square.and.arrow.up")
         config.imagePadding = 8
         config.baseForegroundColor = UIColor(hex: "#6B7684")
@@ -100,7 +100,7 @@ final class DetailsSectionView: UIView {
 
     private let saveButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        config.title = "저장"
+        config.title = L10n.buttonSave
         config.image = UIImage(systemName: "arrow.down.to.line")
         config.imagePadding = 8
         config.baseForegroundColor = .white

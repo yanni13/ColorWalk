@@ -39,13 +39,13 @@ final class CollectionEditViewController: BaseViewController {
         button.tintColor = UIColor(hex: "#191F28")
         button.backgroundColor = UIColor(hex: "#F5F7FA")
         button.layer.cornerRadius = 18
-        button.accessibilityLabel = "닫기"
+        button.accessibilityLabel = L10n.accessibilityClose
         return button
     }()
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "사진 선택"
+        label.text = L10n.collectionEditTitle
         label.font = UIFont(name: "Pretendard-Bold", size: 16)
         label.textColor = UIColor(hex: "#191F28")
         return label
@@ -61,13 +61,13 @@ final class CollectionEditViewController: BaseViewController {
 
     private let doneButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("전체 해제", for: .normal)
+        button.setTitle(L10n.buttonDeselectAll, for: .normal)
         button.titleLabel?.font = UIFont(name: "Pretendard-Bold", size: 14)
         button.setTitleColor(UIColor(hex: "#6B7684"), for: .normal)
         button.backgroundColor = UIColor(hex: "#F5F7FA")
         button.layer.cornerRadius = 17
         button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 18, bottom: 10, right: 18)
-        button.accessibilityLabel = "전체 해제"
+        button.accessibilityLabel = L10n.buttonDeselectAll
         return button
     }()
 
@@ -89,7 +89,7 @@ final class CollectionEditViewController: BaseViewController {
 
     private let instructionLabel: UILabel = {
         let label = UILabel()
-        label.text = "그리드에 담을 사진 9장을 선택하세요"
+        label.text = L10n.collectionEditInstruction
         label.font = UIFont(name: "Pretendard-Medium", size: 12)
         label.textColor = UIColor(hex: "#8E95A2")
         return label
@@ -123,7 +123,7 @@ final class CollectionEditViewController: BaseViewController {
 
     private let selectedTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "선택한 사진"
+        label.text = L10n.collectionEditSelectedPhotos
         label.font = UIFont(name: "Pretendard-Medium", size: 13)
         label.textColor = UIColor(hex: "#8E95A2")
         return label
@@ -141,7 +141,7 @@ final class CollectionEditViewController: BaseViewController {
         return label
     }()
 
-    private let completeButton = AppButton(style: .primary, title: "완료하기")
+    private let completeButton = AppButton(style: .primary, title: L10n.buttonDone)
 
     // MARK: - Init
 
@@ -372,7 +372,7 @@ final class PhotoPickerCell: UICollectionViewCell {
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         contentView.addGestureRecognizer(tapGesture)
-        contentView.accessibilityLabel = "사진"
+        contentView.accessibilityLabel = L10n.accessibilityPhoto
         contentView.isAccessibilityElement = true
     }
 

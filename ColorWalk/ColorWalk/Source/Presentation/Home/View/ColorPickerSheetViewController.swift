@@ -18,16 +18,18 @@ final class ColorPickerSheetViewController: UIViewController {
         let color: UIColor
     }
 
-    static let presets: [PresetColor] = [
-        PresetColor(name: "하늘",   hex: "#5B8DEF", color: UIColor(hex: "#5B8DEF")),
-        PresetColor(name: "벚꽃",   hex: "#FF7EB3", color: UIColor(hex: "#FF7EB3")),
-        PresetColor(name: "라벤더", hex: "#9B7DFF", color: UIColor(hex: "#9B7DFF")),
-        PresetColor(name: "노을",   hex: "#FFB347", color: UIColor(hex: "#FFB347")),
-        PresetColor(name: "민트",   hex: "#34D399", color: UIColor(hex: "#34D399")),
-        PresetColor(name: "산호",   hex: "#F87171", color: UIColor(hex: "#F87171")),
-        PresetColor(name: "바다",   hex: "#60A5FA", color: UIColor(hex: "#60A5FA")),
-        PresetColor(name: "포도",   hex: "#A78BFA", color: UIColor(hex: "#A78BFA"))
-    ]
+    static var presets: [PresetColor] {
+        [
+            PresetColor(name: L10n.colorPresetSky,          hex: "#5B8DEF", color: UIColor(hex: "#5B8DEF")),
+            PresetColor(name: L10n.colorPresetCherryBlossom, hex: "#FF7EB3", color: UIColor(hex: "#FF7EB3")),
+            PresetColor(name: L10n.colorPresetLavender,     hex: "#9B7DFF", color: UIColor(hex: "#9B7DFF")),
+            PresetColor(name: L10n.colorPresetSunset,       hex: "#FFB347", color: UIColor(hex: "#FFB347")),
+            PresetColor(name: L10n.colorPresetMint,         hex: "#34D399", color: UIColor(hex: "#34D399")),
+            PresetColor(name: L10n.colorPresetCoral,        hex: "#F87171", color: UIColor(hex: "#F87171")),
+            PresetColor(name: L10n.colorPresetOcean,        hex: "#60A5FA", color: UIColor(hex: "#60A5FA")),
+            PresetColor(name: L10n.colorPresetGrape,        hex: "#A78BFA", color: UIColor(hex: "#A78BFA"))
+        ]
+    }
 
     // MARK: - Properties
     private let currentMission: ColorMission
@@ -60,7 +62,7 @@ final class ColorPickerSheetViewController: UIViewController {
     // MARK: - UI: Header
     private let titleLabel: UILabel = {
         let l = UILabel()
-        l.text = "미션 색상 변경"
+        l.text = L10n.colorPickerTitle
         l.font = UIFont(name: "Pretendard-Bold", size: 20)
         l.textColor = UIColor(hex: "#191F28")
         return l
@@ -90,7 +92,7 @@ final class ColorPickerSheetViewController: UIViewController {
 
     private let currentTopLabel: UILabel = {
         let l = UILabel()
-        l.text = "현재 미션 색상"
+        l.text = L10n.colorPickerCurrentColorLabel
         l.font = UIFont(name: "Pretendard-Medium", size: 11)
         l.textColor = UIColor(hex: "#6B7684")
         return l
@@ -120,7 +122,7 @@ final class ColorPickerSheetViewController: UIViewController {
     // MARK: - UI: Preset Section
     private let presetLabel: UILabel = {
         let l = UILabel()
-        l.text = "추천 색상"
+        l.text = L10n.colorPickerPresetLabel
         l.font = UIFont(name: "Pretendard-Bold", size: 14)
         l.textColor = UIColor(hex: "#191F28")
         return l
@@ -153,7 +155,7 @@ final class ColorPickerSheetViewController: UIViewController {
         cfg.image = UIImage(systemName: "shuffle", withConfiguration:
             UIImage.SymbolConfiguration(pointSize: 14, weight: .medium))
         cfg.baseForegroundColor = UIColor(hex: "#191F28")
-        var t = AttributedString("랜덤 색상")
+        var t = AttributedString(L10n.buttonRandomColor)
         t.font = UIFont(name: "Pretendard-SemiBold", size: 14) ?? .systemFont(ofSize: 14, weight: .semibold)
         t.foregroundColor = UIColor(hex: "#191F28")
         cfg.attributedTitle = t
@@ -180,7 +182,7 @@ final class ColorPickerSheetViewController: UIViewController {
 
     private let hexPlaceholderLabel: UILabel = {
         let l = UILabel()
-        l.text = "직접 입력"
+        l.text = L10n.colorPickerCustomInputLabel
         l.font = UIFont(name: "Pretendard-Regular", size: 14)
         l.textColor = UIColor(hex: "#B0B8C1")
         return l
@@ -206,7 +208,7 @@ final class ColorPickerSheetViewController: UIViewController {
     // MARK: - UI: Apply
     private let applyButton: UIButton = {
         let b = UIButton(type: .system)
-        b.setTitle("적용하기", for: .normal)
+        b.setTitle(L10n.buttonApply, for: .normal)
         b.titleLabel?.font = UIFont(name: "Pretendard-Bold", size: 16)
         b.tintColor = .white
         b.backgroundColor = UIColor(hex: "#1A1A1A")
@@ -399,7 +401,7 @@ final class ColorPickerSheetViewController: UIViewController {
                 let palette = ColorPalettePickerSheetViewController()
                 palette.modalPresentationStyle = .overFullScreen
                 palette.onColorPicked = { [weak self] color, hex in
-                    self?.selectedRelay.accept((color, hex, "직접 선택한 색상"))
+                    self?.selectedRelay.accept((color, hex, L10n.colorPickerCustomColorName))
                     self?.setHexInputDisplay(color: color, hex: hex)
                     self?.updatePresetRings(selectedIndex: nil)
                     self?.selectedPresetIndex = nil
@@ -453,7 +455,7 @@ final class ColorPickerSheetViewController: UIViewController {
         let hex = String(format: "#%02X%02X%02X", Int(r*255), Int(g*255), Int(b*255))
         
         selectedPresetIndex = nil
-        selectedRelay.accept((color, hex, "랜덤 색상"))
+        selectedRelay.accept((color, hex, L10n.buttonRandomColor))
         updatePresetRings(selectedIndex: nil)
         resetHexInputDisplay()
     }
@@ -484,7 +486,7 @@ final class ColorPickerSheetViewController: UIViewController {
 
     private func resetHexInputDisplay() {
         hexHashLabel.textColor = UIColor(hex: "#B0B8C1")
-        hexPlaceholderLabel.text = "직접 입력"
+        hexPlaceholderLabel.text = L10n.colorPickerCustomInputLabel
         hexPlaceholderLabel.font = UIFont(name: "Pretendard-Regular", size: 14)
         hexPlaceholderLabel.textColor = UIColor(hex: "#B0B8C1")
         hexCircleView.backgroundColor = UIColor(hex: "#E0E0E0")

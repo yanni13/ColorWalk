@@ -114,7 +114,7 @@ final class ColorCardStore {
                 id: photo.id.stringValue,
                 imageURL: nil,
                 capturedImage: uiImage,
-                colorName: "수집된 색상",
+                colorName: L10n.colorCardCollected,
                 hexColor: photo.capturedHex,
                 dotColor: UIColor(hex: photo.capturedHex),
                 locationName: photo.locationName,

@@ -48,7 +48,7 @@ final class GalleryColorViewController: UIViewController {
 
     private let navTitleLabel: UILabel = {
         let l = UILabel()
-        l.text = "색상 수집"
+        l.text = L10n.galleryTitle
         l.font = UIFont(name: "Pretendard-Bold", size: 17) ?? .boldSystemFont(ofSize: 17)
         l.textColor = .white
         l.textAlignment = .center
@@ -57,7 +57,7 @@ final class GalleryColorViewController: UIViewController {
 
     private let hintLabel: UILabel = {
         let l = UILabel()
-        l.text = "원하는 색상 부분을 탭하세요"
+        l.text = L10n.galleryInstruction
         l.font = UIFont(name: "Pretendard-Medium", size: 13)
         l.textColor = UIColor.white.withAlphaComponent(0.65)
         l.textAlignment = .center
@@ -247,7 +247,7 @@ final class GalleryColorViewController: UIViewController {
 
     private func fetchAddress(lat: Double, lon: Double, completion: @escaping (String) -> Void) {
         guard lat != 0.0 || lon != 0.0 else {
-            completion("현재 위치")
+            completion(L10n.locationCurrent)
             return
         }
         let geocoder = CLGeocoder()
@@ -258,9 +258,9 @@ final class GalleryColorViewController: UIViewController {
             if let pm = placemarks?.first {
                 let locality    = pm.locality ?? ""
                 let subLocality = pm.subLocality ?? ""
-                completion(locality.isEmpty ? "현재 위치" : "\(locality) \(subLocality)")
+                completion(locality.isEmpty ? L10n.locationCurrent : "\(locality) \(subLocality)")
             } else {
-                completion("현재 위치")
+                completion(L10n.locationCurrent)
             }
         }
     }
@@ -272,7 +272,7 @@ final class GalleryColorViewController: UIViewController {
         view.addSubview(toast)
 
         let label = UILabel()
-        label.text = "✓  색상 수집 완료! (\(match)%)"
+        label.text = L10n.cameraToastCollectSuccess(match)
         label.font = UIFont(name: "Pretendard-SemiBold", size: 14)
         label.textColor = .white
         toast.addSubview(label)

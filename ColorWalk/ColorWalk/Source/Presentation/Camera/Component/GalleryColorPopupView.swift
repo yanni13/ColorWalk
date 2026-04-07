@@ -44,10 +44,9 @@ final class GalleryColorPopupView: UIView {
         return l
     }()
 
-    // "다시 찾기" — dark primary
     private let retryButton: UIButton = {
         let b = UIButton(type: .system)
-        b.setTitle("다시 찾기", for: .normal)
+        b.setTitle(L10n.galleryPopupRetry, for: .normal)
         b.titleLabel?.font = UIFont(name: "Pretendard-Bold", size: 15) ?? .boldSystemFont(ofSize: 15)
         b.tintColor = .white
         b.backgroundColor = UIColor(hex: "#2A2A2A")
@@ -55,10 +54,9 @@ final class GalleryColorPopupView: UIView {
         return b
     }()
 
-    // "수집하기" — light secondary
     private let collectButton: UIButton = {
         let b = UIButton(type: .system)
-        b.setTitle("수집하기", for: .normal)
+        b.setTitle(L10n.galleryPopupCollect, for: .normal)
         b.titleLabel?.font = UIFont(name: "Pretendard-Bold", size: 15) ?? .boldSystemFont(ofSize: 15)
         b.tintColor = UIColor(hex: "#1A1A1A")
         b.backgroundColor = .white
@@ -131,22 +129,22 @@ final class GalleryColorPopupView: UIView {
 
         switch match {
         case 80...:
-            emoji = "🎯"; title = "딱 맞는 색이네요!"
+            emoji = "🎯"; title = L10n.galleryPopupMatchPerfect
         case 60..<80:
-            emoji = "🎨"; title = "비슷한 색이네요!"
+            emoji = "🎨"; title = L10n.galleryPopupMatchSimilar
         case 40..<60:
-            emoji = "🤔"; title = "좀 다른 색이네요..."
+            emoji = "🤔"; title = L10n.galleryPopupMatchDifferent
         default:
-            emoji = "😅"; title = "많이 다른 색이에요..."
+            emoji = "😅"; title = L10n.galleryPopupMatchVeryDifferent
         }
 
         emojiLabel.text = emoji
         titleLabel.text = title
 
         if canCollect {
-            descLabel.text = "검출 색상: \(hex)\n미션 일치율 \(match)%  · 이대로 수집할까요?"
+            descLabel.text = L10n.galleryPopupDescCanCollect(hex: hex, match: match)
         } else {
-            descLabel.text = "검출 색상: \(hex)\n일치율 \(match)% · 60% 이상이어야 수집할 수 있어요"
+            descLabel.text = L10n.galleryPopupDescCannotCollect(hex: hex, match: match)
         }
 
         collectButton.isEnabled = canCollect

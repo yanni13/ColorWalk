@@ -25,53 +25,54 @@ final class MissionGenerator {
         let nameTemplates: [String]
     }
 
-    private static let themes: [WeatherTheme: [ColorCandidate]] = [
-        .clear: [
-            ColorCandidate(hex: "#FFD700", nameTemplates: ["햇살 가득", "금빛", "맑은"]),
-            ColorCandidate(hex: "#87CEEB", nameTemplates: ["파란 하늘", "맑은 호수", "시원한"]),
-            ColorCandidate(hex: "#FFA500", nameTemplates: ["상큼한", "오후의", "빛나는"]),
-            ColorCandidate(hex: "#FF7EB3", nameTemplates: ["벚꽃", "수줍은", "화사한"]),
-            ColorCandidate(hex: "#FDE047", nameTemplates: ["유채꽃", "밝은", "노란"])
-        ],
-        .cloudy: [
-            ColorCandidate(hex: "#708090", nameTemplates: ["안개 낀", "차분한", "슬레이트"]),
-            ColorCandidate(hex: "#B0C4DE", nameTemplates: ["구름 사이", "연한", "아련한"]),
-            ColorCandidate(hex: "#94A3B8", nameTemplates: ["빌딩 숲", "무채색", "정적인"]),
-            ColorCandidate(hex: "#64748B", nameTemplates: ["깊은 밤", "중후한", "차분한"]),
-            ColorCandidate(hex: "#E2E8F0", nameTemplates: ["구름 하늘", "깨끗한", "소프트"])
-        ],
-        .rainy: [
-            ColorCandidate(hex: "#34D399", nameTemplates: ["비 온 뒤", "생기 가득", "숲속"]),
-            ColorCandidate(hex: "#4682B4", nameTemplates: ["비 머금은", "스틸", "촉촉한"]),
-            ColorCandidate(hex: "#10B981", nameTemplates: ["풀내음", "초록빛", "싱그러운"]),
-            ColorCandidate(hex: "#064E3B", nameTemplates: ["깊은 산", "진한", "숲의"]),
-            ColorCandidate(hex: "#0F172A", nameTemplates: ["자정의", "심연의", "어두운"])
-        ],
-        .extreme: [
-            ColorCandidate(hex: "#483D8B", nameTemplates: ["폭풍 전야", "강렬한", "신비로운"]),
-            ColorCandidate(hex: "#FF4500", nameTemplates: ["열기 가득", "타오르는", "강렬한"]),
-            ColorCandidate(hex: "#4B0082", nameTemplates: ["번개 빛", "인디고", "무거운"]),
-            ColorCandidate(hex: "#DC2626", nameTemplates: ["경고등", "강렬한", "정열의"]),
-            ColorCandidate(hex: "#1E293B", nameTemplates: ["거센 바람", "차가운", "어두운"])
+    private static var themes: [WeatherTheme: [ColorCandidate]] {
+        [
+            .clear: [
+                ColorCandidate(hex: "#FFD700", nameTemplates: [L10n.missionThemeSunFull, L10n.missionThemeGolden, L10n.missionThemeClearOf]),
+                ColorCandidate(hex: "#87CEEB", nameTemplates: [L10n.missionThemeBlueSky, L10n.missionThemeClearLake, L10n.missionThemeCool]),
+                ColorCandidate(hex: "#FFA500", nameTemplates: [L10n.missionThemeRefreshing, L10n.missionThemeAfternoon, L10n.missionThemeShining]),
+                ColorCandidate(hex: "#FF7EB3", nameTemplates: [L10n.missionThemeCherryBlossom, L10n.missionThemeShy, L10n.missionThemeVivid]),
+                ColorCandidate(hex: "#FDE047", nameTemplates: [L10n.missionThemeCanola, L10n.missionThemeBright, L10n.missionThemeYellow])
+            ],
+            .cloudy: [
+                ColorCandidate(hex: "#708090", nameTemplates: [L10n.missionThemeFoggy, L10n.missionThemeCalm, L10n.missionThemeSlate]),
+                ColorCandidate(hex: "#B0C4DE", nameTemplates: [L10n.missionThemeThroughClouds, L10n.missionThemeLight, L10n.missionThemeFaint]),
+                ColorCandidate(hex: "#94A3B8", nameTemplates: [L10n.missionThemeCityForest, L10n.missionThemeMonochrome, L10n.missionThemeStatic]),
+                ColorCandidate(hex: "#64748B", nameTemplates: [L10n.missionThemeDeepNight, L10n.missionThemeHeavy, L10n.missionThemeCalm]),
+                ColorCandidate(hex: "#E2E8F0", nameTemplates: [L10n.missionThemeCloudySky, L10n.missionThemeClean, L10n.missionThemeSoft])
+            ],
+            .rainy: [
+                ColorCandidate(hex: "#34D399", nameTemplates: [L10n.missionThemeAfterRain, L10n.missionThemeLively, L10n.missionThemeForest]),
+                ColorCandidate(hex: "#4682B4", nameTemplates: [L10n.missionThemeRainSoaked, L10n.missionThemeSteel, L10n.missionThemeMoist]),
+                ColorCandidate(hex: "#10B981", nameTemplates: [L10n.missionThemeGrassScent, L10n.missionThemeGreenTone, L10n.missionThemeFresh]),
+                ColorCandidate(hex: "#064E3B", nameTemplates: [L10n.missionThemeDeepMountain, L10n.missionThemeDeep, L10n.missionThemeForestOf]),
+                ColorCandidate(hex: "#0F172A", nameTemplates: [L10n.missionThemeMidnight, L10n.missionThemeAbyss, L10n.missionThemeDark])
+            ],
+            .extreme: [
+                ColorCandidate(hex: "#483D8B", nameTemplates: [L10n.missionThemeBeforeStorm, L10n.missionThemeIntense, L10n.missionThemeMysterious]),
+                ColorCandidate(hex: "#FF4500", nameTemplates: [L10n.missionThemeHeat, L10n.missionThemeBlazing, L10n.missionThemeIntense]),
+                ColorCandidate(hex: "#4B0082", nameTemplates: [L10n.missionThemeLightningFlash, L10n.missionThemeIndigo, L10n.missionThemeHeavyFeel]),
+                ColorCandidate(hex: "#DC2626", nameTemplates: [L10n.missionThemeWarning, L10n.missionThemeIntense, L10n.missionThemePassion]),
+                ColorCandidate(hex: "#1E293B", nameTemplates: [L10n.missionThemeGaleWind, L10n.missionThemeCold, L10n.missionThemeDark])
+            ]
         ]
-    ]
+    }
 
     static func generate(weatherSymbol: String, weatherText: String) -> ColorMission {
         let theme = WeatherTheme.from(symbolName: weatherSymbol)
         let hour = Calendar.current.component(.hour, from: Date())
         
         guard let candidates = themes[theme], let candidate = candidates.randomElement() else {
-            return ColorMission.mockMissions[0]
+            return ColorMission.placeholder
         }
         
         let themePrefix = candidate.nameTemplates.randomElement() ?? ""
         let colorName = getColorName(for: candidate.hex)
         
-        // 시간 수식어 결정
         var timePrefix = ""
-        if (17...20).contains(hour) { timePrefix = "노을" }
-        else if (5...8).contains(hour) { timePrefix = "새벽" }
-        else if (21...23).contains(hour) || (0...4).contains(hour) { timePrefix = "밤" }
+        if (17...20).contains(hour) { timePrefix = L10n.missionThemeSunset }
+        else if (5...8).contains(hour) { timePrefix = L10n.missionThemeDawn }
+        else if (21...23).contains(hour) || (0...4).contains(hour) { timePrefix = L10n.missionThemeNight }
 
         // 단계별 이름 조합 (10자 이내 최적화)
         var finalName = ""
@@ -106,27 +107,27 @@ final class MissionGenerator {
 
     private static func getColorName(for hex: String) -> String {
         switch hex.lowercased() {
-        case "#ffd700": return "노랑"
-        case "#87ceeb": return "하늘"
-        case "#ffa500": return "주황"
-        case "#ff7eb3": return "핑크"
-        case "#fde047": return "노랑"
-        case "#708090": return "회색"
-        case "#b0c4de": return "파랑"
-        case "#94a3b8": return "회색"
-        case "#64748b": return "슬레이트"
-        case "#e2e8f0": return "연회색"
-        case "#34d399": return "초록"
-        case "#4682b4": return "파랑"
-        case "#10b981": return "초록"
-        case "#064e3b": return "진초록"
-        case "#0f172a": return "남색"
-        case "#483d8b": return "보라"
-        case "#ff4500": return "오렌지"
-        case "#4b0082": return "인디고"
-        case "#dc2626": return "빨강"
-        case "#1e293b": return "회청색"
-        default: return "색상"
+        case "#ffd700": return L10n.missionColorYellow
+        case "#87ceeb": return L10n.missionColorSky
+        case "#ffa500": return L10n.missionColorOrange
+        case "#ff7eb3": return L10n.missionColorPink
+        case "#fde047": return L10n.missionColorYellow
+        case "#708090": return L10n.missionColorGray
+        case "#b0c4de": return L10n.missionColorBlue
+        case "#94a3b8": return L10n.missionColorGray
+        case "#64748b": return L10n.missionColorSlate
+        case "#e2e8f0": return L10n.missionColorLightGray
+        case "#34d399": return L10n.missionColorGreen
+        case "#4682b4": return L10n.missionColorBlue
+        case "#10b981": return L10n.missionColorGreen
+        case "#064e3b": return L10n.missionColorDarkGreen
+        case "#0f172a": return L10n.missionColorNavy
+        case "#483d8b": return L10n.missionColorPurple
+        case "#ff4500": return L10n.missionColorOrange
+        case "#4b0082": return L10n.missionColorIndigo
+        case "#dc2626": return L10n.missionColorRed
+        case "#1e293b": return L10n.missionColorBlueGray
+        default: return L10n.missionColorDefault
         }
     }
 }

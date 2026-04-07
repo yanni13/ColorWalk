@@ -123,9 +123,9 @@ final class CollectionViewModel: ViewModelType {
                 let captured = mission.slots.filter { $0.linkedPhoto != nil }.count
                 let total = mission.slots.count
                 if captured == total && total > 0 {
-                    return "\(AppConstants.Text.missionComplete) (\(total)/\(total))"
+                    return L10n.missionCompleteStatus(total: total)
                 }
-                return "\(AppConstants.Text.missionIncomplete) (\(captured)/\(total))"
+                return L10n.missionIncompleteStatus(captured: captured, total: total)
             }
             .asDriver(onErrorJustReturn: "")
     }

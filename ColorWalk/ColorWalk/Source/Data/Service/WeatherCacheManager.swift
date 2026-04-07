@@ -50,7 +50,7 @@ final class WeatherCacheManager: @unchecked Sendable {
         let current = weather.currentWeather
         let celsius = String(format: "%.0f°C", current.temperature.converted(to: .celsius).value)
         let data = WeatherData(
-            displayText: "\(current.condition.koreanDescription) · \(celsius)",
+            displayText: "\(current.condition.localizedDescription) · \(celsius)",
             symbolName: current.symbolName,
             celsius: celsius,
             humidity: "\(Int(current.humidity * 100))%"
@@ -82,46 +82,46 @@ final class WeatherCacheManager: @unchecked Sendable {
     }
 }
 
-// MARK: - WeatherCondition Korean
+// MARK: - WeatherCondition Localized
 
 private extension WeatherCondition {
-    var koreanDescription: String {
+    var localizedDescription: String {
         switch self {
-        case .clear:                    return "맑음"
-        case .mostlyClear:              return "대체로 맑음"
-        case .partlyCloudy:             return "구름 조금"
-        case .mostlyCloudy:             return "대체로 흐림"
-        case .cloudy:                   return "흐림"
-        case .foggy:                    return "안개"
-        case .haze:                     return "연무"
-        case .smoky:                    return "연기"
-        case .breezy:                   return "산들바람"
-        case .windy:                    return "강풍"
-        case .blowingDust:              return "황사"
-        case .drizzle:                  return "이슬비"
-        case .rain:                     return "비"
-        case .heavyRain:                return "폭우"
-        case .sunShowers:               return "맑다가 소나기"
-        case .isolatedThunderstorms:    return "드문 뇌우"
-        case .scatteredThunderstorms:   return "돌발 뇌우"
-        case .thunderstorms:            return "뇌우"
-        case .strongStorms:             return "강한 뇌우"
-        case .snow:                     return "눈"
-        case .heavySnow:                return "폭설"
-        case .flurries:                 return "가벼운 눈"
-        case .sunFlurries:              return "맑다가 눈"
-        case .blowingSnow:              return "날리는 눈"
-        case .blizzard:                 return "눈폭풍"
-        case .sleet:                    return "진눈깨비"
-        case .hail:                     return "우박"
-        case .freezingRain:             return "어는 비"
-        case .freezingDrizzle:          return "어는 이슬비"
-        case .wintryMix:                return "겨울 혼합"
-        case .hot:                      return "매우 더움"
-        case .frigid:                   return "매우 추움"
-        case .hurricane:                return "허리케인"
-        case .tropicalStorm:            return "열대 폭풍"
-        default:                        return "날씨 정보"
+        case .clear:                    return L10n.weatherClear
+        case .mostlyClear:              return L10n.weatherMostlyClear
+        case .partlyCloudy:             return L10n.weatherPartlyCloudy
+        case .mostlyCloudy:             return L10n.weatherMostlyCloudy
+        case .cloudy:                   return L10n.weatherCloudy
+        case .foggy:                    return L10n.weatherFoggy
+        case .haze:                     return L10n.weatherHaze
+        case .smoky:                    return L10n.weatherSmoky
+        case .breezy:                   return L10n.weatherBreezy
+        case .windy:                    return L10n.weatherWindy
+        case .blowingDust:              return L10n.weatherBlowingDust
+        case .drizzle:                  return L10n.weatherDrizzle
+        case .rain:                     return L10n.weatherRain
+        case .heavyRain:                return L10n.weatherHeavyRain
+        case .sunShowers:               return L10n.weatherSunShowers
+        case .isolatedThunderstorms:    return L10n.weatherIsolatedThunderstorms
+        case .scatteredThunderstorms:   return L10n.weatherScatteredThunderstorms
+        case .thunderstorms:            return L10n.weatherThunderstorms
+        case .strongStorms:             return L10n.weatherStrongStorms
+        case .snow:                     return L10n.weatherSnow
+        case .heavySnow:                return L10n.weatherHeavySnow
+        case .flurries:                 return L10n.weatherFlurries
+        case .sunFlurries:              return L10n.weatherSunFlurries
+        case .blowingSnow:              return L10n.weatherBlowingSnow
+        case .blizzard:                 return L10n.weatherBlizzard
+        case .sleet:                    return L10n.weatherSleet
+        case .hail:                     return L10n.weatherHail
+        case .freezingRain:             return L10n.weatherFreezingRain
+        case .freezingDrizzle:          return L10n.weatherFreezingDrizzle
+        case .wintryMix:                return L10n.weatherWintryMix
+        case .hot:                      return L10n.weatherHot
+        case .frigid:                   return L10n.weatherFrigid
+        case .hurricane:                return L10n.weatherHurricane
+        case .tropicalStorm:            return L10n.weatherTropicalStorm
+        default:                        return L10n.weatherDefault
         }
     }
 }

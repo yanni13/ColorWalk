@@ -20,40 +20,50 @@ struct ColorMission {
 }
 
 extension ColorMission {
+    static var placeholder: ColorMission {
+        ColorMission(
+            name: L10n.homeMissionSection,
+            hexColor: "#B0B8C1",
+            color: UIColor(hex: "#B0B8C1"),
+            weatherInfo: L10n.missionWeatherNoInfo,
+            progress: 0.0
+        )
+    }
+
     static let mockMissions: [ColorMission] = [
         ColorMission(
-            name: "비 온 뒤 초록",
+            name: "\(L10n.missionThemeAfterRain) \(L10n.missionColorGreen)",
             hexColor: "#34D399",
             color: UIColor(hex: "#34D399"),
-            weatherInfo: "오늘의 날씨: 흐린 후 맑음",
+            weatherInfo: L10n.missionWeatherNoInfo,
             progress: 0.0
         ),
         ColorMission(
-            name: "하늘빛 파랑",
+            name: "\(L10n.missionThemeClearOf) \(L10n.missionColorBlue)",
             hexColor: "#5B8DEF",
             color: UIColor(hex: "#5B8DEF"),
-            weatherInfo: "오늘의 날씨: 맑음",
+            weatherInfo: L10n.missionWeatherNoInfo,
             progress: 0.0
         ),
         ColorMission(
-            name: "노을 주황",
+            name: "\(L10n.missionThemeSunset) \(L10n.missionColorOrange)",
             hexColor: "#FF9500",
             color: UIColor(hex: "#FF9500"),
-            weatherInfo: "오늘의 날씨: 구름 조금",
+            weatherInfo: L10n.missionWeatherNoInfo,
             progress: 0.0
         ),
         ColorMission(
-            name: "벚꽃 핑크",
+            name: "\(L10n.missionThemeCherryBlossom) \(L10n.missionColorPink)",
             hexColor: "#FF7EB3",
             color: UIColor(hex: "#FF7EB3"),
-            weatherInfo: "오늘의 날씨: 맑음",
+            weatherInfo: L10n.missionWeatherNoInfo,
             progress: 0.0
         ),
         ColorMission(
-            name: "새벽 보라",
+            name: "\(L10n.missionThemeDawn) \(L10n.missionColorPurple)",
             hexColor: "#BF5AF2",
             color: UIColor(hex: "#BF5AF2"),
-            weatherInfo: "오늘의 날씨: 흐림",
+            weatherInfo: L10n.missionWeatherNoInfo,
             progress: 0.0
         )
     ]
@@ -87,7 +97,7 @@ final class MissionHomeViewModel: ViewModelType {
     private let repository: MissionRepositoryProtocol
     private let weatherService: WeatherServiceProtocol
     private let missions: [ColorMission] = [] // Unused in this context
-    private let weatherDataRelay = BehaviorRelay<WeatherData>(value: WeatherData(displayText: "날씨 정보 없음", symbolName: "sun.max", celsius: "0°C", humidity: "0%"))
+    private let weatherDataRelay = BehaviorRelay<WeatherData>(value: WeatherData(displayText: L10n.missionWeatherNoInfo, symbolName: "sun.max", celsius: "0°C", humidity: "0%"))
     private let disposeBag = DisposeBag()
 
     init(
@@ -122,7 +132,7 @@ final class MissionHomeViewModel: ViewModelType {
                 progress: 0.0
             )
         } else {
-            initialMission = ColorMission.mockMissions[0]
+            initialMission = ColorMission.placeholder
         }
 
         let missionSubject = BehaviorSubject<ColorMission>(value: initialMission)
@@ -147,7 +157,7 @@ final class MissionHomeViewModel: ViewModelType {
         Observable.merge(shuffleOrChange, firstWeatherLoad)
             .withLatestFrom(weatherDataRelay)
             .map { weatherData in
-                MissionGenerator.generate(weatherSymbol: weatherData.symbolName, weatherText: "오늘의 날씨는 \(weatherData.displayText)이에요")
+                MissionGenerator.generate(weatherSymbol: weatherData.symbolName, weatherText: L10n.missionWeatherInfoFormat(weatherData.displayText))
             }
             .bind(to: missionSubject)
             .disposed(by: disposeBag)
@@ -159,7 +169,7 @@ final class MissionHomeViewModel: ViewModelType {
             .disposed(by: disposeBag)
 
         let mission = missionObservable
-            .asDriver(onErrorJustReturn: ColorMission.mockMissions[0])
+            .asDriver(onErrorJustReturn: ColorMission.placeholder)
 
         let saveResult = input.saveTap
             .compactMap { $0 }

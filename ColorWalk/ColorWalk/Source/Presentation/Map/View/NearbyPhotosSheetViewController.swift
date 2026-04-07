@@ -22,7 +22,7 @@ final class NearbyPhotosSheetViewController: UIViewController {
 
     private let titleLabel: UILabel = {
         let l = UILabel()
-        l.text = "이 근처 사진"
+        l.text = L10n.nearbyPhotosTitle
         l.textColor = .black
         l.font = UIFont(name: "Inter-Bold", size: 22) ?? .boldSystemFont(ofSize: 22)
         return l
@@ -129,9 +129,9 @@ final class NearbyPhotosSheetViewController: UIViewController {
         view.addSubview(weatherInfoCard)
         view.addSubview(weatherAttributionView)
 
-        colorInfoCard.titleLabel.text = "색상 정보"
+        colorInfoCard.titleLabel.text = L10n.nearbyPhotosColorInfo
 
-        weatherInfoCard.titleLabel.text = "날씨"
+        weatherInfoCard.titleLabel.text = L10n.nearbyPhotosWeather
         weatherInfoCard.iconView.backgroundColor = UIColor(hex: "#F5F5F5")
         weatherInfoCard.iconImageView.isHidden = false
         weatherInfoCard.iconImageView.tintColor = UIColor(hex: "#3A3A3A")
@@ -187,7 +187,7 @@ final class NearbyPhotosSheetViewController: UIViewController {
 
     private func configureContent() {
         guard let first = photos.first else { return }
-        subtitleLabel.text = "사진 \(photos.count)장"
+        subtitleLabel.text = L10n.nearbyPhotosSubtitle(photos.count)
         updateColorCard(for: first)
         paginationDotsView.configure(count: photos.count, currentIndex: 0)
         fetchWeather(for: first)
@@ -196,7 +196,7 @@ final class NearbyPhotosSheetViewController: UIViewController {
     private func updateColorCard(for photo: Photo) {
         colorInfoCard.iconView.backgroundColor = UIColor(hex: photo.capturedHex)
         colorInfoCard.iconImageView.isHidden = true
-        let matchText = photo.matchRate > 0 ? " • 매칭율 \(Int(photo.matchRate))%" : ""
+        let matchText = photo.matchRate > 0 ? L10n.nearbyPhotosMatchRate(Int(photo.matchRate)) : ""
         colorInfoCard.subtitleLabel.text = "\(photo.capturedHex)\(matchText)"
         colorInfoCard.rightLabel.text = relativeTime(from: photo.createdAt)
     }
@@ -212,7 +212,7 @@ final class NearbyPhotosSheetViewController: UIViewController {
                 self.titleLabel.text = placemark.name
                     ?? placemark.subLocality
                     ?? placemark.locality
-                    ?? "이 근처 사진"
+                    ?? L10n.nearbyPhotosTitle
 
                 let addressParts = [
                     placemark.administrativeArea,
@@ -223,7 +223,7 @@ final class NearbyPhotosSheetViewController: UIViewController {
                 ].compactMap { $0 }
 
                 self.subtitleLabel.text = addressParts.isEmpty
-                    ? "주소 정보 없음"
+                    ? L10n.nearbyPhotosNoAddress
                     : addressParts.joined(separator: " ")
             }
         }
@@ -242,7 +242,7 @@ final class NearbyPhotosSheetViewController: UIViewController {
                 guard let self else { return }
                 weatherInfoCard.iconImageView.image = UIImage(systemName: data.symbolName)
                 weatherInfoCard.subtitleLabel.text = "\(data.celsius) · 습도 \(data.humidity)"
-                weatherInfoCard.rightLabel.text = "현재"
+                weatherInfoCard.rightLabel.text = L10n.nearbyPhotosWeatherNow
                 UIView.animate(withDuration: 0.3) {
                     self.weatherInfoCard.alpha = 1
                     self.weatherAttributionView.alpha = 1
@@ -254,10 +254,10 @@ final class NearbyPhotosSheetViewController: UIViewController {
     private func relativeTime(from date: Date) -> String {
         let diff = Int(Date().timeIntervalSince(date))
         switch diff {
-        case ..<60:         return "방금 전"
-        case 60..<3600:     return "\(diff / 60)분 전"
-        case 3600..<86400:  return "\(diff / 3600)시간 전"
-        default:            return "\(diff / 86400)일 전"
+        case ..<60:         return L10n.nearbyPhotosTimeJustNow
+        case 60..<3600:     return L10n.nearbyPhotosTimeMinutesAgo(diff / 60)
+        case 3600..<86400:  return L10n.nearbyPhotosTimeHoursAgo(diff / 3600)
+        default:            return L10n.nearbyPhotosTimeDaysAgo(diff / 86400)
         }
     }
 }

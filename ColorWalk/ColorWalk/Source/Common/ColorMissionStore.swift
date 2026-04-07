@@ -9,12 +9,9 @@ import RxCocoa
 
 final class ColorMissionStore {
     static let shared = ColorMissionStore()
-    private init() {
-        // 초기값 설정
-        mission.accept(ColorMission.mockMissions[0])
-    }
+    private init() {}
 
-    let mission = BehaviorRelay<ColorMission>(value: ColorMission.mockMissions[0])
+    let mission = BehaviorRelay<ColorMission>(value: ColorMission.placeholder)
 
     func setMission(_ newMission: ColorMission) {
         mission.accept(newMission)

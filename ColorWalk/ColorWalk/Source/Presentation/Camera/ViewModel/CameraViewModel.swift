@@ -18,6 +18,17 @@ enum CameraFilter: String, CaseIterable {
     case vivid  = "선명하게"
     case soft   = "부드럽게"
     case mono   = "흑백"
+
+    var displayName: String {
+        switch self {
+        case .normal: return L10n.cameraFilterNormal
+        case .warm:   return L10n.cameraFilterWarm
+        case .cool:   return L10n.cameraFilterCool
+        case .vivid:  return L10n.cameraFilterVivid
+        case .soft:   return L10n.cameraFilterSoft
+        case .mono:   return L10n.cameraFilterMono
+        }
+    }
 }
 
 // MARK: - ViewModel

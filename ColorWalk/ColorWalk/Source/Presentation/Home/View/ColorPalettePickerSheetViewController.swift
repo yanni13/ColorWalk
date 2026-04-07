@@ -42,7 +42,7 @@ final class ColorPalettePickerSheetViewController: UIViewController {
     // MARK: - UI: Header
     private let titleLabel: UILabel = {
         let l = UILabel()
-        l.text = "색상 직접 선택"
+        l.text = L10n.colorPaletteTitle
         l.font = UIFont(name: "Pretendard-Bold", size: 18)
         l.textColor = UIColor(hex: "#191F28")
         return l
@@ -106,7 +106,7 @@ final class ColorPalettePickerSheetViewController: UIViewController {
     // MARK: - UI: Apply
     private let applyButton: UIButton = {
         let b = UIButton(type: .system)
-        b.setTitle("적용하기", for: .normal)
+        b.setTitle(L10n.buttonApply, for: .normal)
         b.titleLabel?.font = UIFont(name: "Pretendard-Bold", size: 16)
         b.tintColor = .white
         b.backgroundColor = UIColor(hex: "#1A1A1A")
@@ -258,7 +258,7 @@ final class ColorPalettePickerSheetViewController: UIViewController {
         let hex = hexString(from: color)
         previewCircle.backgroundColor = color
         hexTextLabel.text = hex
-        pantoneLabel.text = "선택된 색상"
+        pantoneLabel.text = L10n.colorPaletteSelectedColor
     }
 
     // MARK: - Actions

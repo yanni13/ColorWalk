@@ -93,12 +93,12 @@ final class MissionAlertScheduler {
 
     private func makeContent(missionHex: String) -> UNMutableNotificationContent {
         let content = UNMutableNotificationContent()
-        content.title = "주변의 아름다운 색을 담아보세요."
-        content.body  = "오늘 하루 스쳐간 색을 남겨볼까요?"
+        content.title = L10n.notificationTitle
+        content.body  = L10n.notificationBody
         content.sound = .default
         content.userInfo = [
             AppConstants.Notification.missionHexKey:  missionHex,
-            AppConstants.Notification.missionNameKey: "오늘의 색상 미션"
+            AppConstants.Notification.missionNameKey: L10n.notificationMissionName
         ]
         return content
     }

@@ -33,7 +33,7 @@ final class MapViewController: BaseViewController {
         b.layer.shadowOpacity = 0.12
         b.layer.shadowRadius = 8
         b.layer.shadowOffset = CGSize(width: 0, height: 4)
-        b.accessibilityLabel = "내 위치로 이동"
+        b.accessibilityLabel = L10n.accessibilityMyLocation
         return b
     }()
 

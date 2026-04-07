@@ -43,7 +43,7 @@ final class ColorConfirmSheetViewController: UIViewController {
     // MARK: - UI: Header
     private let titleLabel: UILabel = {
         let l = UILabel()
-        l.text = "색상 변경 확인"
+        l.text = L10n.colorConfirmTitle
         l.font = UIFont(name: "Pretendard-Bold", size: 20)
         l.textColor = UIColor(hex: "#191F28")
         return l
@@ -82,7 +82,7 @@ final class ColorConfirmSheetViewController: UIViewController {
 
     private let oldTopLabel: UILabel = {
         let l = UILabel()
-        l.text = "기존 색상"
+        l.text = L10n.colorConfirmOldColorLabel
         l.font = UIFont(name: "Pretendard-Medium", size: 10)
         l.textColor = UIColor(hex: "#B0B8C1")
         return l
@@ -119,7 +119,7 @@ final class ColorConfirmSheetViewController: UIViewController {
 
     private let newTopLabel: UILabel = {
         let l = UILabel()
-        l.text = "선택한 색상"
+        l.text = L10n.colorConfirmNewColorLabel
         l.font = UIFont(name: "Pretendard-Bold", size: 10)
         l.textColor = UIColor(hex: "#1A1A1A")
         return l
@@ -153,7 +153,7 @@ final class ColorConfirmSheetViewController: UIViewController {
         cfg.image = UIImage(systemName: "shuffle", withConfiguration:
             UIImage.SymbolConfiguration(pointSize: 14, weight: .medium))
         cfg.baseForegroundColor = UIColor(hex: "#191F28")
-        var t = AttributedString("랜덤 색상")
+        var t = AttributedString(L10n.buttonRandomColor)
         t.font = UIFont(name: "Pretendard-SemiBold", size: 14) ?? .systemFont(ofSize: 14, weight: .semibold)
         t.foregroundColor = UIColor(hex: "#191F28")
         cfg.attributedTitle = t
@@ -212,7 +212,7 @@ final class ColorConfirmSheetViewController: UIViewController {
 
     private let tipLabel: UILabel = {
         let l = UILabel()
-        l.text = "선택한 색상으로 오늘의 미션이 변경됩니다."
+        l.text = L10n.colorConfirmDescription
         l.font = UIFont(name: "Pretendard-Medium", size: 12)
         l.textColor = UIColor(hex: "#9B6B5A")
         l.numberOfLines = 0
@@ -229,7 +229,7 @@ final class ColorConfirmSheetViewController: UIViewController {
     // MARK: - UI: Apply
     private let applyButton: UIButton = {
         let b = UIButton(type: .system)
-        b.setTitle("적용하기", for: .normal)
+        b.setTitle(L10n.buttonApply, for: .normal)
         b.titleLabel?.font = UIFont(name: "Pretendard-Bold", size: 16)
         b.tintColor = .white
         b.backgroundColor = UIColor(hex: "#1A1A1A")
@@ -469,7 +469,7 @@ final class ColorConfirmSheetViewController: UIViewController {
                 palette.onColorPicked = { [weak self] color, hex in
                     self?.pendingColor = color
                     self?.pendingHex = hex
-                    self?.pendingName = "직접 선택한 색상"
+                    self?.pendingName = L10n.colorPickerCustomColorName
                     self?.applyPendingColor()
                 }
                 self.present(palette, animated: false)

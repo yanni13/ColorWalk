@@ -244,7 +244,7 @@ final class ColorDetailViewController: BaseViewController {
         controls.forEach { $0.alpha = 1 }
 
         // 4. 공유 항목 및 메타데이터 구성 (Thumbnail 표시 포함)
-        let shareText = "친구가 오늘의 컬러를 공유하고 싶어해요!"
+        let shareText = L10n.colorDetailShareText
         let itemSource = ColorShareItemSource(image: image, text: shareText, title: card.colorName)
 
         let activityViewController = UIActivityViewController(activityItems: [itemSource, shareText], applicationActivities: nil)

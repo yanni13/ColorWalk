@@ -145,7 +145,7 @@ final class CameraViewController: BaseViewController {
 
     private let navTitleLabel: UILabel = {
         let l = UILabel()
-        l.text = "색상 촬영"
+        l.text = L10n.cameraTitle
         l.font = UIFont(name: "Pretendard-Bold", size: 17) ?? .boldSystemFont(ofSize: 17)
         l.textColor = .white
         l.textAlignment = .center
@@ -226,7 +226,7 @@ final class CameraViewController: BaseViewController {
         let l = UILabel()
         l.font = UIFont(name: "Pretendard-Regular", size: 13) ?? .systemFont(ofSize: 13)
         l.textColor = .white
-        l.text = "오늘의 미션: Sky Blue를 찾아보세요"
+        l.text = L10n.cameraMissionLabel("Sky Blue")
         return l
     }()
 
@@ -514,7 +514,7 @@ final class CameraViewController: BaseViewController {
         viewModel.missionName
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] name in
-                self?.missionLabel.text = "오늘의 미션: \(name)를 찾아보세요"
+                self?.missionLabel.text = L10n.cameraMissionLabel(name)
             })
             .disposed(by: disposeBag)
     }
@@ -646,10 +646,10 @@ final class CameraViewController: BaseViewController {
             if let pm = placemarks?.first {
                 let locality = pm.locality ?? "" // 예: 강남구
                 let subLocality = pm.subLocality ?? "" // 예: 역삼동
-                let address = locality.isEmpty ? "현재 위치" : "\(locality) \(subLocality)"
+                let address = locality.isEmpty ? L10n.locationCurrent : "\(locality) \(subLocality)"
                 completion(address)
             } else {
-                completion("현재 위치")
+                completion(L10n.locationCurrent)
             }
         }
     }
@@ -665,8 +665,8 @@ final class CameraViewController: BaseViewController {
 
         let label = UILabel()
         label.text = success
-            ? "✓  색상 수집 완료! (\(match)%)"
-            : "✗  일치율 \(match)% · 60% 이상이어야 수집 가능해요"
+            ? L10n.cameraToastCollectSuccess(match)
+            : L10n.cameraToastCollectFail(match)
         label.font = UIFont(name: "Pretendard-SemiBold", size: 14) ?? .systemFont(ofSize: 14, weight: .semibold)
         label.textColor = .white
         toast.addSubview(label)
