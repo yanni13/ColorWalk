@@ -285,13 +285,22 @@ final class ColorPickerSheetViewController: UIViewController {
             dot.backgroundColor = preset.color
             dot.layer.cornerRadius = 20
             dot.tag = i
-            dot.snp.makeConstraints { $0.width.height.equalTo(40) }
+            dot.accessibilityLabel = preset.name
+            dot.snp.makeConstraints { make in
+                make.width.height.equalTo(40)
+            }
             dot.addTarget(self, action: #selector(presetTapped(_:)), for: .touchUpInside)
 
             let lbl = UILabel()
             lbl.text = preset.name
             lbl.font = UIFont(name: "Pretendard-Regular", size: 10)
             lbl.textColor = UIColor(hex: "#6B7684")
+            lbl.textAlignment = .center
+            lbl.numberOfLines = 2
+            lbl.lineBreakMode = .byWordWrapping
+            lbl.snp.makeConstraints { make in
+                make.width.equalTo(40)
+            }
 
             colStack.addArrangedSubview(dot)
             colStack.addArrangedSubview(lbl)
