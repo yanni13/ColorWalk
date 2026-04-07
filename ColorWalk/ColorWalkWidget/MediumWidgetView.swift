@@ -43,26 +43,26 @@ struct MediumWidgetView: View {
     }
 
     // MARK: - Info Panel
-private var infoSection: some View {
-    VStack(alignment: .leading, spacing: 0) {
-        titleRow
-            .padding(.bottom, 16)
-        colorRow
-            .padding(.bottom, 8)
-        Spacer()
-        locationRow
-    }
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .padding(.leading, 0)
-    .padding(.trailing, 16)
-    .padding(.vertical, 14)
-    .background(Color(.systemBackground))
-}
 
+    private var infoSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            titleRow
+                .padding(.bottom, 16)
+            colorRow
+                .padding(.bottom, 8)
+            Spacer()
+            locationRow
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.leading, 0)
+        .padding(.trailing, 16)
+        .padding(.vertical, 14)
+        .background(Color(.systemBackground))
+    }
 
     private var titleRow: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text("오늘의 색상")
+            Text("widget.today.color")
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundColor(Color(.label))
             Text(entry.dailyData.dateString)
@@ -94,7 +94,7 @@ private var infoSection: some View {
             Image(systemName: "mappin.circle.fill")
                 .font(.system(size: 11))
                 .foregroundColor(Color(.secondaryLabel))
-            Text(photo?.locationName ?? "산책을 시작해보세요")
+            Text(photo?.locationName ?? String(localized: "widget.location.placeholder"))
                 .font(.system(size: 11))
                 .foregroundColor(Color(.secondaryLabel))
                 .lineLimit(1)

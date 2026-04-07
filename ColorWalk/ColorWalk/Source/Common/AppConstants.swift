@@ -13,6 +13,7 @@ enum AppConstants {
         static let displayShort = "M월 d일"
         static let displayFull = "M월 d일 EEEE"
         static let displayShare = "yyyy. MM. dd"
+        static let widgetDisplayShort = "M/d"
     }
 
     enum Text {

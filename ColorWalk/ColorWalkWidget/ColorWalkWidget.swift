@@ -11,9 +11,9 @@ struct ColorWalkEntry: TimelineEntry {
         ColorWalkEntry(
             date: .now,
             dailyData: WidgetDailyData(
-                dateString: "오늘",
+                dateString: String(localized: "widget.date.today"),
                 missionColorHex: "#5B8DEF",
-                missionColorName: "오늘의 색상",
+                missionColorName: String(localized: "widget.today.color"),
                 photos: []
             )
         )
@@ -80,7 +80,7 @@ struct ColorWalkWidget: Widget {
         }
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
         .contentMarginsDisabled()
-        .configurationDisplayName("오늘의 컬러워크")
-        .description("오늘 수집한 색상을 확인하세요.")
+        .configurationDisplayName("widget.displayName")
+        .description("widget.description")
     }
 }

@@ -1,107 +1,197 @@
 {
-  "sourceLanguage" : "ko",
-  "strings" : {
-    "CFBundleDisplayName" : {
-      "comment" : "Bundle display name",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dama"
+  "sourceLanguage": "ko",
+  "strings": {
+    "CFBundleDisplayName": {
+      "comment": "Bundle display name",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dama"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "담아,"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "담아,"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拾色，"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拾色，"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拾色，"
           }
         }
       }
     },
-    "CFBundleName" : {
-      "comment" : "Bundle name",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "ColorWalk"
+    "CFBundleName": {
+      "comment": "Bundle name",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "new",
+            "value": "ColorWalk"
           }
         }
       }
     },
-    "NSCameraUsageDescription" : {
-      "comment" : "Privacy - Camera Usage Description",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Camera access is required to capture the beautiful colors around you."
+    "NSCameraUsageDescription": {
+      "comment": "Privacy - Camera Usage Description",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera access is required to capture the beautiful colors around you."
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "주변의 아름다운 색을 카메라로 촬영하기 위해 카메라 접근 권한이 필요합니다."
+        "ko": {
+          "stringUnit": {
+            "state": "new",
+            "value": "주변의 아름다운 색을 카메라로 촬영하기 위해 카메라 접근 권한이 필요합니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要访问相机以拍摄您周围美丽的色彩。"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要存取相機以拍攝您周圍美麗的色彩。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要存取相機以拍攝您周圍美麗的色彩。"
           }
         }
       }
     },
-    "NSLocationWhenInUseUsageDescription" : {
-      "comment" : "Privacy - Location When In Use Usage Description",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Location access is required to provide photo information based on your location."
+    "NSLocationWhenInUseUsageDescription": {
+      "comment": "Privacy - Location When In Use Usage Description",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Location access is required to provide photo information based on your location."
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "사용자의 위치를 기반으로 사진 정보를 제공하기 위해 필요합니다."
+        "ko": {
+          "stringUnit": {
+            "state": "new",
+            "value": "사용자의 위치를 기반으로 사진 정보를 제공하기 위해 필요합니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要访问位置信息以提供基于您位置的照片信息。"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要存取位置資訊以提供基於您位置的相片資訊。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要存取位置資訊以提供基於您位置的照片資訊。"
           }
         }
       }
     },
-    "NSPhotoLibraryAddUsageDescription" : {
-      "comment" : "Privacy - Photo Library Additions Usage Description",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Photo library access is required to save captured color photos to your gallery."
+    "NSPhotoLibraryAddUsageDescription": {
+      "comment": "Privacy - Photo Library Additions Usage Description",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo library access is required to save captured color photos to your gallery."
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "촬영한 색상 사진을 갤러리에 저장하기 위해 접근 권한이 필요합니다."
+        "ko": {
+          "stringUnit": {
+            "state": "new",
+            "value": "촬영한 색상 사진을 갤러리에 저장하기 위해 접근 권한이 필요합니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要访问相册以将拍摄的色彩照片保存到您的相册中。"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要存取相簿以將拍攝的色彩相片儲存至您的相簿。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要存取相簿以將拍攝的色彩照片儲存至您的相簿。"
           }
         }
       }
     },
-    "NSPhotoLibraryUsageDescription" : {
-      "comment" : "Privacy - Photo Library Usage Description",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Photo library access is required to import photos from your gallery and collect colors."
+    "NSPhotoLibraryUsageDescription": {
+      "comment": "Privacy - Photo Library Usage Description",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo library access is required to import photos from your gallery and collect colors."
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "갤러리에서 사진을 가져와 색상을 수집하기 위해 사진 접근 권한이 필요합니다."
+        "ko": {
+          "stringUnit": {
+            "state": "new",
+            "value": "갤러리에서 사진을 가져와 색상을 수집하기 위해 사진 접근 권한이 필요합니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要访问相册以从图库导入照片并收集色彩。"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要存取相簿以從圖庫匯入相片並收集色彩。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要存取相簿以從圖庫匯入照片並收集色彩。"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

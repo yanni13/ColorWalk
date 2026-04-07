@@ -24,10 +24,10 @@ struct ColorWalkWidgetLiveActivity: Widget {
                             .frame(width: 32, height: 32)
                             .shadow(color: missionColor(context.attributes).opacity(0.6), radius: 6)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("\(context.attributes.missionHex) 포착 중")
+                            Text(String(format: String(localized: "widget.live.capturing.format"), context.attributes.missionHex))
                                 .font(.system(size: 13, weight: .bold, design: .monospaced))
                                 .foregroundColor(.white)
-                            Text("\(context.state.matchPercent)% 일치")
+                            Text(String(format: String(localized: "widget.live.match.format"), context.state.matchPercent))
                                 .font(.system(size: 10))
                                 .foregroundColor(.white.opacity(0.55))
                         }
@@ -37,7 +37,7 @@ struct ColorWalkWidgetLiveActivity: Widget {
                 DynamicIslandExpandedRegion(.trailing) {
                     if let timerEnd = context.state.timerEnd {
                         VStack(alignment: .trailing, spacing: 2) {
-                            Text("남은 시간")
+                            Text("widget.live.remaining")
                                 .font(.system(size: 9))
                                 .foregroundColor(.white.opacity(0.45))
                             Text(timerInterval: Date()...timerEnd, countsDown: true, showsHours: false)
@@ -48,7 +48,7 @@ struct ColorWalkWidgetLiveActivity: Widget {
                         .padding(.trailing, 6)
                     } else {
                         VStack(alignment: .trailing, spacing: 2) {
-                            Text("미션")
+                            Text("widget.live.mission")
                                 .font(.system(size: 9))
                                 .foregroundColor(.white.opacity(0.45))
                             Text(": \(context.attributes.missionName)")
@@ -110,14 +110,16 @@ private struct LockScreenBannerView: View {
         HStack(alignment: .top, spacing: 14) {
             VStack(alignment: .leading, spacing: 6) {
                 // 타이머 종료 여부에 따른 타이틀 변경
-                Text(state.isExpired ? "당신의 색상을 담아보세요." : "지금 주변의 색을 찾아보세요! 🔍")
+                Text(verbatim: state.isExpired
+                    ? String(localized: "widget.live.collect")
+                    : String(localized: "widget.live.find"))
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.white)
 
                 // 3분 전이고 타이머가 있을 때만 카운트다운 표시
                 if let timerEnd = state.timerEnd, !state.isExpired {
                     HStack(spacing: 6) {
-                        Text("목표 색상 \(attrs.missionHex)")
+                        Text(String(format: String(localized: "widget.live.target.color.format"), attrs.missionHex))
                             .font(.system(size: 13, weight: .semibold, design: .monospaced))
                             .foregroundColor(color)
                         Text("·")
@@ -126,19 +128,19 @@ private struct LockScreenBannerView: View {
                             .font(.system(size: 13, weight: .semibold, design: .monospaced))
                             .foregroundColor(.white.opacity(0.85))
                             .monospacedDigit()
-                        Text("남음")
+                        Text("widget.live.time.remaining")
                             .font(.system(size: 13))
                             .foregroundColor(.white.opacity(0.55))
                     }
                 } else {
                     // 타이머가 종료되었거나 없는 경우 목표 색상 및 일치율 정보 노출
                     HStack(spacing: 6) {
-                        Text("목표 \(attrs.missionHex)")
+                        Text(String(format: String(localized: "widget.live.target.format"), attrs.missionHex))
                             .font(.system(size: 13, weight: .semibold, design: .monospaced))
                             .foregroundColor(color)
                         Text("·")
                             .foregroundColor(.white.opacity(0.35))
-                        Text("\(state.matchPercent)% 일치 중")
+                        Text(String(format: String(localized: "widget.live.matching.format"), state.matchPercent))
                             .font(.system(size: 13))
                             .foregroundColor(.white.opacity(0.65))
                     }
@@ -174,7 +176,7 @@ private struct MatchProgressBar: View {
     var body: some View {
         VStack(spacing: 5) {
             HStack {
-                Text("목표 색상 \(missionHex)까지")
+                Text(String(format: String(localized: "widget.live.until.target.format"), missionHex))
                     .font(.system(size: 10))
                     .foregroundColor(.white.opacity(0.45))
                 Spacer()

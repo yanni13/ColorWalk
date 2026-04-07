@@ -42,7 +42,7 @@ final class WidgetDataWriter {
         let currentMission = mission ?? ColorMissionStore.shared.mission.value
 
         let formatter = DateFormatter()
-        formatter.dateFormat = AppConstants.DateFormat.displayShort
+        formatter.dateFormat = AppConstants.DateFormat.widgetDisplayShort
         let dateString = formatter.string(from: Date())
 
         let photoInfos: [WidgetPhotoInfo] = photos.compactMap { photo in

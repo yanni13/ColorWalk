@@ -610,7 +610,17 @@ final class MissionHomeViewController: BaseViewController {
 
         output.weatherData
             .drive(onNext: { [weak self] data in
-                self?.currentWeatherData = data
+                guard let self else { return }
+                self.currentWeatherData = data
+                let newWeatherInfo = L10n.missionWeatherInfoFormat(data.displayText)
+                self.missionDetailLabel.text = "\(self.currentDisplayedMission.hexColor)  ·  \(newWeatherInfo)"
+                self.currentDisplayedMission = ColorMission(
+                    name: self.currentDisplayedMission.name,
+                    hexColor: self.currentDisplayedMission.hexColor,
+                    color: self.currentDisplayedMission.color,
+                    weatherInfo: newWeatherInfo,
+                    progress: self.currentDisplayedMission.progress
+                )
             })
             .disposed(by: disposeBag)
 

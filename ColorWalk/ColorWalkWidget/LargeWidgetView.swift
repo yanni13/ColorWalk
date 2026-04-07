@@ -80,7 +80,7 @@ struct LargeWidgetView: View {
             Image(systemName: "camera.fill")
                 .font(.system(size: 20))
                 .foregroundColor(.white.opacity(0.6))
-            Text("색상을 촬영해보세요")
+            Text("widget.empty.prompt")
                 .font(.system(size: 12, weight: .medium))
                 .foregroundColor(.white.opacity(0.8))
         }
