@@ -63,3 +63,7 @@ fastlane/test_output
 
 # Design docs
 ColorWalk/ColorWalk-HiFi-Atomic-Design.md
+
+# macOS
+.DS_Store
+**/.DS_Store
