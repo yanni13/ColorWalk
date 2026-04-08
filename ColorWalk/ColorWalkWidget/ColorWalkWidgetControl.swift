@@ -10,7 +10,7 @@ import SwiftUI
 import WidgetKit
 
 struct ColorWalkWidgetControl: ControlWidget {
-    static let kind: String = "com.yanni13.ColorWalk.ColorWalkWidget"
+    static let kind: String = WidgetConstants.Kind.control
 
     var body: some ControlWidgetConfiguration {
         AppIntentControlConfiguration(

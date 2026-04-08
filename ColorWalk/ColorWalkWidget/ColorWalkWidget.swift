@@ -67,7 +67,7 @@ struct ColorWalkWidgetEntryView: View {
 // MARK: - Widget
 
 struct ColorWalkWidget: Widget {
-    let kind: String = "ColorWalkWidget"
+    let kind: String = WidgetConstants.Kind.main
 
     var body: some WidgetConfiguration {
         AppIntentConfiguration(
