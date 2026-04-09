@@ -612,7 +612,9 @@ final class MissionHomeViewController: BaseViewController {
             .drive(onNext: { [weak self] data in
                 guard let self else { return }
                 self.currentWeatherData = data
-                let newWeatherInfo = L10n.missionWeatherInfoFormat(data.displayText)
+                let newWeatherInfo = data.displayText == L10n.missionWeatherNoInfo
+                    ? L10n.missionWeatherLoading
+                    : L10n.missionWeatherInfoFormat(data.displayText)
                 self.missionDetailLabel.text = "\(self.currentDisplayedMission.hexColor)  ·  \(newWeatherInfo)"
                 self.currentDisplayedMission = ColorMission(
                     name: self.currentDisplayedMission.name,
@@ -794,7 +796,17 @@ final class MissionHomeViewController: BaseViewController {
     // MARK: - Apply
 
     private func applyMission(_ mission: ColorMission) {
-        currentDisplayedMission = mission
+        // 이미 로드된 날씨 정보가 있으면 유지, 없으면 로딩 텍스트 표시
+        let preservedWeather = currentDisplayedMission.weatherInfo == L10n.missionWeatherNoInfo
+            ? L10n.missionWeatherLoading
+            : currentDisplayedMission.weatherInfo
+        currentDisplayedMission = ColorMission(
+            name: mission.name,
+            hexColor: mission.hexColor,
+            color: mission.color,
+            weatherInfo: preservedWeather,
+            progress: mission.progress
+        )
 
         UIView.animate(withDuration: 0.25) {
             self.colorDotView.backgroundColor = mission.color
@@ -803,7 +815,7 @@ final class MissionHomeViewController: BaseViewController {
         }
 
         missionNameLabel.text = mission.name
-        missionDetailLabel.text = "\(mission.hexColor)  ·  \(mission.weatherInfo)"
+        missionDetailLabel.text = "\(mission.hexColor)  ·  \(preservedWeather)"
 
         let count = ColorCardStore.shared.cards.value.count
         updateProgressBar(count: count)

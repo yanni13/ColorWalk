@@ -145,6 +145,7 @@ enum L10n {
     // MARK: - Mission Weather
 
     static var missionWeatherNoInfo: String { String(localized: "mission.weather.noInfo") }
+    static var missionWeatherLoading: String { String(localized: "mission.weather.loading") }
     static func missionWeatherInfoFormat(_ condition: String) -> String {
         String(format: String(localized: "mission.weather.infoFormat"), condition)
     }

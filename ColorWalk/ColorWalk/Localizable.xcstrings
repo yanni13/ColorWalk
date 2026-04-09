@@ -5951,6 +5951,40 @@
         }
       }
     },
+    "mission.weather.loading": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading weather . ."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "날씨 정보 로딩중 . ."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "天气加载中 . ."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "天氣載入中 . ."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "天氣載入中 . ."
+          }
+        }
+      }
+    },
     "missionDetail.weatherDetail": {
       "localizations": {
         "en": {
