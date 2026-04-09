@@ -290,7 +290,9 @@ final class ColorDetailViewController: BaseViewController {
         controls.forEach { $0.alpha = 0 }
 
         // 2. 렌더링할 임시 뷰 생성
-        let renderer = UIGraphicsImageRenderer(bounds: view.bounds)
+        let format = UIGraphicsImageRendererFormat()
+        format.opaque = true
+        let renderer = UIGraphicsImageRenderer(bounds: view.bounds, format: format)
         let image = renderer.image { _ in
             view.drawHierarchy(in: view.bounds, afterScreenUpdates: true)
         }
