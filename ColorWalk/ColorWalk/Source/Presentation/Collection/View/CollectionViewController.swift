@@ -23,6 +23,10 @@ final class CollectionViewController: BaseViewController {
     private var currentMissionHex: String = ""
     private var currentShareDateText: String = ""
     private var currentMissionDateIdentifier: String = ""
+
+    // MARK: - Gradient
+
+    private let backgroundGradientLayer = CAGradientLayer()
     
     // MARK: - UI: Scroll
 
@@ -246,7 +250,8 @@ final class CollectionViewController: BaseViewController {
 
     override func setupViews() {
         view.backgroundColor = UIColor(hex: "#F7F8FA")
-        
+        view.layer.insertSublayer(backgroundGradientLayer, at: 0)
+
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(contentStackView)
@@ -387,6 +392,7 @@ final class CollectionViewController: BaseViewController {
                 self.currentMissionHex = hex
                 self.colorDotView.backgroundColor = UIColor(hex: hex)
                 self.missionNameLabel.text = L10n.collectionMissionColor
+                self.applyGradient(for: UIColor(hex: hex))
             })
             .disposed(by: disposeBag)
 
@@ -493,7 +499,30 @@ final class CollectionViewController: BaseViewController {
         }
     }
 
+    // MARK: - Lifecycle
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        backgroundGradientLayer.frame = view.bounds
+    }
+
     // MARK: - Action
+
+    private func applyGradient(for color: UIColor) {
+        let newColors: [CGColor] = [
+            color.withAlphaComponent(0.33).cgColor,
+            color.withAlphaComponent(0.22).cgColor,
+            color.withAlphaComponent(0.10).cgColor,
+            UIColor.clear.cgColor
+        ]
+        CATransaction.begin()
+        CATransaction.setAnimationDuration(0.4)
+        backgroundGradientLayer.colors = newColors
+        CATransaction.commit()
+        backgroundGradientLayer.locations = [0, 0.4, 0.7, 1.0]
+        backgroundGradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
+        backgroundGradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
+    }
 
     private func navigateToEdit() {
         guard !currentMissionDateIdentifier.isEmpty else { return }
