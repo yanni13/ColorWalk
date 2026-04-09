@@ -17,6 +17,9 @@ final class ColorDetailViewController: BaseViewController {
     private let swipeLeftSubject  = PublishSubject<Void>()
     private let swipeRightSubject = PublishSubject<Void>()
 
+    private enum SwipeDirection { case left, right, none }
+    private var pendingSwipeDirection: SwipeDirection = .none
+
     // MARK: - UI: Background
     private let backgroundImageView: UIImageView = {
         let iv = UIImageView()
@@ -87,13 +90,25 @@ final class ColorDetailViewController: BaseViewController {
     }()
 
     // MARK: - UI: Swipe Hint
-    private let swipeChevron: UIImageView = {
+    private let swipeLeftChevron: UIImageView = {
+        let iv = UIImageView()
+        iv.image = UIImage(systemName: "chevron.left")?
+            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
+        iv.tintColor = .white
+        iv.contentMode = .scaleAspectFit
+        iv.alpha = 0
+        iv.isUserInteractionEnabled = true
+        return iv
+    }()
+
+    private let swipeRightChevron: UIImageView = {
         let iv = UIImageView()
         iv.image = UIImage(systemName: "chevron.right")?
             .withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .regular))
         iv.tintColor = .white
-        iv.alpha = 0.3
         iv.contentMode = .scaleAspectFit
+        iv.alpha = 0
+        iv.isUserInteractionEnabled = true
         return iv
     }()
 
@@ -129,9 +144,10 @@ final class ColorDetailViewController: BaseViewController {
         [backgroundImageView, gradientOverlayView,
          backButton, shareButton, pageCounterView,
          colorNameRow, hexCodeLabel, metaLabel,
-         swipeChevron].forEach { view.addSubview($0) }
+         swipeLeftChevron, swipeRightChevron].forEach { view.addSubview($0) }
 
         setupGesture()
+        setupChevronTaps()
     }
 
     // MARK: - setupConstraints
@@ -175,11 +191,16 @@ final class ColorDetailViewController: BaseViewController {
             $0.top.equalTo(hexCodeLabel.snp.bottom).offset(8)
         }
 
-        // Swipe hint chevron
-        swipeChevron.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(12)
-            $0.centerY.equalToSuperview()
-            $0.width.height.equalTo(20)
+        // Swipe hint chevrons
+        swipeLeftChevron.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(12)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(20)
+        }
+        swipeRightChevron.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(12)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(20)
         }
     }
 
@@ -206,6 +227,17 @@ final class ColorDetailViewController: BaseViewController {
         output.shareCard
             .drive(onNext: { [weak self] card in self?.presentShareSheet(for: card) })
             .disposed(by: disposeBag)
+
+        output.chevronState
+            .drive(onNext: { [weak self] state in
+                guard let self else { return }
+                UIView.animate(withDuration: 0.2) {
+                    self.swipeLeftChevron.alpha = state.leftAlpha
+                    self.swipeRightChevron.alpha = state.rightAlpha
+                }
+            })
+            .disposed(by: disposeBag)
+
     }
 
     // MARK: - Gesture
@@ -215,14 +247,34 @@ final class ColorDetailViewController: BaseViewController {
         view.addGestureRecognizer(pan)
     }
 
+    private func setupChevronTaps() {
+        let leftTap = UITapGestureRecognizer(target: self, action: #selector(handleLeftChevronTap))
+        swipeLeftChevron.addGestureRecognizer(leftTap)
+
+        let rightTap = UITapGestureRecognizer(target: self, action: #selector(handleRightChevronTap))
+        swipeRightChevron.addGestureRecognizer(rightTap)
+    }
+
+    @objc private func handleLeftChevronTap() {
+        pendingSwipeDirection = .right
+        swipeRightSubject.onNext(())
+    }
+
+    @objc private func handleRightChevronTap() {
+        pendingSwipeDirection = .left
+        swipeLeftSubject.onNext(())
+    }
+
     @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
         guard gesture.state == .ended else { return }
         let translation = gesture.translation(in: view)
         let velocity    = gesture.velocity(in: view)
 
         if translation.x < -60 || velocity.x < -400 {
+            pendingSwipeDirection = .left
             swipeLeftSubject.onNext(())
         } else if translation.x > 60 || velocity.x > 400 {
+            pendingSwipeDirection = .right
             swipeRightSubject.onNext(())
         }
     }
@@ -230,8 +282,9 @@ final class ColorDetailViewController: BaseViewController {
     // MARK: - Share
 
     private func presentShareSheet(for card: ColorCard) {
-        // 1. UI 컨트롤 일시 숨김 (네비게이션 바 영역 및 아이콘 제외)
-        let controls: [UIView] = [backButton, shareButton, pageCounterView, swipeChevron]
+        // 1. UI 컨트롤 일시 숨김 (렌더링 시 제거, 각 뷰의 원래 alpha 보존)
+        let controls: [UIView] = [backButton, shareButton, pageCounterView]
+        let originalAlphas = controls.map { $0.alpha }
         controls.forEach { $0.alpha = 0 }
 
         // 2. 렌더링할 임시 뷰 생성
@@ -240,8 +293,8 @@ final class ColorDetailViewController: BaseViewController {
             view.drawHierarchy(in: view.bounds, afterScreenUpdates: true)
         }
 
-        // 3. UI 컨트롤 복구
-        controls.forEach { $0.alpha = 1 }
+        // 3. UI 컨트롤 복구 (원래 alpha 값으로 복원)
+        zip(controls, originalAlphas).forEach { view, alpha in view.alpha = alpha }
 
         // 4. 공유 항목 및 메타데이터 구성 (Thumbnail 표시 포함)
         let shareText = L10n.colorDetailShareText
@@ -260,10 +313,48 @@ final class ColorDetailViewController: BaseViewController {
     // MARK: - Configure
 
     private func configure(card: ColorCard) {
+        let direction = pendingSwipeDirection
+        pendingSwipeDirection = .none
+
+        guard direction != .none else {
+            applyCard(card)
+            return
+        }
+
+        let slideOffset: CGFloat = direction == .left ? view.bounds.width : -view.bounds.width
+
+        let newImageView = UIImageView(frame: view.bounds)
+        newImageView.contentMode = .scaleAspectFill
+        newImageView.clipsToBounds = true
+        if let img = card.capturedImage {
+            newImageView.image = img
+        } else if let url = card.imageURL {
+            newImageView.kf.setImage(with: url)
+        }
+        newImageView.transform = CGAffineTransform(translationX: slideOffset, y: 0)
+        view.insertSubview(newImageView, belowSubview: gradientOverlayView)
+
+        let infoViews: [UIView] = [colorNameRow, hexCodeLabel, metaLabel]
+
+        UIView.animate(withDuration: 0.35, delay: 0, options: .curveEaseInOut) {
+            self.backgroundImageView.transform = CGAffineTransform(translationX: -slideOffset, y: 0)
+            newImageView.transform = .identity
+            infoViews.forEach { $0.alpha = 0 }
+        } completion: { _ in
+            self.applyCard(card)
+            self.backgroundImageView.transform = .identity
+            newImageView.removeFromSuperview()
+            UIView.animate(withDuration: 0.2) {
+                infoViews.forEach { $0.alpha = 1 }
+            }
+        }
+    }
+
+    private func applyCard(_ card: ColorCard) {
         if let img = card.capturedImage {
             backgroundImageView.image = img
         } else if let url = card.imageURL {
-            backgroundImageView.kf.setImage(with: url, options: [.transition(.fade(0.25))])
+            backgroundImageView.kf.setImage(with: url)
         }
 
         colorDotView.setColor(card.dotColor)

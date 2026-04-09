@@ -3,6 +3,7 @@
 //  ColorWalk
 //
 
+import UIKit
 import RxSwift
 import RxCocoa
 
@@ -15,10 +16,16 @@ final class ColorDetailViewModel: ViewModelType {
         let shareTap:   Observable<Void>
     }
 
+    struct ChevronState {
+        let leftAlpha: CGFloat
+        let rightAlpha: CGFloat
+    }
+
     struct Output {
         let currentCard: Driver<ColorCard>
         let pageText: Driver<String>
         let shareCard: Driver<ColorCard>
+        let chevronState: Driver<ChevronState>
     }
 
     var onBack: (() -> Void)?
@@ -37,13 +44,15 @@ final class ColorDetailViewModel: ViewModelType {
 
         input.swipeLeft
             .withLatestFrom(currentIndexRelay)
-            .map { ($0 + 1) % count }
+            .filter { $0 < count - 1 }
+            .map { $0 + 1 }
             .bind(to: currentIndexRelay)
             .disposed(by: disposeBag)
 
         input.swipeRight
             .withLatestFrom(currentIndexRelay)
-            .map { ($0 - 1 + count) % count }
+            .filter { $0 > 0 }
+            .map { $0 - 1 }
             .bind(to: currentIndexRelay)
             .disposed(by: disposeBag)
 
@@ -74,6 +83,16 @@ final class ColorDetailViewModel: ViewModelType {
 
         let shareCard = shareCardRelay.asDriver(onErrorDriveWith: .empty())
 
-        return Output(currentCard: currentCard, pageText: pageText, shareCard: shareCard)
+        let chevronState = currentIndexRelay
+            .map { index -> ChevronState in
+                guard count > 1 else { return ChevronState(leftAlpha: 0, rightAlpha: 0) }
+                return ChevronState(
+                    leftAlpha:  index > 0           ? 1.0 : 0.3,
+                    rightAlpha: index < count - 1   ? 1.0 : 0.3
+                )
+            }
+            .asDriver(onErrorJustReturn: ChevronState(leftAlpha: 0, rightAlpha: 0))
+
+        return Output(currentCard: currentCard, pageText: pageText, shareCard: shareCard, chevronState: chevronState)
     }
 }
