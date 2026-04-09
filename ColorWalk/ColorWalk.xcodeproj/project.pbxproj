@@ -189,7 +189,6 @@
 			);
 			fileSystemSynchronizedGroups = (
 				D82CC0722F710D1B00211DB3 /* ColorWalk */,
-				D82CC51F2F73D0E800211DB3 /* ColorWalkWidget */,
 			);
 			name = ColorWalk;
 			packageProductDependencies = (
