@@ -3,6 +3,7 @@ import SnapKit
 import LinkPresentation
 import RxSwift
 import RxCocoa
+import Photos
 
 final class CollectionViewController: BaseViewController {
 
@@ -519,12 +520,22 @@ final class CollectionViewController: BaseViewController {
         }
 
         let itemSource = GridShareItemSource(image: image, title: L10n.collectionShareTitle, date: currentShareDateText)
-        let activityVC = UIActivityViewController(activityItems: [itemSource], applicationActivities: nil)
-        
+
+        var applicationActivities: [UIActivity] = []
+        if let pngData = image.pngData() {
+            applicationActivities.append(SaveAsPNGToPhotosActivity(imageData: pngData))
+        }
+
+        let activityVC = UIActivityViewController(
+            activityItems: [itemSource],
+            applicationActivities: applicationActivities
+        )
+        activityVC.excludedActivityTypes = [.saveToCameraRoll]
+
         if let popover = activityVC.popoverPresentationController {
             popover.sourceView = shareIconButton
         }
-        
+
         present(activityVC, animated: true)
     }
 }
@@ -558,5 +569,56 @@ final class GridShareItemSource: NSObject, UIActivityItemSource {
         metadata.imageProvider = NSItemProvider(object: image)
         metadata.iconProvider = NSItemProvider(object: image)
         return metadata
+    }
+}
+
+// MARK: - SaveAsPNGToPhotosActivity
+
+final class SaveAsPNGToPhotosActivity: UIActivity {
+
+    private enum Constants {
+        static let title = "사진에 저장"
+    }
+
+    private let imageData: Data
+
+    init(imageData: Data) {
+        self.imageData = imageData
+        super.init()
+    }
+
+    override var activityTitle: String? { Constants.title }
+    override var activityImage: UIImage? { UIImage(systemName: "photo.badge.plus") }
+    override class var activityCategory: UIActivity.Category { .action }
+
+    override func canPerform(withActivityItems activityItems: [Any]) -> Bool { true }
+    override func prepare(withActivityItems activityItems: [Any]) {}
+
+    override func perform() {
+        let status = PHPhotoLibrary.authorizationStatus(for: .addOnly)
+        if status == .authorized || status == .limited {
+            saveToGallery()
+        } else {
+            PHPhotoLibrary.requestAuthorization(for: .addOnly) { [weak self] newStatus in
+                guard newStatus == .authorized || newStatus == .limited else {
+                    self?.activityDidFinish(false)
+                    return
+                }
+                self?.saveToGallery()
+            }
+        }
+    }
+
+    private func saveToGallery() {
+        let data = imageData
+        PHPhotoLibrary.shared().performChanges({
+            let request = PHAssetCreationRequest.forAsset()
+            let options = PHAssetResourceCreationOptions()
+            options.uniformTypeIdentifier = "public.png"
+            request.addResource(with: .photo, data: data, options: options)
+            request.creationDate = Date()
+        }) { [weak self] success, _ in
+            self?.activityDidFinish(success)
+        }
     }
 }
