@@ -207,9 +207,21 @@ final class MissionHomeViewModel: ViewModelType {
     }
 
     private func saveImageToGallery(_ image: UIImage) -> Observable<GallerySaveResult> {
+        let lastCard = ColorCardStore.shared.cards.value.first
+        let location: CLLocation? = lastCard.map { CLLocation(latitude: $0.latitude, longitude: $0.longitude) }
+
         return Observable.create { observer in
             PHPhotoLibrary.shared().performChanges({
-                PHAssetChangeRequest.creationRequestForAsset(from: image)
+                let request = PHAssetCreationRequest.forAsset()
+                let options = PHAssetResourceCreationOptions()
+                if let location,
+                   let gpsData = ImageFileManager.shared.jpegDataWithGPS(from: image, coordinate: location.coordinate) {
+                    request.addResource(with: .photo, data: gpsData, options: options)
+                    request.location = location
+                } else if let fallback = image.jpegData(compressionQuality: 0.8) {
+                    request.addResource(with: .photo, data: fallback, options: options)
+                }
+                request.creationDate = Date()
             }) { success, _ in
                 observer.onNext(success ? .success : .failure)
                 observer.onCompleted()

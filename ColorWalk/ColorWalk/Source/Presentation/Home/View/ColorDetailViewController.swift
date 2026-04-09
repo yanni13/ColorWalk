@@ -9,6 +9,8 @@ import Kingfisher
 import RxSwift
 import RxCocoa
 import LinkPresentation
+import Photos
+import CoreLocation
 
 final class ColorDetailViewController: BaseViewController {
 
@@ -283,7 +285,7 @@ final class ColorDetailViewController: BaseViewController {
 
     private func presentShareSheet(for card: ColorCard) {
         // 1. UI 컨트롤 일시 숨김 (렌더링 시 제거, 각 뷰의 원래 alpha 보존)
-        let controls: [UIView] = [backButton, shareButton, pageCounterView]
+        let controls: [UIView] = [backButton, shareButton, pageCounterView, swipeLeftChevron, swipeRightChevron]
         let originalAlphas = controls.map { $0.alpha }
         controls.forEach { $0.alpha = 0 }
 
@@ -296,11 +298,24 @@ final class ColorDetailViewController: BaseViewController {
         // 3. UI 컨트롤 복구 (원래 alpha 값으로 복원)
         zip(controls, originalAlphas).forEach { view, alpha in view.alpha = alpha }
 
-        // 4. 공유 항목 및 메타데이터 구성 (Thumbnail 표시 포함)
+        // 4. GPS 포함 저장 액티비티 구성 (좌표가 유효한 경우에만)
+        let coordinate = CLLocationCoordinate2D(latitude: card.latitude, longitude: card.longitude)
+        var applicationActivities: [UIActivity] = []
+        if card.latitude != 0 || card.longitude != 0,
+           let gpsData = ImageFileManager.shared.jpegDataWithGPS(from: image, coordinate: coordinate) {
+            let saveActivity = SaveToPhotosWithGPSActivity(imageData: gpsData, coordinate: coordinate)
+            applicationActivities.append(saveActivity)
+        }
+
+        // 5. 공유 항목 및 메타데이터 구성 (Thumbnail 표시 포함)
         let shareText = L10n.colorDetailShareText
         let itemSource = ColorShareItemSource(image: image, text: shareText, title: card.colorName)
 
-        let activityViewController = UIActivityViewController(activityItems: [itemSource, shareText], applicationActivities: nil)
+        let activityViewController = UIActivityViewController(
+            activityItems: [itemSource, shareText],
+            applicationActivities: applicationActivities
+        )
+        activityViewController.excludedActivityTypes = [.saveToCameraRoll]
 
         if let popover = activityViewController.popoverPresentationController {
             popover.sourceView = self.view
@@ -365,6 +380,60 @@ final class ColorDetailViewController: BaseViewController {
 
         hexCodeLabel.text = card.hexColor
         metaLabel.text = "\(card.captureDate) · \(card.locationName)"
+    }
+}
+
+// MARK: - SaveToPhotosWithGPSActivity
+
+final class SaveToPhotosWithGPSActivity: UIActivity {
+
+    private enum Constants {
+        static let title = "사진에 저장"
+    }
+
+    private let imageData: Data
+    private let coordinate: CLLocationCoordinate2D
+
+    init(imageData: Data, coordinate: CLLocationCoordinate2D) {
+        self.imageData = imageData
+        self.coordinate = coordinate
+        super.init()
+    }
+
+    override var activityTitle: String? { Constants.title }
+    override var activityImage: UIImage? { UIImage(systemName: "photo.badge.plus") }
+    override class var activityCategory: UIActivity.Category { .action }
+
+    override func canPerform(withActivityItems activityItems: [Any]) -> Bool { true }
+    override func prepare(withActivityItems activityItems: [Any]) {}
+
+    override func perform() {
+        let status = PHPhotoLibrary.authorizationStatus(for: .addOnly)
+        if status == .authorized || status == .limited {
+            saveToGallery()
+        } else {
+            PHPhotoLibrary.requestAuthorization(for: .addOnly) { [weak self] newStatus in
+                guard newStatus == .authorized || newStatus == .limited else {
+                    self?.activityDidFinish(false)
+                    return
+                }
+                self?.saveToGallery()
+            }
+        }
+    }
+
+    private func saveToGallery() {
+        let data = imageData
+        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        PHPhotoLibrary.shared().performChanges({
+            let request = PHAssetCreationRequest.forAsset()
+            let options = PHAssetResourceCreationOptions()
+            request.addResource(with: .photo, data: data, options: options)
+            request.location = location
+            request.creationDate = Date()
+        }) { [weak self] success, _ in
+            self?.activityDidFinish(success)
+        }
     }
 }
 
