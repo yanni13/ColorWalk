@@ -1,8 +1,37 @@
 import UIKit
+import CoreLocation
+import ImageIO
 
 final class ImageFileManager {
     static let shared = ImageFileManager()
     private init() {}
+
+    func jpegDataWithGPS(from image: UIImage, coordinate: CLLocationCoordinate2D) -> Data? {
+        guard let cgImage = image.cgImage else { return image.jpegData(compressionQuality: 0.8) }
+
+        let mutableData = NSMutableData()
+        guard let destination = CGImageDestinationCreateWithData(
+            mutableData, "public.jpeg" as CFString, 1, nil
+        ) else { return image.jpegData(compressionQuality: 0.8) }
+
+        let gpsProperties: [CFString: Any] = [
+            kCGImagePropertyGPSLatitude:     abs(coordinate.latitude),
+            kCGImagePropertyGPSLatitudeRef:  coordinate.latitude  >= 0 ? "N" : "S",
+            kCGImagePropertyGPSLongitude:    abs(coordinate.longitude),
+            kCGImagePropertyGPSLongitudeRef: coordinate.longitude >= 0 ? "E" : "W"
+        ]
+
+        let properties: [CFString: Any] = [
+            kCGImagePropertyGPSDictionary: gpsProperties,
+            kCGImageDestinationLossyCompressionQuality: 0.8
+        ]
+
+        CGImageDestinationAddImage(destination, cgImage, properties as CFDictionary)
+        guard CGImageDestinationFinalize(destination) else {
+            return image.jpegData(compressionQuality: 0.8)
+        }
+        return mutableData as Data
+    }
 
     func saveImage(image: UIImage, fileName: String) -> String? {
         guard let data = image.jpegData(compressionQuality: 0.8) else { return nil }

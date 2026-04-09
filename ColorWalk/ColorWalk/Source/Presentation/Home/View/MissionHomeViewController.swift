@@ -298,6 +298,11 @@ final class MissionHomeViewController: BaseViewController {
         return s
     }()
 
+    // MARK: - Gradient
+
+    private let backgroundGradientLayer = CAGradientLayer()
+    private var currentGradientColor: UIColor = UIColor(hex: "#B0B8C1")
+
     // MARK: - Rx
 
     private let shuffleSubject = PublishSubject<Void>()
@@ -326,6 +331,22 @@ final class MissionHomeViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLocationManager()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        backgroundGradientLayer.frame = view.bounds
+        if backgroundGradientLayer.colors == nil {
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            backgroundGradientLayer.colors = [
+                currentGradientColor.withAlphaComponent(0.33).cgColor,
+                currentGradientColor.withAlphaComponent(0.22).cgColor,
+                currentGradientColor.withAlphaComponent(0.10).cgColor,
+                UIColor.clear.cgColor
+            ]
+            CATransaction.commit()
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -390,6 +411,10 @@ final class MissionHomeViewController: BaseViewController {
 
     override func setupViews() {
         view.backgroundColor = .white
+        view.layer.insertSublayer(backgroundGradientLayer, at: 0)
+        backgroundGradientLayer.locations = [0, 0.4, 0.7, 1.0]
+        backgroundGradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
+        backgroundGradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
 
         view.addSubview(headerRow)
         headerRow.addSubview(titleStack)
@@ -612,7 +637,9 @@ final class MissionHomeViewController: BaseViewController {
             .drive(onNext: { [weak self] data in
                 guard let self else { return }
                 self.currentWeatherData = data
-                let newWeatherInfo = L10n.missionWeatherInfoFormat(data.displayText)
+                let newWeatherInfo = data.displayText == L10n.missionWeatherNoInfo
+                    ? L10n.missionWeatherLoading
+                    : L10n.missionWeatherInfoFormat(data.displayText)
                 self.missionDetailLabel.text = "\(self.currentDisplayedMission.hexColor)  ·  \(newWeatherInfo)"
                 self.currentDisplayedMission = ColorMission(
                     name: self.currentDisplayedMission.name,
@@ -794,16 +821,27 @@ final class MissionHomeViewController: BaseViewController {
     // MARK: - Apply
 
     private func applyMission(_ mission: ColorMission) {
-        currentDisplayedMission = mission
+        // 이미 로드된 날씨 정보가 있으면 유지, 없으면 로딩 텍스트 표시
+        let preservedWeather = currentDisplayedMission.weatherInfo == L10n.missionWeatherNoInfo
+            ? L10n.missionWeatherLoading
+            : currentDisplayedMission.weatherInfo
+        currentDisplayedMission = ColorMission(
+            name: mission.name,
+            hexColor: mission.hexColor,
+            color: mission.color,
+            weatherInfo: preservedWeather,
+            progress: mission.progress
+        )
 
         UIView.animate(withDuration: 0.25) {
             self.colorDotView.backgroundColor = mission.color
             self.progressFill.backgroundColor = mission.color
             self.progressCountLabel.textColor = mission.color
         }
+        applyGradient(for: mission.color)
 
         missionNameLabel.text = mission.name
-        missionDetailLabel.text = "\(mission.hexColor)  ·  \(mission.weatherInfo)"
+        missionDetailLabel.text = "\(mission.hexColor)  ·  \(preservedWeather)"
 
         let count = ColorCardStore.shared.cards.value.count
         updateProgressBar(count: count)
@@ -811,6 +849,19 @@ final class MissionHomeViewController: BaseViewController {
         ColorMissionStore.shared.setMission(mission)
         RealmManager.shared.updateTodayMission(hex: mission.hexColor, name: mission.name, weather: mission.weatherInfo)
         WidgetDataWriter.shared.updateWidgetData(with: mission)
+    }
+
+    private func applyGradient(for color: UIColor) {
+        currentGradientColor = color
+        CATransaction.begin()
+        CATransaction.setAnimationDuration(0.4)
+        backgroundGradientLayer.colors = [
+            color.withAlphaComponent(0.33).cgColor,
+            color.withAlphaComponent(0.22).cgColor,
+            color.withAlphaComponent(0.10).cgColor,
+            UIColor.clear.cgColor
+        ]
+        CATransaction.commit()
     }
 
     private func updateProgressBar(count: Int) {
@@ -833,6 +884,7 @@ final class MissionHomeViewController: BaseViewController {
             self.progressFill.backgroundColor = color
             self.progressCountLabel.textColor = color
         }
+        applyGradient(for: color)
 
         missionNameLabel.text = name
         missionDetailLabel.text = "\(hex)  ·  \(currentDisplayedMission.weatherInfo)"

@@ -42,8 +42,8 @@ final class MapViewModel: ViewModelType {
                 let groups = realmPhotos.reduce(into: [[Photo]]()) { groups, photo in
                     if let idx = groups.firstIndex(where: { group in
                         guard let first = group.first else { return false }
-                        return abs(first.latitude - photo.latitude) < 0.00001 &&
-                               abs(first.longitude - photo.longitude) < 0.00001
+                        return abs(first.latitude - photo.latitude) < 0.0003 &&
+                               abs(first.longitude - photo.longitude) < 0.0003
                     }) {
                         groups[idx].append(photo)
                     } else {

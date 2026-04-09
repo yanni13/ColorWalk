@@ -19,6 +19,9 @@ final class ColorPalettePickerSheetViewController: UIViewController {
     private var currentSaturation: CGFloat = 1.0
     private var currentBrightness: CGFloat = 1.0
 
+    // MARK: - Gradient
+    private let backgroundGradientLayer = CAGradientLayer()
+
     // MARK: - UI: Sheet
     private let sheetView: UIView = {
         let v = UIView()
@@ -123,6 +126,11 @@ final class ColorPalettePickerSheetViewController: UIViewController {
         updatePreview()
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        backgroundGradientLayer.frame = sheetView.bounds
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         view.backgroundColor = .clear
@@ -156,6 +164,11 @@ final class ColorPalettePickerSheetViewController: UIViewController {
 
         spectrumView.layer.cornerRadius = 12
         spectrumView.layer.masksToBounds = true
+
+        backgroundGradientLayer.locations = [0, 0.4, 0.7, 1.0]
+        backgroundGradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
+        backgroundGradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
+        sheetView.layer.insertSublayer(backgroundGradientLayer, at: 0)
     }
 
     private func setupConstraints() {
@@ -259,6 +272,16 @@ final class ColorPalettePickerSheetViewController: UIViewController {
         previewCircle.backgroundColor = color
         hexTextLabel.text = hex
         pantoneLabel.text = L10n.colorPaletteSelectedColor
+
+        CATransaction.begin()
+        CATransaction.setAnimationDuration(0.15)
+        backgroundGradientLayer.colors = [
+            color.withAlphaComponent(0.33).cgColor,
+            color.withAlphaComponent(0.22).cgColor,
+            color.withAlphaComponent(0.10).cgColor,
+            UIColor.clear.cgColor
+        ]
+        CATransaction.commit()
     }
 
     // MARK: - Actions

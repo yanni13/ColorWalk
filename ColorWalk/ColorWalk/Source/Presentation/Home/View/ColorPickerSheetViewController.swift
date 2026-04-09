@@ -216,6 +216,12 @@ final class ColorPickerSheetViewController: UIViewController {
         return b
     }()
 
+    // MARK: - Constants
+    private enum Constants {
+        static let dismissTranslationThreshold: CGFloat = 120
+        static let dismissVelocityThreshold: CGFloat = 600
+    }
+
     // MARK: - Init
     init(currentMission: ColorMission) {
         self.currentMission = currentMission
@@ -272,6 +278,9 @@ final class ColorPickerSheetViewController: UIViewController {
 
         let overlayTap = UITapGestureRecognizer(target: self, action: #selector(overlayTapped(_:)))
         view.addGestureRecognizer(overlayTap)
+
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+        sheetView.addGestureRecognizer(pan)
     }
 
     private func buildPresets() {
@@ -446,6 +455,27 @@ final class ColorPickerSheetViewController: UIViewController {
     @objc private func overlayTapped(_ gesture: UITapGestureRecognizer) {
         let loc = gesture.location(in: view)
         if !sheetView.frame.contains(loc) { dismissSheet() }
+    }
+
+    @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: sheetView)
+        let velocity = gesture.velocity(in: sheetView)
+
+        switch gesture.state {
+        case .changed:
+            guard translation.y > 0 else { return }
+            sheetView.transform = CGAffineTransform(translationX: 0, y: translation.y)
+        case .ended, .cancelled:
+            if translation.y > Constants.dismissTranslationThreshold || velocity.y > Constants.dismissVelocityThreshold {
+                dismissSheet()
+            } else {
+                UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0) {
+                    self.sheetView.transform = .identity
+                }
+            }
+        default:
+            break
+        }
     }
 
     private func applyPresetSelection(at index: Int) {

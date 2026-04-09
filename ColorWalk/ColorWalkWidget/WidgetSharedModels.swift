@@ -1,14 +1,6 @@
 import SwiftUI
 import UIKit
 
-// MARK: - Constants
-
-enum WidgetConstants {
-    static let appGroupID = "group.com.yanni13.ColorWalk"
-    static let dailyDataKey = "widgetDailyData"
-    static let imageDirName = "WidgetImages"
-}
-
 // MARK: - Codable Models
 
 struct WidgetPhotoInfo: Codable {

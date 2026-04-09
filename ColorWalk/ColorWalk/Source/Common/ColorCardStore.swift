@@ -52,7 +52,7 @@ final class ColorCardStore {
                 photo.longitude = card.longitude
                 photo.locationName = card.locationName
                 photo.createdAt = Date()
-                
+
                 // 슬롯 인덱스 결정: 0이면 첫 번째 빈 슬롯 찾기
                 let slotIndex = (card.missionCurrent > 0) ? (card.missionCurrent - 1) : cards.value.count
 
