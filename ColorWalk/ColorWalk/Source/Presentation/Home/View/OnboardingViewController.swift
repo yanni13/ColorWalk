@@ -165,6 +165,7 @@ final class OnboardingViewController: BaseViewController {
     override func bind() {
         ctaButton.rx.tap
             .subscribe(onNext: { [weak self] in
+                AnalyticsManager.shared.logOnboardingCtaTapped()
                 self?.onOnboardingComplete?()
             })
             .disposed(by: disposeBag)

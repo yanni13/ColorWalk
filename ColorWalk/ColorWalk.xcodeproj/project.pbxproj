@@ -20,6 +20,8 @@
 		D82CC62B2F74339300211DB3 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D82CC6292F74336000211DB3 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D85CE9D22F74C2B6002DB279 /* CLAUDE.md in Resources */ = {isa = PBXBuildFile; fileRef = D85CE9D12F74C2B6002DB279 /* CLAUDE.md */; };
 		D89DEDAE2F796E2100DCC565 /* GEMINI.md in Resources */ = {isa = PBXBuildFile; fileRef = D89DEDAD2F796E2100DCC565 /* GEMINI.md */; };
+		D8B767D82F88DF0C003BF264 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = D8B767D72F88DF0C003BF264 /* FirebaseAnalyticsCore */; };
+		D8B767DA2F88DF0C003BF264 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = D8B767D92F88DF0C003BF264 /* FirebaseCrashlytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -118,7 +120,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				D82CC62A2F74336000211DB3 /* RealmSwift in Frameworks */,
+				D8B767D82F88DF0C003BF264 /* FirebaseAnalyticsCore in Frameworks */,
 				D82CC0DA2F711D7D00211DB3 /* Kingfisher in Frameworks */,
+				D8B767DA2F88DF0C003BF264 /* FirebaseCrashlytics in Frameworks */,
 				D82CC0D22F711D2B00211DB3 /* SnapKit in Frameworks */,
 				D82CC0CF2F711D1D00211DB3 /* RxSwift in Frameworks */,
 				D82CC0CD2F711D1D00211DB3 /* RxCocoa in Frameworks */,
@@ -181,6 +185,7 @@
 				D82CC06E2F710D1B00211DB3 /* Resources */,
 				D82CC5342F73D0E900211DB3 /* Embed Foundation Extensions */,
 				D82CC62C2F74339300211DB3 /* Embed Frameworks */,
+				D8B767DB2F88E29F003BF264 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -197,6 +202,8 @@
 				D82CC0D12F711D2B00211DB3 /* SnapKit */,
 				D82CC0D92F711D7D00211DB3 /* Kingfisher */,
 				D82CC6292F74336000211DB3 /* RealmSwift */,
+				D8B767D72F88DF0C003BF264 /* FirebaseAnalyticsCore */,
+				D8B767D92F88DF0C003BF264 /* FirebaseCrashlytics */,
 			);
 			productName = ColorWalk;
 			productReference = D82CC0702F710D1B00211DB3 /* ColorWalk.app */;
@@ -260,6 +267,7 @@
 				D82CC0D02F711D2B00211DB3 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				D82CC0D82F711D7D00211DB3 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				D82CC6262F74336000211DB3 /* XCRemoteSwiftPackageReference "realm-swift" */,
+				D8B767D62F88DF0C003BF264 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D82CC0712F710D1B00211DB3 /* Products */;
@@ -292,6 +300,32 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		D8B767DB2F88E29F003BF264 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}.debug.dylib",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		D82CC06C2F710D1B00211DB3 /* Sources */ = {
@@ -327,6 +361,7 @@
 				CODE_SIGN_ENTITLEMENTS = ColorWalk/ColorWalk.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = W5Z68U98HJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ColorWalk/Info.plist;
@@ -659,6 +694,14 @@
 				version = 20.0.3;
 			};
 		};
+		D8B767D62F88DF0C003BF264 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.12.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -686,6 +729,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D82CC6262F74336000211DB3 /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
+		};
+		D8B767D72F88DF0C003BF264 /* FirebaseAnalyticsCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D8B767D62F88DF0C003BF264 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsCore;
+		};
+		D8B767D92F88DF0C003BF264 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D8B767D62F88DF0C003BF264 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -531,6 +531,7 @@ final class CollectionViewController: BaseViewController {
 
     private func presentShareSheet() {
         guard !currentSlots.isEmpty else { return }
+        AnalyticsManager.shared.logCollectionShared()
 
         let cardSize = CGSize(width: Constants.shareCardWidth, height: Constants.shareCardHeight)
         let container = UIView(frame: CGRect(origin: .zero, size: cardSize))

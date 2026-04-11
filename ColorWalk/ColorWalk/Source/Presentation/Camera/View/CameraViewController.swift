@@ -613,7 +613,14 @@ final class CameraViewController: BaseViewController {
         fetchAddress(lat: latitude, lon: longitude) { [weak self] address in
             guard let self = self else { return }
             
-            if match >= 60 {
+            let isSuccess = match >= 60
+            AnalyticsManager.shared.logPhotoCaptured(
+                matchPercent: match,
+                filter: self.viewModel.currentFilter.value.rawValue,
+                isSuccess: isSuccess
+            )
+
+            if isSuccess {
                 let card = ColorCard(
                     id: UUID().uuidString,
                     imageURL: nil,
@@ -621,7 +628,7 @@ final class CameraViewController: BaseViewController {
                     colorName: self.viewModel.missionName.value,
                     hexColor: self.viewModel.detectedHex.value,
                     dotColor: self.viewModel.detectedColor.value,
-                    locationName: address, // 실제 주소 텍스트 삽입
+                    locationName: address,
                     captureDate: Self.currentDateString(),
                     matchPercentage: match,
                     missionCurrent: 0,
@@ -768,6 +775,7 @@ extension CameraViewController: PHPickerViewControllerDelegate {
         picker.dismiss(animated: true)
         guard let provider = results.first?.itemProvider,
               provider.canLoadObject(ofClass: UIImage.self) else { return }
+        AnalyticsManager.shared.logGalleryImageUsed()
 
         provider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { [weak self] data, _ in
             guard let self else { return }

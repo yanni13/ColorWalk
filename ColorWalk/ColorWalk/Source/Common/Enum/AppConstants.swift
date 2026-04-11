@@ -16,6 +16,25 @@ enum AppConstants {
         static let widgetDisplayShort = "M/d"
     }
 
+    enum Analytics {
+        enum Event {
+            static let photoCaptured = "photo_captured"
+            static let galleryImageUsed = "gallery_image_used"
+            static let missionShuffled = "mission_shuffled"
+            static let missionColorChanged = "mission_color_changed"
+            static let collectionShared = "collection_shared"
+            static let onboardingCtaTapped = "onboarding_cta_tapped"
+        }
+
+        enum Param {
+            static let matchPercent = "match_percent"
+            static let filterUsed = "filter_used"
+            static let isSuccess = "is_success"
+            static let hexColor = "hex_color"
+            static let colorName = "color_name"
+        }
+    }
+
     enum Text {
         static var missionComplete: String { L10n.missionStatusComplete }
         static var missionIncomplete: String { L10n.missionStatusIncomplete }

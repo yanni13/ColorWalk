@@ -727,6 +727,7 @@ final class MissionHomeViewController: BaseViewController {
 
     private func handleShuffleTap() {
         guard !cards.isEmpty else {
+            AnalyticsManager.shared.logMissionShuffled()
             shuffleSubject.onNext(())
             return
         }
@@ -737,6 +738,7 @@ final class MissionHomeViewController: BaseViewController {
         )
         alert.addAction(UIAlertAction(title: L10n.buttonCancel, style: .cancel))
         alert.addAction(UIAlertAction(title: L10n.buttonConfirm, style: .destructive) { [weak self] _ in
+            AnalyticsManager.shared.logMissionShuffled()
             ColorCardStore.shared.clearAll()
             self?.shuffleSubject.onNext(())
         })
@@ -877,6 +879,7 @@ final class MissionHomeViewController: BaseViewController {
     }
 
     private func applyCustomColor(_ color: UIColor, hex: String, name: String) {
+        AnalyticsManager.shared.logMissionColorChanged(hexColor: hex, colorName: name)
         ColorCardStore.shared.clearAll()
 
         UIView.animate(withDuration: 0.3) {
