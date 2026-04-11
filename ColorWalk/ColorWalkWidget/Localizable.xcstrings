@@ -44,6 +44,12 @@
             "state": "translated",
             "value": "今日"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日"
+          }
         }
       }
     },
@@ -77,6 +83,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "查看今日收集的顏色。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日収集した色を確認しましょう。"
           }
         }
       }
@@ -112,6 +124,12 @@
             "state": "translated",
             "value": "今日拾色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日のカラーウォーク"
+          }
         }
       }
     },
@@ -145,6 +163,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "拍攝顏色吧"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "色を撮影してみてください"
           }
         }
       }
@@ -180,6 +204,12 @@
             "state": "translated",
             "value": "正在捕捉 %@"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@をキャプチャ中"
+          }
         }
       }
     },
@@ -213,6 +243,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "收集您的顏色。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "あなたの色を収めてみてください。"
           }
         }
       }
@@ -248,6 +284,12 @@
             "state": "translated",
             "value": "現在尋找周圍的顏色！🔍"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今すぐ周りの色を探してみましょう！🔍"
+          }
         }
       }
     },
@@ -281,6 +323,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld%% 吻合"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld%%一致"
           }
         }
       }
@@ -316,6 +364,12 @@
             "state": "translated",
             "value": "%lld%% 吻合中"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld%%一致中"
+          }
         }
       }
     },
@@ -349,6 +403,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "任務"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ミッション"
           }
         }
       }
@@ -384,6 +444,12 @@
             "state": "translated",
             "value": "剩餘時間"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "残り時間"
+          }
         }
       }
     },
@@ -417,6 +483,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "目標顏色 %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目標カラー%@"
           }
         }
       }
@@ -452,6 +524,12 @@
             "state": "translated",
             "value": "目標 %@"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目標%@"
+          }
         }
       }
     },
@@ -485,6 +563,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "剩餘"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "残り"
           }
         }
       }
@@ -520,6 +604,12 @@
             "state": "translated",
             "value": "距離 %@"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目標カラー%@まで"
+          }
         }
       }
     },
@@ -553,6 +643,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "開始散步吧"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "散歩を始めてみてください"
           }
         }
       }
@@ -588,6 +684,12 @@
             "state": "translated",
             "value": "今日顏色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日の色"
+          }
         }
       }
     },
@@ -616,6 +718,12 @@
             "state": "translated",
             "value": "拾色小工具"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "担ってウィジェット"
+          }
         }
       }
     },
@@ -643,6 +751,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "將今天散步中遇見的顏色展示在主畫面。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日の散歩で出会った色をホーム画面に飾ってください。"
           }
         }
       }

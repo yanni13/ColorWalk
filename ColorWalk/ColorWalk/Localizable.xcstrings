@@ -32,6 +32,12 @@
             "state": "translated",
             "value": "關閉"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "閉じる"
+          }
         }
       }
     },
@@ -65,6 +71,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "編輯名稱"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "名前を編集"
           }
         }
       }
@@ -100,6 +112,12 @@
             "state": "translated",
             "value": "前往我的位置"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在地へ移動"
+          }
         }
       }
     },
@@ -133,6 +151,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "照片"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真"
           }
         }
       }
@@ -168,6 +192,12 @@
             "state": "translated",
             "value": "隨機任務"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ミッションをシャッフル"
+          }
         }
       }
     },
@@ -201,6 +231,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "請輸入任務名稱"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ミッションの名前を入力してください"
           }
         }
       }
@@ -236,6 +272,12 @@
             "state": "translated",
             "value": "編輯名稱"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "名前を編集"
+          }
         }
       }
     },
@@ -269,6 +311,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "⚠️ 更改任務顏色將清除所有已拍攝的照片。是否繼續？"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⚠️ ミッションの色を変更すると、撮影した写真がすべて削除されます。続けますか？"
           }
         }
       }
@@ -304,6 +352,12 @@
             "state": "translated",
             "value": "更改任務顏色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ミッションの色を変更"
+          }
         }
       }
     },
@@ -337,6 +391,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "確定要刪除這張照片嗎？"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この写真を削除してもよろしいですか？"
           }
         }
       }
@@ -372,6 +432,12 @@
             "state": "translated",
             "value": "刪除照片"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真を削除"
+          }
         }
       }
     },
@@ -405,6 +471,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "儲存照片時發生錯誤。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真の保存中にエラーが発生しました。"
           }
         }
       }
@@ -440,6 +512,12 @@
             "state": "translated",
             "value": "儲存失敗"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存失敗"
+          }
         }
       }
     },
@@ -473,6 +551,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "請在設定中允許存取照片。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定で写真へのアクセスを許可してください。"
           }
         }
       }
@@ -508,6 +592,12 @@
             "state": "translated",
             "value": "需要照片存取權限"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真へのアクセスが必要"
+          }
         }
       }
     },
@@ -541,6 +631,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "照片已儲存至相簿。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真がギャラリーに保存されました。"
           }
         }
       }
@@ -576,6 +672,12 @@
             "state": "translated",
             "value": "儲存成功！"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存完了！"
+          }
         }
       }
     },
@@ -609,6 +711,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "套用"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "適用する"
           }
         }
       }
@@ -644,6 +752,12 @@
             "state": "translated",
             "value": "取消"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "キャンセル"
+          }
         }
       }
     },
@@ -677,6 +791,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "更改"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変更"
           }
         }
       }
@@ -712,6 +832,12 @@
             "state": "translated",
             "value": "關閉"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "閉じる"
+          }
         }
       }
     },
@@ -742,6 +868,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "確認"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "確認"
@@ -780,6 +912,12 @@
             "state": "translated",
             "value": "自訂"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "直接入力"
+          }
         }
       }
     },
@@ -813,6 +951,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "刪除"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "削除"
           }
         }
       }
@@ -848,6 +992,12 @@
             "state": "translated",
             "value": "刪除"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "削除する"
+          }
         }
       }
     },
@@ -881,6 +1031,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "取消全選"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すべて解除"
           }
         }
       }
@@ -916,6 +1072,12 @@
             "state": "translated",
             "value": "完成"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完了"
+          }
         }
       }
     },
@@ -949,6 +1111,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "前往設定"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定へ移動"
           }
         }
       }
@@ -984,6 +1152,12 @@
             "state": "translated",
             "value": "隨機顏色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ランダムカラー"
+          }
         }
       }
     },
@@ -1017,6 +1191,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "儲存"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存する"
           }
         }
       }
@@ -1052,6 +1232,12 @@
             "state": "translated",
             "value": "分享"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "共有する"
+          }
         }
       }
     },
@@ -1085,6 +1271,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "冷色"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "クール"
           }
         }
       }
@@ -1120,6 +1312,12 @@
             "state": "translated",
             "value": "黑白"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モノクロ"
+          }
         }
       }
     },
@@ -1153,6 +1351,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "普通"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ノーマル"
           }
         }
       }
@@ -1188,6 +1392,12 @@
             "state": "translated",
             "value": "柔和"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ソフト"
+          }
         }
       }
     },
@@ -1221,6 +1431,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "鮮明"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ビビッド"
           }
         }
       }
@@ -1256,6 +1472,12 @@
             "state": "translated",
             "value": "暖色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ウォーム"
+          }
         }
       }
     },
@@ -1289,6 +1511,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld%%吻合"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld%%一致"
           }
         }
       }
@@ -1324,6 +1552,12 @@
             "state": "translated",
             "value": "今日任務：尋找%@"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日のミッション：%@を探してみよう"
+          }
         }
       }
     },
@@ -1357,6 +1591,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "顏色拍攝"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "カラー撮影"
           }
         }
       }
@@ -1392,6 +1632,12 @@
             "state": "translated",
             "value": "✗  吻合率%lld%% · 需要60%%以上才能收集"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✗  一致率%lld%% · 60%%以上で収集できます"
+          }
         }
       }
     },
@@ -1425,6 +1671,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "✓  收集成功！（%lld%%吻合）"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✓  色を収集しました！（%lld%%）"
           }
         }
       }
@@ -1460,6 +1712,12 @@
             "state": "translated",
             "value": "今日任務顏色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日のミッションカラー"
+          }
         }
       }
     },
@@ -1490,6 +1748,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完成 (%lld/%lld)"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "完成 (%lld/%lld)"
@@ -1528,6 +1792,12 @@
             "state": "translated",
             "value": "未完成 (%lld/%lld)"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未完成 (%lld/%lld)"
+          }
         }
       }
     },
@@ -1561,6 +1831,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "完成9個任務後可以分享您的格格！"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "9つのミッションを達成するとグリッドを共有できます！"
           }
         }
       }
@@ -1596,6 +1872,12 @@
             "state": "translated",
             "value": "收集，任務格格"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "担って，ミッショングリッド"
+          }
         }
       }
     },
@@ -1629,6 +1911,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "選擇9張照片放入格格"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "グリッドに載せる写真を9枚選んでください"
           }
         }
       }
@@ -1664,6 +1952,12 @@
             "state": "translated",
             "value": "已選照片"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選択した写真"
+          }
         }
       }
     },
@@ -1697,6 +1991,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "選擇照片"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真を選択"
           }
         }
       }
@@ -1732,6 +2032,12 @@
             "state": "translated",
             "value": "櫻花"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "桜"
+          }
         }
       }
     },
@@ -1762,6 +2068,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "珊瑚"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "珊瑚"
@@ -1800,6 +2112,12 @@
             "state": "translated",
             "value": "葡萄紫"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ぶどう"
+          }
         }
       }
     },
@@ -1833,6 +2151,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "薰衣草紫"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ラベンダー"
           }
         }
       }
@@ -1868,6 +2192,12 @@
             "state": "translated",
             "value": "薄荷"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ミント"
+          }
         }
       }
     },
@@ -1901,6 +2231,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "海洋"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "海"
           }
         }
       }
@@ -1936,6 +2272,12 @@
             "state": "translated",
             "value": "天空"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "空"
+          }
         }
       }
     },
@@ -1969,6 +2311,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "日落"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "夕焼け"
           }
         }
       }
@@ -2004,6 +2352,12 @@
             "state": "translated",
             "value": "已收集的顏色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "収集した色"
+          }
         }
       }
     },
@@ -2037,6 +2391,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "今日任務將更新為所選顏色。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選択した色で今日のミッションが変更されます。"
           }
         }
       }
@@ -2072,6 +2432,12 @@
             "state": "translated",
             "value": "所選顏色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選択した色"
+          }
         }
       }
     },
@@ -2105,6 +2471,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "目前顏色"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在の色"
           }
         }
       }
@@ -2140,6 +2512,12 @@
             "state": "translated",
             "value": "確認更改顏色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "色の変更を確認"
+          }
         }
       }
     },
@@ -2173,6 +2551,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "朋友想與您分享今日的顏色！"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "友達が今日の色を共有したいそうです！"
           }
         }
       }
@@ -2208,6 +2592,12 @@
             "state": "translated",
             "value": "已選顏色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選択された色"
+          }
         }
       }
     },
@@ -2241,6 +2631,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "自訂顏色"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "カラーを直接選択"
           }
         }
       }
@@ -2276,6 +2672,12 @@
             "state": "translated",
             "value": "目前任務顏色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在のミッションカラー"
+          }
         }
       }
     },
@@ -2309,6 +2711,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "自訂顏色"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "直接選択した色"
           }
         }
       }
@@ -2344,6 +2752,12 @@
             "state": "translated",
             "value": "自訂"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "直接入力"
+          }
         }
       }
     },
@@ -2377,6 +2791,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "推薦顏色"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "おすすめカラー"
           }
         }
       }
@@ -2412,6 +2832,12 @@
             "state": "translated",
             "value": "更改任務顏色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ミッションカラーを変更"
+          }
         }
       }
     },
@@ -2445,6 +2871,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "顏色準確度"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "色の精度"
           }
         }
       }
@@ -2480,6 +2912,12 @@
             "state": "translated",
             "value": "任務進度"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ミッションの進行"
+          }
         }
       }
     },
@@ -2513,6 +2951,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "這一天沒有散步記錄。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この日は散歩しませんでした。"
           }
         }
       }
@@ -2548,6 +2992,12 @@
             "state": "translated",
             "value": "空空的~"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "空っぽ〜"
+          }
         }
       }
     },
@@ -2581,6 +3031,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "點擊您想要的顏色區域"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "欲しい色の部分をタップしてください"
           }
         }
       }
@@ -2616,6 +3072,12 @@
             "state": "translated",
             "value": "收集"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "収集する"
+          }
         }
       }
     },
@@ -2649,6 +3111,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "偵測顏色：%@\n吻合率%lld%% · 要收集這個顏色嗎？"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "検出色：%@\nミッション一致率%lld%% · このまま収集しますか？"
           }
         }
       }
@@ -2684,6 +3152,12 @@
             "state": "translated",
             "value": "偵測顏色：%@\n吻合率%lld%% · 需要60%%以上才能收集"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "検出色：%@\n一致率%lld%% · 60%%以上で収集できます"
+          }
         }
       }
     },
@@ -2717,6 +3191,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "有點不同..."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "少し違う色ですね..."
           }
         }
       }
@@ -2752,6 +3232,12 @@
             "state": "translated",
             "value": "完美吻合！"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ぴったりの色ですね！"
+          }
         }
       }
     },
@@ -2785,6 +3271,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "顏色相似！"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "似た色ですね！"
           }
         }
       }
@@ -2820,6 +3312,12 @@
             "state": "translated",
             "value": "差別很大..."
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "かなり違う色です..."
+          }
         }
       }
     },
@@ -2853,6 +3351,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "重新尋找"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "もう一度探す"
           }
         }
       }
@@ -2888,6 +3392,12 @@
             "state": "translated",
             "value": "顏色收集"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "カラーコレクション"
+          }
         }
       }
     },
@@ -2921,6 +3431,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "不喜歡這個顏色？  →"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この色が気に入らないですか？  →"
           }
         }
       }
@@ -2956,6 +3472,12 @@
             "state": "translated",
             "value": "已過午夜！新任務已到來。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "深夜を過ぎました！新しいミッションが届きました"
+          }
         }
       }
     },
@@ -2989,6 +3511,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "今日任務"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日のミッション"
           }
         }
       }
@@ -3024,6 +3552,12 @@
             "state": "translated",
             "value": "%lld / 9張"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld / 9枚"
+          }
         }
       }
     },
@@ -3057,6 +3591,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "已拍攝的照片"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "撮影した写真"
           }
         }
       }
@@ -3092,6 +3632,12 @@
             "state": "translated",
             "value": "尋找新的顏色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新しい色を探してください"
+          }
         }
       }
     },
@@ -3125,6 +3671,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "已收集9格中的%lld格"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在9マス中%lldマスを集めました"
           }
         }
       }
@@ -3160,6 +3712,12 @@
             "state": "translated",
             "value": "收集狀態"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "収集状況"
+          }
         }
       }
     },
@@ -3193,6 +3751,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "拾色，"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "担って，"
           }
         }
       }
@@ -3228,6 +3792,12 @@
             "state": "translated",
             "value": "目前位置"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在地"
+          }
         }
       }
     },
@@ -3261,6 +3831,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "藍色"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "青"
           }
         }
       }
@@ -3296,6 +3872,12 @@
             "state": "translated",
             "value": "藍灰色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "青灰色"
+          }
         }
       }
     },
@@ -3329,6 +3911,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "深綠"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "濃い緑"
           }
         }
       }
@@ -3364,6 +3952,12 @@
             "state": "translated",
             "value": "顏色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "カラー"
+          }
         }
       }
     },
@@ -3397,6 +3991,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "灰色"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "グレー"
           }
         }
       }
@@ -3432,6 +4032,12 @@
             "state": "translated",
             "value": "綠色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "緑"
+          }
         }
       }
     },
@@ -3465,6 +4071,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "靛藍"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "インディゴ"
           }
         }
       }
@@ -3500,6 +4112,12 @@
             "state": "translated",
             "value": "淺灰色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "薄灰色"
+          }
         }
       }
     },
@@ -3533,6 +4151,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "海軍藍"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ネイビー"
           }
         }
       }
@@ -3568,6 +4192,12 @@
             "state": "translated",
             "value": "橙色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "オレンジ"
+          }
         }
       }
     },
@@ -3601,6 +4231,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "粉色"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ピンク"
           }
         }
       }
@@ -3636,6 +4272,12 @@
             "state": "translated",
             "value": "紫色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "紫"
+          }
         }
       }
     },
@@ -3669,6 +4311,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "紅色"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "赤"
           }
         }
       }
@@ -3704,6 +4352,12 @@
             "state": "translated",
             "value": "天藍"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "空色"
+          }
         }
       }
     },
@@ -3737,6 +4391,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "石板灰"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スレート"
           }
         }
       }
@@ -3772,6 +4432,12 @@
             "state": "translated",
             "value": "黃色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "黄色"
+          }
         }
       }
     },
@@ -3802,6 +4468,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完成"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "完成"
@@ -3840,6 +4512,12 @@
             "state": "translated",
             "value": "未完成"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未完成"
+          }
         }
       }
     },
@@ -3873,6 +4551,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "太可惜了 😢 任務未能完成。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "残念 😢 ミッションを完成できませんでした。"
           }
         }
       }
@@ -3908,6 +4592,12 @@
             "state": "translated",
             "value": "深淵的"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "深淵の"
+          }
         }
       }
     },
@@ -3941,6 +4631,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "午後的"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "午後の"
           }
         }
       }
@@ -3976,6 +4672,12 @@
             "state": "translated",
             "value": "雨後"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "雨上がり"
+          }
         }
       }
     },
@@ -4009,6 +4711,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "暴風前夜"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "嵐の前夜"
           }
         }
       }
@@ -4044,6 +4752,12 @@
             "state": "translated",
             "value": "燃燒的"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "燃え盛る"
+          }
         }
       }
     },
@@ -4077,6 +4791,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "藍天"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "青い空"
           }
         }
       }
@@ -4112,6 +4832,12 @@
             "state": "translated",
             "value": "明亮的"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "明るい"
+          }
         }
       }
     },
@@ -4145,6 +4871,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "沉靜的"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "落ち着いた"
           }
         }
       }
@@ -4180,6 +4912,12 @@
             "state": "translated",
             "value": "油菜花"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "菜の花"
+          }
         }
       }
     },
@@ -4213,6 +4951,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "櫻花"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "桜"
           }
         }
       }
@@ -4248,6 +4992,12 @@
             "state": "translated",
             "value": "城市森林"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ビルの森"
+          }
         }
       }
     },
@@ -4281,6 +5031,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "清潔的"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清潔な"
           }
         }
       }
@@ -4316,6 +5072,12 @@
             "state": "translated",
             "value": "清澈的湖"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "澄んだ湖"
+          }
         }
       }
     },
@@ -4349,6 +5111,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "清澈的"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "澄んだ"
           }
         }
       }
@@ -4384,6 +5152,12 @@
             "state": "translated",
             "value": "多雲天空"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "曇り空"
+          }
         }
       }
     },
@@ -4417,6 +5191,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "冷冽的"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "冷たい"
           }
         }
       }
@@ -4452,6 +5232,12 @@
             "state": "translated",
             "value": "清涼的"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "涼しい"
+          }
         }
       }
     },
@@ -4485,6 +5271,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "黑暗的"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暗い"
           }
         }
       }
@@ -4520,6 +5312,12 @@
             "state": "translated",
             "value": "黎明"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "夜明け"
+          }
         }
       }
     },
@@ -4553,6 +5351,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "深沉的"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "濃い"
           }
         }
       }
@@ -4588,6 +5392,12 @@
             "state": "translated",
             "value": "深山"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "深い山"
+          }
         }
       }
     },
@@ -4618,6 +5428,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "深夜"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "深夜"
@@ -4656,6 +5472,12 @@
             "state": "translated",
             "value": "朦朧的"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "かすかな"
+          }
         }
       }
     },
@@ -4689,6 +5511,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "有霧的"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "霧がかかった"
           }
         }
       }
@@ -4724,6 +5552,12 @@
             "state": "translated",
             "value": "森林深處"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "森の中"
+          }
         }
       }
     },
@@ -4757,6 +5591,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "森林的"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "森の"
           }
         }
       }
@@ -4792,6 +5632,12 @@
             "state": "translated",
             "value": "清新的"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "みずみずしい"
+          }
         }
       }
     },
@@ -4826,6 +5672,12 @@
             "state": "translated",
             "value": "狂風"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "強い風"
+          }
         }
       }
     },
@@ -4856,6 +5708,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "金色"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "金色"
@@ -4894,6 +5752,12 @@
             "state": "translated",
             "value": "草香"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "草の香り"
+          }
         }
       }
     },
@@ -4927,6 +5791,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "綠色調"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "緑色"
           }
         }
       }
@@ -4962,6 +5832,12 @@
             "state": "translated",
             "value": "熱浪滾滾"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "熱気いっぱい"
+          }
         }
       }
     },
@@ -4995,6 +5871,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "厚重的"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重厚な"
           }
         }
       }
@@ -5030,6 +5912,12 @@
             "state": "translated",
             "value": "沉重的"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重い"
+          }
         }
       }
     },
@@ -5063,6 +5951,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "靛藍"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "インディゴ"
           }
         }
       }
@@ -5098,6 +5992,12 @@
             "state": "translated",
             "value": "強烈的"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "激しい"
+          }
         }
       }
     },
@@ -5131,6 +6031,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "淺淡的"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "淡い"
           }
         }
       }
@@ -5166,6 +6072,12 @@
             "state": "translated",
             "value": "閃電光"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "稲妻の光"
+          }
         }
       }
     },
@@ -5199,6 +6111,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "生機勃勃"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "生き生きした"
           }
         }
       }
@@ -5234,6 +6152,12 @@
             "state": "translated",
             "value": "午夜的"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "真夜中の"
+          }
         }
       }
     },
@@ -5268,6 +6192,12 @@
             "state": "translated",
             "value": "濕潤的"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "しっとりした"
+          }
         }
       }
     },
@@ -5298,6 +6228,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無彩色"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "無彩色"
@@ -5336,6 +6272,12 @@
             "state": "translated",
             "value": "神秘的"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "神秘的な"
+          }
         }
       }
     },
@@ -5369,6 +6311,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "夜晚"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "夜"
           }
         }
       }
@@ -5404,6 +6352,12 @@
             "state": "translated",
             "value": "熱情的"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "情熱の"
+          }
         }
       }
     },
@@ -5437,6 +6391,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "沾滿雨露"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "雨を含んだ"
           }
         }
       }
@@ -5472,6 +6432,12 @@
             "state": "translated",
             "value": "清爽的"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "さわやかな"
+          }
         }
       }
     },
@@ -5505,6 +6471,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "閃耀的"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "輝く"
           }
         }
       }
@@ -5540,6 +6512,12 @@
             "state": "translated",
             "value": "羞澀的"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "恥ずかしそうな"
+          }
         }
       }
     },
@@ -5573,6 +6551,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "石板"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スレート"
           }
         }
       }
@@ -5608,6 +6592,12 @@
             "state": "translated",
             "value": "柔和"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ソフト"
+          }
         }
       }
     },
@@ -5641,6 +6631,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "靜態的"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "静的な"
           }
         }
       }
@@ -5676,6 +6672,12 @@
             "state": "translated",
             "value": "鋼鐵"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スチール"
+          }
         }
       }
     },
@@ -5709,6 +6711,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "陽光滿滿"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "日差しいっぱい"
           }
         }
       }
@@ -5744,6 +6752,12 @@
             "state": "translated",
             "value": "日落"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "夕焼け"
+          }
         }
       }
     },
@@ -5777,6 +6791,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "雲間"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "雲の間"
           }
         }
       }
@@ -5812,6 +6832,12 @@
             "state": "translated",
             "value": "華麗的"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "鮮やかな"
+          }
         }
       }
     },
@@ -5845,6 +6871,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "警示燈"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "警告灯"
           }
         }
       }
@@ -5880,6 +6912,12 @@
             "state": "translated",
             "value": "黃色的"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "黄色い"
+          }
         }
       }
     },
@@ -5913,6 +6951,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "今天的天氣是%@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日の天気は%@です"
           }
         }
       }
@@ -5948,6 +6992,12 @@
             "state": "translated",
             "value": "無天氣資訊"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "天気情報なし"
+          }
         }
       }
     },
@@ -5981,6 +7031,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "天氣載入中 . ."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "天気情報を読み込み中 . ."
           }
         }
       }
@@ -6016,6 +7072,12 @@
             "state": "translated",
             "value": "氣溫%@ · 濕度%@"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "気温%@ · 湿度%@"
+          }
         }
       }
     },
@@ -6049,6 +7111,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "即時天氣資訊"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リアルタイム天気情報"
           }
         }
       }
@@ -6084,6 +7152,12 @@
             "state": "translated",
             "value": "顏色資訊"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "カラー情報"
+          }
         }
       }
     },
@@ -6117,6 +7191,12 @@
           "stringUnit": {
             "state": "translated",
             "value": " • 吻合率%lld%%"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " • 一致率%lld%%"
           }
         }
       }
@@ -6152,6 +7232,12 @@
             "state": "translated",
             "value": "無地址資訊"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "住所情報なし"
+          }
         }
       }
     },
@@ -6185,6 +7271,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld張照片"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真%lld枚"
           }
         }
       }
@@ -6220,6 +7312,12 @@
             "state": "translated",
             "value": "%lld天前"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld日前"
+          }
         }
       }
     },
@@ -6253,6 +7351,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld小時前"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld時間前"
           }
         }
       }
@@ -6288,6 +7392,12 @@
             "state": "translated",
             "value": "剛剛"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "たった今"
+          }
         }
       }
     },
@@ -6321,6 +7431,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld分鐘前"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld分前"
           }
         }
       }
@@ -6356,6 +7472,12 @@
             "state": "translated",
             "value": "附近的照片"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "近くの写真"
+          }
         }
       }
     },
@@ -6389,6 +7511,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "天氣"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "天気"
           }
         }
       }
@@ -6424,6 +7552,12 @@
             "state": "translated",
             "value": "目前"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在"
+          }
         }
       }
     },
@@ -6457,6 +7591,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "您的顏色任務在等待。出去走走吧。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日のカラーミッションが待っています。ちょっと外へ出てみませんか？"
           }
         }
       }
@@ -6492,6 +7632,12 @@
             "state": "translated",
             "value": "今日顏色任務"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日のカラーミッション"
+          }
         }
       }
     },
@@ -6525,6 +7671,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "記錄今日的瞬間"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日の瞬間を収めてみてください"
           }
         }
       }
@@ -6560,6 +7712,12 @@
             "state": "translated",
             "value": "現在去找第一個顏色吧？"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日の最初の色を探してみましょうか？"
+          }
         }
       }
     },
@@ -6593,6 +7751,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "在散步的同時，\n用相機捕捉周圍美麗的色彩吧"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "散歩しながら、周りの美しい色を\nカメラで収めてみてください"
           }
         }
       }
@@ -6628,6 +7792,12 @@
             "state": "translated",
             "value": "還沒有收集到顏色"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "まだ収集した色がありません"
+          }
         }
       }
     },
@@ -6661,6 +7831,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "將您目光所停留的地方，\n用只屬於您的顏色填滿吧"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "あなたの視線が止まる場所を、\nあなただけの色で満たしてみてください"
           }
         }
       }
@@ -6696,6 +7872,12 @@
             "state": "translated",
             "value": "拍攝"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "撮影"
+          }
         }
       }
     },
@@ -6729,6 +7911,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "收藏"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コレクション"
           }
         }
       }
@@ -6764,6 +7952,12 @@
             "state": "translated",
             "value": "主頁"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ホーム"
+          }
         }
       }
     },
@@ -6797,6 +7991,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "地圖"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "マップ"
           }
         }
       }
@@ -6832,6 +8032,12 @@
             "state": "translated",
             "value": "任務名稱"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ミッション名"
+          }
         }
       }
     },
@@ -6865,6 +8071,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "暴風雪"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "吹雪"
           }
         }
       }
@@ -6900,6 +8112,12 @@
             "state": "translated",
             "value": "沙塵暴"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "黄砂"
+          }
         }
       }
     },
@@ -6933,6 +8151,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "飛雪"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "地吹雪"
           }
         }
       }
@@ -6968,6 +8192,12 @@
             "state": "translated",
             "value": "微風"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "そよ風"
+          }
         }
       }
     },
@@ -7002,6 +8232,12 @@
             "state": "translated",
             "value": "晴天"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "晴れ"
+          }
         }
       }
     },
@@ -7035,6 +8271,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "多雲"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "曇り"
           }
         }
       }
@@ -7071,6 +8313,12 @@
             "state": "translated",
             "value": "毛毛雨"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "霧雨"
+          }
         }
       }
     },
@@ -7104,6 +8352,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "小雪"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "にわか雪"
           }
         }
       }
@@ -7139,6 +8393,12 @@
             "state": "translated",
             "value": "有霧"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "霧"
+          }
         }
       }
     },
@@ -7172,6 +8432,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "凍雨毛毛雨"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "凍霧雨"
           }
         }
       }
@@ -7207,6 +8473,12 @@
             "state": "translated",
             "value": "凍雨"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "着氷性の雨"
+          }
         }
       }
     },
@@ -7240,6 +8512,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "極寒"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "猛烈な寒さ"
           }
         }
       }
@@ -7275,6 +8553,12 @@
             "state": "translated",
             "value": "冰雹"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ひょう"
+          }
         }
       }
     },
@@ -7308,6 +8592,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "煙霧"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "もや"
           }
         }
       }
@@ -7343,6 +8633,12 @@
             "state": "translated",
             "value": "暴雨"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大雨"
+          }
         }
       }
     },
@@ -7376,6 +8672,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "暴雪"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大雪"
           }
         }
       }
@@ -7411,6 +8713,12 @@
             "state": "translated",
             "value": "高溫"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "猛暑"
+          }
         }
       }
     },
@@ -7444,6 +8752,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "颶風"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ハリケーン"
           }
         }
       }
@@ -7479,6 +8793,12 @@
             "state": "translated",
             "value": "局部雷暴"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "まれな雷雨"
+          }
         }
       }
     },
@@ -7513,6 +8833,12 @@
             "state": "translated",
             "value": "大致晴朗"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ほぼ晴れ"
+          }
         }
       }
     },
@@ -7546,6 +8872,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "大致多雲"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ほぼ曇り"
           }
         }
       }
@@ -7582,6 +8914,12 @@
             "state": "translated",
             "value": "無天氣資訊"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "天気情報なし"
+          }
         }
       }
     },
@@ -7616,6 +8954,12 @@
             "state": "translated",
             "value": "少雲"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一部曇り"
+          }
         }
       }
     },
@@ -7646,6 +8990,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "雨"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "雨"
@@ -7684,6 +9034,12 @@
             "state": "translated",
             "value": "零散雷暴"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "突然の雷雨"
+          }
         }
       }
     },
@@ -7717,6 +9073,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "雨夾雪"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "みぞれ"
           }
         }
       }
@@ -7752,6 +9114,12 @@
             "state": "translated",
             "value": "煙霧瀰漫"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "煙霧"
+          }
         }
       }
     },
@@ -7782,6 +9150,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "雪"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "雪"
@@ -7820,6 +9194,12 @@
             "state": "translated",
             "value": "強雷暴"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "激しい雷雨"
+          }
         }
       }
     },
@@ -7853,6 +9233,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "晴轉小雪"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "晴れのちにわか雪"
           }
         }
       }
@@ -7888,6 +9274,12 @@
             "state": "translated",
             "value": "晴轉陣雨"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "晴れのちにわか雨"
+          }
         }
       }
     },
@@ -7922,6 +9314,12 @@
             "state": "translated",
             "value": "雷暴"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "雷雨"
+          }
         }
       }
     },
@@ -7955,6 +9353,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "熱帶風暴"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "熱帯低気圧"
           }
         }
       }
@@ -7991,6 +9395,12 @@
             "state": "translated",
             "value": "天氣資訊"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "天気情報"
+          }
         }
       }
     },
@@ -8025,6 +9435,12 @@
             "state": "translated",
             "value": "大風"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "強風"
+          }
         }
       }
     },
@@ -8058,6 +9474,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "冬季混合降水"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "冬の混合降水"
           }
         }
       }

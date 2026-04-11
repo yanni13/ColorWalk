@@ -33,6 +33,12 @@
             "state": "translated",
             "value": "拾色，"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "担って，"
+          }
         }
       }
     },
@@ -81,6 +87,12 @@
             "state": "translated",
             "value": "需要存取相機以拍攝您周圍美麗的色彩。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "周りの美しい色を撮影するためにカメラへのアクセスが必要です。"
+          }
         }
       }
     },
@@ -116,6 +128,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "需要存取位置資訊以提供基於您位置的照片資訊。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "位置情報に基づいた写真情報を提供するために必要です。"
           }
         }
       }
@@ -153,6 +171,12 @@
             "state": "translated",
             "value": "需要存取相簿以將拍攝的色彩照片儲存至您的相簿。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "撮影した色の写真をギャラリーに保存するためのアクセス権が必要です。"
+          }
         }
       }
     },
@@ -188,6 +212,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "需要存取相簿以從圖庫匯入照片並收集色彩。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ギャラリーから写真をインポートして色を収集するためのアクセス権が必要です。"
           }
         }
       }
