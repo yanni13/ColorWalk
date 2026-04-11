@@ -99,20 +99,21 @@ final class CameraViewController: BaseViewController {
     private var currentZoomFactor: CGFloat = 1.0
 
     // Timer state
+    private var isCountingDown = false
+
     private var timerSeconds: Int = 0 {
         didSet {
             let isActive = timerSeconds > 0
             let iconName = isActive ? "timer.circle.fill" : "timer"
-            let color = isActive ? UIColor(hex: "#34D399") : .white
-            
+
             timerButton.setImage(
                 UIImage(systemName: iconName)?
                     .withConfiguration(UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)),
                 for: .normal
             )
-            timerButton.tintColor = color
+            timerButton.tintColor = isActive ? UIColor(hex: "#34D399") : .white
             timerLabel.text = isActive ? "\(timerSeconds)s" : ""
-            timerLabel.textColor = color
+            timerLabel.textColor = .white
         }
     }
 
@@ -446,7 +447,7 @@ final class CameraViewController: BaseViewController {
 
         timerButton.rx.tap
             .subscribe(onNext: { [weak self] in
-                guard let self else { return }
+                guard let self, !self.isCountingDown else { return }
                 if self.timerSeconds == 0 { self.timerSeconds = 3 }
                 else if self.timerSeconds == 3 { self.timerSeconds = 5 }
                 else if self.timerSeconds == 5 { self.timerSeconds = 10 }
@@ -558,14 +559,15 @@ final class CameraViewController: BaseViewController {
             return
         }
 
+        isCountingDown = true
         shutterButton.isEnabled = false
         var count = timerSeconds
         countdownLabel.text = "\(count)"
         countdownLabel.isHidden = false
         countdownLabel.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
-        
+
         Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
-            guard let self = self else { return }
+            guard let self else { return }
             count -= 1
             if count > 0 {
                 self.countdownLabel.text = "\(count)"
@@ -575,12 +577,13 @@ final class CameraViewController: BaseViewController {
                 }
             } else {
                 timer.invalidate()
+                self.isCountingDown = false
                 self.countdownLabel.isHidden = true
                 self.shutterButton.isEnabled = true
                 self.animateShutter()
             }
         }
-        
+
         UIView.animate(withDuration: 0.2) {
             self.countdownLabel.transform = .identity
         }
