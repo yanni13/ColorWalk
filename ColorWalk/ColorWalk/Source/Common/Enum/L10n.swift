@@ -201,6 +201,7 @@ enum L10n {
     static var accessibilityMyLocation: String { String(localized: "accessibility.myLocation") }
     static var accessibilityClose: String { String(localized: "accessibility.close") }
     static var accessibilityPhoto: String { String(localized: "accessibility.photo") }
+    static var accessibilityChangeLayout: String { String(localized: "accessibility.changeLayout") }
 
     // MARK: - Details Section
 

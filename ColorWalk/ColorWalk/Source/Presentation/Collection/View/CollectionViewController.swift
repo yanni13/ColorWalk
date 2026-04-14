@@ -210,6 +210,21 @@ final class CollectionViewController: BaseViewController {
         return button
     }()
 
+    private let layoutButton: UIButton = {
+        let button = UIButton(type: .system)
+        let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)
+        button.setImage(UIImage(systemName: "square.grid.2x2", withConfiguration: config), for: .normal)
+        button.tintColor = .gray
+        button.accessibilityLabel = L10n.accessibilityChangeLayout
+        return button
+    }()
+
+    // MARK: - Dropdown State
+
+    private var currentGridLayout: GridLayoutType = .threeByThree
+    private weak var dropdownView: GridLayoutDropdownView?
+    private weak var dropdownDismissOverlay: UIView?
+
     // MARK: - UI: State & Share
 
     private let stateLabel: UILabel = {
@@ -296,7 +311,7 @@ final class CollectionViewController: BaseViewController {
         }
         
         // Action Row (Bottom Right)
-        let actionStack = UIStackView(arrangedSubviews: [shareIconButton, editIconButton])
+        let actionStack = UIStackView(arrangedSubviews: [shareIconButton, editIconButton, layoutButton])
         actionStack.axis = .horizontal
         actionStack.spacing = 16
         actionStack.alignment = .center
@@ -324,11 +339,12 @@ final class CollectionViewController: BaseViewController {
         photoGridView.isHidden = true
         stateLabel.isHidden = true
         emptyStateStack.isHidden = true
-        
+
         shareIconButton.isHidden = true
         editIconButton.isHidden = false
         editIconButton.isEnabled = true
         editIconButton.tintColor = .gray
+        layoutButton.isHidden = true
     }
 
     // MARK: - Constraints
@@ -366,6 +382,9 @@ final class CollectionViewController: BaseViewController {
             make.width.height.equalTo(24)
         }
         editIconButton.snp.makeConstraints { make in
+            make.width.height.equalTo(24)
+        }
+        layoutButton.snp.makeConstraints { make in
             make.width.height.equalTo(24)
         }
         
@@ -437,6 +456,12 @@ final class CollectionViewController: BaseViewController {
                 self?.navigateToEdit()
             })
             .disposed(by: disposeBag)
+
+        layoutButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                self?.toggleLayoutDropdown()
+            })
+            .disposed(by: disposeBag)
     }
 
     private func makeInput() -> CollectionViewModel.Input {
@@ -459,9 +484,11 @@ final class CollectionViewController: BaseViewController {
             emptyStateStack.isHidden = false
             photoGridView.clearSlots()
             currentSlots = []
-            
+
             shareIconButton.isHidden = true
             editIconButton.isHidden = true
+            layoutButton.isHidden = true
+            hideLayoutDropdown()
 
         case .inProgress(let capturedCount, let slots):
             currentSlots = slots
@@ -471,7 +498,7 @@ final class CollectionViewController: BaseViewController {
             stateLabel.isHidden = false
             emptyStateStack.isHidden = true
             photoGridView.configure(with: slots)
-            
+
             shareIconButton.isHidden = false
             shareIconButton.isEnabled = false
             shareIconButton.tintColor = .lightGray
@@ -479,6 +506,8 @@ final class CollectionViewController: BaseViewController {
             editIconButton.isHidden = false
             editIconButton.isEnabled = true
             editIconButton.tintColor = .gray
+
+            layoutButton.isHidden = false
 
         case .completed(let slots):
             currentSlots = slots
@@ -488,7 +517,7 @@ final class CollectionViewController: BaseViewController {
             stateLabel.isHidden = true
             emptyStateStack.isHidden = true
             photoGridView.configure(with: slots)
-            
+
             shareIconButton.isHidden = false
             shareIconButton.isEnabled = true
             shareIconButton.tintColor = .gray
@@ -496,6 +525,8 @@ final class CollectionViewController: BaseViewController {
             editIconButton.isHidden = false
             editIconButton.isEnabled = true
             editIconButton.tintColor = .gray
+
+            layoutButton.isHidden = false
         }
     }
 
@@ -522,6 +553,47 @@ final class CollectionViewController: BaseViewController {
         backgroundGradientLayer.locations = [0, 0.4, 0.7, 1.0]
         backgroundGradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
         backgroundGradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
+    }
+
+    private func toggleLayoutDropdown() {
+        if dropdownView != nil {
+            hideLayoutDropdown()
+            return
+        }
+
+        let overlay = UIView()
+        overlay.backgroundColor = .clear
+        overlay.frame = view.bounds
+        overlay.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hideLayoutDropdown)))
+        view.addSubview(overlay)
+        dropdownDismissOverlay = overlay
+
+        let dropdown = GridLayoutDropdownView()
+        dropdown.setSelectedLayout(currentGridLayout)
+        dropdown.onSelect = { [weak self] layout in
+            self?.applyGridLayout(layout)
+            self?.hideLayoutDropdown()
+        }
+        dropdown.show(anchoredTo: layoutButton, in: view)
+        dropdownView = dropdown
+    }
+
+    @objc private func hideLayoutDropdown() {
+        dropdownView?.dismiss()
+        dropdownDismissOverlay?.removeFromSuperview()
+        dropdownView = nil
+        dropdownDismissOverlay = nil
+    }
+
+    private func applyGridLayout(_ layout: GridLayoutType) {
+        currentGridLayout = layout
+        photoGridView.setLayout(layout)
+        photoGridView.snp.remakeConstraints { make in
+            make.height.equalTo(photoGridView.snp.width).multipliedBy(layout.aspectRatioMultiplier)
+        }
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
     }
 
     private func navigateToEdit() {
