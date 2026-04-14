@@ -14,7 +14,23 @@ struct ColorWalkEntry: TimelineEntry {
                 dateString: String(localized: "widget.date.today"),
                 missionColorHex: "#5B8DEF",
                 missionColorName: String(localized: "widget.today.color"),
-                photos: []
+                photos: [],
+                dateIdentifier: nil
+            )
+        )
+    }
+
+    static func newDay(hex: String) -> ColorWalkEntry {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M/d"
+        return ColorWalkEntry(
+            date: .now,
+            dailyData: WidgetDailyData(
+                dateString: formatter.string(from: Date()),
+                missionColorHex: hex,
+                missionColorName: String(localized: "widget.today.color"),
+                photos: [],
+                dateIdentifier: nil
             )
         )
     }
@@ -39,8 +55,24 @@ struct ColorWalkProvider: AppIntentTimelineProvider {
     }
 
     private func loadEntry() -> ColorWalkEntry {
-        guard let data = WidgetDataStore.shared.loadDailyData() else { return .placeholder }
+        guard let data = WidgetDataStore.shared.loadDailyData() else {
+            return newDayEntry()
+        }
+        if let storedIdentifier = data.dateIdentifier {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            let todayIdentifier = formatter.string(from: Date())
+            if storedIdentifier != todayIdentifier {
+                return newDayEntry()
+            }
+        }
         return ColorWalkEntry(date: .now, dailyData: data)
+    }
+
+    private func newDayEntry() -> ColorWalkEntry {
+        let weatherSymbol = WidgetDataStore.shared.loadWeatherSymbol()
+        let hex = WidgetColorGenerator.hex(for: Date(), weatherSymbol: weatherSymbol)
+        return .newDay(hex: hex)
     }
 }
 

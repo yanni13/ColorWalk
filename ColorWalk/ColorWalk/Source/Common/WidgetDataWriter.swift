@@ -19,6 +19,7 @@ struct WidgetDailyData: Codable {
     let missionColorHex: String
     let missionColorName: String
     let photos: [WidgetPhotoInfo]
+    let dateIdentifier: String?
 }
 
 // MARK: - WidgetDataWriter
@@ -31,11 +32,17 @@ final class WidgetDataWriter {
         static let appGroupID = "group.com.yanni13.ColorWalk"
         static let dailyDataKey = "widgetDailyData"
         static let imageDirName = "WidgetImages"
+        static let lastWeatherSymbolKey = "lastWeatherSymbol"
         static let thumbnailSize = CGSize(width: 300, height: 300)
         static let maxPhotoCount = 3
     }
 
     private init() {}
+
+    func writeWeatherSymbol(_ symbol: String) {
+        guard let defaults = UserDefaults(suiteName: Constants.appGroupID) else { return }
+        defaults.set(symbol, forKey: Constants.lastWeatherSymbolKey)
+    }
 
     func updateWidgetData(with mission: ColorMission? = nil) {
         let photos = Array(RealmManager.shared.fetchAllPhotos().prefix(Constants.maxPhotoCount))
@@ -60,11 +67,16 @@ final class WidgetDataWriter {
         let missionHex = currentMission.hexColor
         let missionName = currentMission.name
 
+        let storedFormatter = DateFormatter()
+        storedFormatter.dateFormat = "yyyy-MM-dd"
+        let dateIdentifier = storedFormatter.string(from: Date())
+
         let dailyData = WidgetDailyData(
             dateString: dateString,
             missionColorHex: missionHex,
             missionColorName: missionName,
-            photos: photoInfos
+            photos: photoInfos,
+            dateIdentifier: dateIdentifier
         )
 
         guard let defaults = UserDefaults(suiteName: Constants.appGroupID),

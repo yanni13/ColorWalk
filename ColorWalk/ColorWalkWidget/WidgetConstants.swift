@@ -9,4 +9,5 @@ enum WidgetConstants {
     static let appGroupID = "group.com.yanni13.ColorWalk"
     static let dailyDataKey = "widgetDailyData"
     static let imageDirName = "WidgetImages"
+    static let lastWeatherSymbolKey = "lastWeatherSymbol"
 }

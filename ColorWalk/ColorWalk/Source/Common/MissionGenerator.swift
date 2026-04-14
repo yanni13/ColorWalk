@@ -58,15 +58,27 @@ final class MissionGenerator {
         ]
     }
 
-    static func generate(weatherSymbol: String, weatherText: String) -> ColorMission {
+    static func generate(weatherSymbol: String, weatherText: String, shuffled: Bool = false) -> ColorMission {
         let theme = WeatherTheme.from(symbolName: weatherSymbol)
         let hour = Calendar.current.component(.hour, from: Date())
-        
-        guard let candidates = themes[theme], let candidate = candidates.randomElement() else {
+
+        guard let candidates = themes[theme] else {
             return ColorMission.placeholder
         }
-        
-        let themePrefix = candidate.nameTemplates.randomElement() ?? ""
+
+        let candidate: ColorCandidate
+        let themePrefix: String
+
+        if shuffled {
+            guard let random = candidates.randomElement() else { return ColorMission.placeholder }
+            candidate = random
+            themePrefix = candidate.nameTemplates.randomElement() ?? ""
+        } else {
+            let dayOfYear = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 1
+            candidate = candidates[(dayOfYear - 1) % candidates.count]
+            themePrefix = candidate.nameTemplates[(dayOfYear - 1) % candidate.nameTemplates.count]
+        }
+
         let colorName = getColorName(for: candidate.hex)
         
         var timePrefix = ""

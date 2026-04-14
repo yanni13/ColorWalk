@@ -116,6 +116,7 @@ final class MissionHomeViewModel: ViewModelType {
                 return self.weatherService.fetchWeatherInfo(for: location)
                     .asObservable()
             }
+            .do(onNext: { WidgetDataWriter.shared.writeWeatherSymbol($0.symbolName) })
             .bind(to: weatherDataRelay)
             .disposed(by: disposeBag)
 
@@ -154,10 +155,18 @@ final class MissionHomeViewModel: ViewModelType {
             }
             .map { _ in () }
 
-        Observable.merge(shuffleOrChange, firstWeatherLoad)
+        firstWeatherLoad
             .withLatestFrom(weatherDataRelay)
             .map { weatherData in
-                MissionGenerator.generate(weatherSymbol: weatherData.symbolName, weatherText: L10n.missionWeatherInfoFormat(weatherData.displayText))
+                MissionGenerator.generate(weatherSymbol: weatherData.symbolName, weatherText: L10n.missionWeatherInfoFormat(weatherData.displayText), shuffled: false)
+            }
+            .bind(to: missionSubject)
+            .disposed(by: disposeBag)
+
+        shuffleOrChange
+            .withLatestFrom(weatherDataRelay)
+            .map { weatherData in
+                MissionGenerator.generate(weatherSymbol: weatherData.symbolName, weatherText: L10n.missionWeatherInfoFormat(weatherData.displayText), shuffled: true)
             }
             .bind(to: missionSubject)
             .disposed(by: disposeBag)
