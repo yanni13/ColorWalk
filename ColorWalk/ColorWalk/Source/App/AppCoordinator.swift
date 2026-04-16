@@ -26,14 +26,24 @@ final class AppCoordinator {
     // MARK: - Start
 
     func start() {
-        if UserDefaults.standard.bool(forKey: Keys.hasLaunchedBefore) {
-            showTabBar()
-        } else {
-            showOnboarding()
-        }
+        showSplash()
     }
 
     // MARK: - Private
+
+    private func showSplash() {
+        let splash = SplashViewController()
+        splash.onAnimationComplete = { [weak self] in
+            guard let self else { return }
+            if UserDefaults.standard.bool(forKey: Keys.hasLaunchedBefore) {
+                self.showTabBar()
+            } else {
+                self.showOnboarding()
+            }
+        }
+        window.rootViewController = splash
+        window.makeKeyAndVisible()
+    }
 
     private func showOnboarding() {
         let viewModel = OnboardingViewModel()
@@ -42,15 +52,19 @@ final class AppCoordinator {
             UserDefaults.standard.set(true, forKey: Keys.hasLaunchedBefore)
             self?.showTabBar()
         }
-        window.rootViewController = vc
-        window.makeKeyAndVisible()
+        let win = window
+        UIView.transition(with: win, duration: 0.35, options: .transitionCrossDissolve) {
+            win.rootViewController = vc
+        }
     }
 
     private func showTabBar() {
         if locationManager.authorizationStatus == .notDetermined {
             locationManager.requestWhenInUseAuthorization()
         }
-        window.rootViewController = MainTabBarController()
-        window.makeKeyAndVisible()
+        let win = window
+        UIView.transition(with: win, duration: 0.35, options: .transitionCrossDissolve) {
+            win.rootViewController = MainTabBarController()
+        }
     }
 }

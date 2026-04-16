@@ -54,11 +54,11 @@ enum L10n {
     static var homePlaceholder: String { String(localized: "home.placeholder") }
     static var homePhotosSection: String { String(localized: "home.photos.section") }
 
-    static func homeProgressCount(_ count: Int) -> String {
-        String(format: String(localized: "home.progress.count"), count)
+    static func homeProgressCount(captured: Int, total: Int) -> String {
+        String(format: String(localized: "home.progress.count"), captured, total)
     }
-    static func homePhotosCount(_ count: Int) -> String {
-        String(format: String(localized: "home.photos.count"), count)
+    static func homePhotosCount(captured: Int, total: Int) -> String {
+        String(format: String(localized: "home.photos.count"), captured, total)
     }
 
     // MARK: - Alerts
@@ -79,7 +79,9 @@ enum L10n {
 
     // MARK: - Collection
 
-    static var collectionShareHint: String { String(localized: "collection.share.hint") }
+    static func collectionShareHint(count: Int) -> String {
+        String(format: String(localized: "collection.share.hint"), count)
+    }
     static var collectionMissionColor: String { String(localized: "collection.mission.color") }
     static var collectionShareTitle: String { String(localized: "collection.share.title") }
 

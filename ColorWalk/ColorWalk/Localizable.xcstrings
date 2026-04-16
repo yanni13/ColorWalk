@@ -1846,37 +1846,37 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Complete 9 missions to share your grid!"
+            "value": "Complete %lld missions to share your grid!"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "9개의 미션을 수행하면 그리드를 공유할 수 있어요!"
+            "value": "%lld개의 미션을 수행하면 그리드를 공유할 수 있어요!"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "完成9个任务后可以分享您的网格！"
+            "value": "完成%lld个任务后可以分享您的网格！"
           }
         },
         "zh-Hant-HK": {
           "stringUnit": {
             "state": "translated",
-            "value": "完成9個任務後可以分享您的格格！"
+            "value": "完成%lld個任務後可以分享您的格格！"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "完成9個任務後可以分享您的格格！"
+            "value": "完成%lld個任務後可以分享您的格格！"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "9つのミッションを達成するとグリッドを共有できます！"
+            "value": "%lldつのミッションを達成するとグリッドを共有できます！"
           }
         }
       }
@@ -3566,37 +3566,37 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld / 9"
+            "value": "%lld / %lld"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld / 9장"
+            "value": "%lld / %lld장"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld / 9张"
+            "value": "%lld / %lld张"
           }
         },
         "zh-Hant-HK": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld / 9張"
+            "value": "%lld / %lld張"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld / 9張"
+            "value": "%lld / %lld張"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld / 9枚"
+            "value": "%lld / %lld枚"
           }
         }
       }
@@ -3686,37 +3686,37 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Collected %lld / 9 slots"
+            "value": "Collected %lld / %lld slots"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "현재 9칸 중 %lld칸을 담았어요"
+            "value": "현재 %lld / %lld칸을 담았어요"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "已收集9格中的%lld格"
+            "value": "已收集%lld / %lld格"
           }
         },
         "zh-Hant-HK": {
           "stringUnit": {
             "state": "translated",
-            "value": "已收集9格中的%lld格"
+            "value": "已收集%lld / %lld格"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "已收集9格中的%lld格"
+            "value": "已收集%lld / %lld格"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "現在9マス中%lldマスを集めました"
+            "value": "%lld / %lldマスを集めました"
           }
         }
       }

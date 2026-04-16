@@ -177,7 +177,6 @@ final class MissionHomeViewController: BaseViewController {
 
     private let progressCountLabel: UILabel = {
         let l = UILabel()
-        l.text = L10n.homePhotosCount(0)
         l.font = UIFont(name: "Pretendard-Bold", size: 12)
         l.textColor = UIColor(hex: "#34D399")
         return l
@@ -355,6 +354,7 @@ final class MissionHomeViewController: BaseViewController {
         ColorCardStore.shared.checkDailyReset()
         updateBannerVisibility()
         updateLocationLabelVisibility()
+        refreshCountLabels()
         let status = locationManager.authorizationStatus
         if status == .authorizedWhenInUse || status == .authorizedAlways {
             locationManager.requestLocation()
@@ -669,12 +669,13 @@ final class MissionHomeViewController: BaseViewController {
                 self.paginationView.isHidden = isEmpty
                 self.actionRow.isHidden = isEmpty
 
-                self.progressCountLabel.text = L10n.homeProgressCount(newCards.count)
+                let total = self.currentGridSlotCount
+                self.progressCountLabel.text = L10n.homeProgressCount(captured: newCards.count, total: total)
                 self.updateProgressBar(count: newCards.count)
 
                 guard !isEmpty else { return }
                 if self.currentIndex >= newCards.count { self.currentIndex = 0 }
-                self.photoCountLabel.text = L10n.homePhotosCount(newCards.count)
+                self.photoCountLabel.text = L10n.homePhotosCount(captured: newCards.count, total: total)
                 self.paginationView.setup(count: newCards.count)
                 self.paginationView.setActive(index: self.currentIndex)
                 self.carouselView.configure(cards: newCards, currentIndex: self.currentIndex)
@@ -699,6 +700,24 @@ final class MissionHomeViewController: BaseViewController {
     }
 
     // MARK: - Helper
+
+    private var currentGridSlotCount: Int {
+        guard let raw = UserDefaults.standard.string(forKey: AppConstants.UserDefaultsKey.gridLayout),
+              let layout = GridLayoutType(rawValue: raw) else {
+            return GridLayoutType.threeByThree.slotCount
+        }
+        return layout.slotCount
+    }
+
+    private func refreshCountLabels() {
+        let count = ColorCardStore.shared.cards.value.count
+        let total = currentGridSlotCount
+        progressCountLabel.text = L10n.homeProgressCount(captured: count, total: total)
+        updateProgressBar(count: count)
+        if !cards.isEmpty {
+            photoCountLabel.text = L10n.homePhotosCount(captured: count, total: total)
+        }
+    }
 
     private func handleSaveResult(_ result: GallerySaveResult) {
         switch result {
@@ -870,7 +889,8 @@ final class MissionHomeViewController: BaseViewController {
         progressFill.snp.updateConstraints { make in make.width.equalTo(0) }
         view.layoutIfNeeded()
 
-        let ratio = min(CGFloat(count) / 9.0, 1.0)
+        let total = CGFloat(currentGridSlotCount)
+        let ratio = min(CGFloat(count) / total, 1.0)
         let targetWidth = progressTrack.bounds.width * ratio
         progressFill.snp.updateConstraints { make in make.width.equalTo(targetWidth) }
         UIView.animate(withDuration: 0.4, delay: 0.1, options: .curveEaseOut) {

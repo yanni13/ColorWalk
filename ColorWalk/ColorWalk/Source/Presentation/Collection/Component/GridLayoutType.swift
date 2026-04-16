@@ -1,11 +1,11 @@
 import Foundation
 import CoreGraphics
 
-enum GridLayoutType: CaseIterable {
-    case twoByTwo
-    case threeByThree
-    case twoByThree
-    case filmStrip
+enum GridLayoutType: String, CaseIterable {
+    case twoByTwo = "twoByTwo"
+    case threeByThree = "threeByThree"
+    case twoByThree = "twoByThree"
+    case filmStrip = "filmStrip"
 
     var displayTitle: String {
         switch self {
@@ -32,6 +32,15 @@ enum GridLayoutType: CaseIterable {
         case .threeByThree: return "square.grid.3x3"
         case .twoByThree:   return "rectangle.grid.2x2"
         case .filmStrip:    return "film"
+        }
+    }
+
+    var slotCount: Int {
+        switch self {
+        case .twoByTwo:     return 4
+        case .threeByThree: return 9
+        case .twoByThree:   return 5
+        case .filmStrip:    return 3
         }
     }
 }

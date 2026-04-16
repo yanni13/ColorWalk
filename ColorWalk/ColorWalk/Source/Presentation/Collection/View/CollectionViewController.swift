@@ -221,7 +221,13 @@ final class CollectionViewController: BaseViewController {
 
     // MARK: - Dropdown State
 
-    private var currentGridLayout: GridLayoutType = .threeByThree
+    private var currentGridLayout: GridLayoutType = {
+        guard let raw = UserDefaults.standard.string(forKey: AppConstants.UserDefaultsKey.gridLayout),
+              let saved = GridLayoutType(rawValue: raw) else {
+            return .threeByThree
+        }
+        return saved
+    }()
     private weak var dropdownView: GridLayoutDropdownView?
     private weak var dropdownDismissOverlay: UIView?
 
@@ -238,7 +244,6 @@ final class CollectionViewController: BaseViewController {
 
     private let shareHintLabel: UILabel = {
         let label = UILabel()
-        label.text = L10n.collectionShareHint
         label.font = UIFont(name: "Pretendard-Medium", size: 13)
         label.textColor = UIColor(hex: "#6B7684")
         label.textAlignment = .center
@@ -330,6 +335,7 @@ final class CollectionViewController: BaseViewController {
         
         contentStackView.addArrangedSubview(stateLabel)
         
+        photoGridView.setLayout(currentGridLayout)
         configureInitialState()
     }
 
@@ -389,7 +395,7 @@ final class CollectionViewController: BaseViewController {
         }
         
         photoGridView.snp.makeConstraints { make in
-            make.height.equalTo(photoGridView.snp.width).multipliedBy(1.1)
+            make.height.equalTo(photoGridView.snp.width).multipliedBy(currentGridLayout.aspectRatioMultiplier)
         }
         emptyStateStack.snp.makeConstraints { make in
             make.height.greaterThanOrEqualTo(200)
@@ -419,10 +425,6 @@ final class CollectionViewController: BaseViewController {
             .drive(onNext: { [weak self] text in
                 self?.currentShareDateText = text
             })
-            .disposed(by: disposeBag)
-
-        output.missionMetaText
-            .drive(metaLabel.rx.text)
             .disposed(by: disposeBag)
 
         output.missionState
@@ -490,43 +492,37 @@ final class CollectionViewController: BaseViewController {
             layoutButton.isHidden = true
             hideLayoutDropdown()
 
-        case .inProgress(let capturedCount, let slots):
+        case .inProgress(_, let slots):
             currentSlots = slots
             shareHintLabel.isHidden = false
             missionHeaderCard.isHidden = false
             photoGridView.isHidden = false
-            stateLabel.isHidden = false
             emptyStateStack.isHidden = true
             photoGridView.configure(with: slots)
 
             shareIconButton.isHidden = false
-            shareIconButton.isEnabled = false
-            shareIconButton.tintColor = .lightGray
-
             editIconButton.isHidden = false
             editIconButton.isEnabled = true
             editIconButton.tintColor = .gray
-
             layoutButton.isHidden = false
+
+            updateMissionDisplay()
 
         case .completed(let slots):
             currentSlots = slots
             shareHintLabel.isHidden = false
             missionHeaderCard.isHidden = false
             photoGridView.isHidden = false
-            stateLabel.isHidden = true
             emptyStateStack.isHidden = true
             photoGridView.configure(with: slots)
 
             shareIconButton.isHidden = false
-            shareIconButton.isEnabled = true
-            shareIconButton.tintColor = .gray
-
             editIconButton.isHidden = false
             editIconButton.isEnabled = true
             editIconButton.tintColor = .gray
-
             layoutButton.isHidden = false
+
+            updateMissionDisplay()
         }
     }
 
@@ -587,13 +583,35 @@ final class CollectionViewController: BaseViewController {
 
     private func applyGridLayout(_ layout: GridLayoutType) {
         currentGridLayout = layout
+        UserDefaults.standard.set(layout.rawValue, forKey: AppConstants.UserDefaultsKey.gridLayout)
         photoGridView.setLayout(layout)
         photoGridView.snp.remakeConstraints { make in
             make.height.equalTo(photoGridView.snp.width).multipliedBy(layout.aspectRatioMultiplier)
         }
+        updateMissionDisplay()
         UIView.animate(withDuration: 0.3) {
             self.view.layoutIfNeeded()
         }
+    }
+
+    private func updateMissionDisplay() {
+        guard !currentSlots.isEmpty else { return }
+
+        let gridSlotCount = currentGridLayout.slotCount
+        let capturedCount = currentSlots.filter { $0.isCaptured }.count
+        let displayedCaptured = min(capturedCount, gridSlotCount)
+        let isGridComplete = capturedCount >= gridSlotCount
+
+        if isGridComplete {
+            metaLabel.text = L10n.missionCompleteStatus(total: gridSlotCount)
+        } else {
+            metaLabel.text = L10n.missionIncompleteStatus(captured: displayedCaptured, total: gridSlotCount)
+        }
+
+        shareHintLabel.text = L10n.collectionShareHint(count: gridSlotCount)
+        shareIconButton.isEnabled = isGridComplete
+        shareIconButton.tintColor = isGridComplete ? .gray : .lightGray
+        stateLabel.isHidden = isGridComplete
     }
 
     private func navigateToEdit() {

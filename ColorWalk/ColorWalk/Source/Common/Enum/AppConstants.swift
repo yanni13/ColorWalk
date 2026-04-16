@@ -35,6 +35,10 @@ enum AppConstants {
         }
     }
 
+    enum UserDefaultsKey {
+        static let gridLayout = "gridLayout"
+    }
+
     enum Text {
         static var missionComplete: String { L10n.missionStatusComplete }
         static var missionIncomplete: String { L10n.missionStatusIncomplete }
