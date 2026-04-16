@@ -11,134 +11,107 @@ final class SplashViewController: BaseViewController {
     // MARK: - Constants
 
     private enum Constants {
-        static let tileSize: CGFloat = 60
-        static let tileCenterSize: CGFloat = 64
-        static let tileCornerRadius: CGFloat = 14
-        static let tileCenterCornerRadius: CGFloat = 15
+        static let tileSize: CGFloat = 72
+        static let resolveScale: CGFloat = 1.0
 
-        static let resolveScale: CGFloat = 52.0 / 60.0
-        static let resolveScaleCenter: CGFloat = 56.0 / 64.0
-
-        static let shellSize: CGFloat = 228
-        static let shellCornerRadius: CGFloat = 52
-
-        static let flyInDuration: TimeInterval = 0.7
-        static let flyInStagger: TimeInterval = 0.07
-        static let gatherStartDelay: TimeInterval = 1.5
+        static let gatherStartDelay: TimeInterval = 0.3
         static let gatherDuration: TimeInterval = 0.85
         static let gatherStagger: TimeInterval = 0.04
-        static let resolveStartDelay: TimeInterval = 2.7
+        static let resolveStartDelay: TimeInterval = 1.5
         static let resolveDuration: TimeInterval = 0.6
         static let resolveStagger: TimeInterval = 0.04
-        static let brandStartDelay: TimeInterval = 3.7
-        static let brandDuration: TimeInterval = 0.5
-        static let completionDelay: TimeInterval = 4.5
+        static let floatStartDelay: TimeInterval = 2.6
+        static let floatDuration: TimeInterval = 2.4
+        static let floatAmplitude: CGFloat = 5
+        static let completionDelay: TimeInterval = 3.8
     }
 
     // MARK: - Tile Configuration
 
     private struct TileConfig {
-        let color: UIColor
-        let isCenter: Bool
-        let startRelativeCenter: CGPoint
+        let imageName: String
         let scatterRelativeCenter: CGPoint
         let gatherRelativeCenter: CGPoint
         let resolveRelativeCenter: CGPoint
         let scatterRotation: CGFloat
         let gatherRotation: CGFloat
-        let resolveRotation: CGFloat
     }
 
+    // 3×3 grid: tileSize=72, gap=6 → spacing=78pt
+    // Grid center: (0.500, 0.450), columns: 0.292 / 0.500 / 0.708
+    // Rows: 0.333 / 0.450 / 0.567
     private static let tileConfigs: [TileConfig] = [
         TileConfig(
-            color: UIColor(hex: "#F39A49"), isCenter: false,
-            startRelativeCenter:   CGPoint(x: -0.20,  y:  0.117),
+            imageName: "orange",
             scatterRelativeCenter: CGPoint(x:  0.076, y:  0.117),
-            gatherRelativeCenter:  CGPoint(x:  0.186, y:  0.180),
-            resolveRelativeCenter: CGPoint(x:  0.328, y:  0.377),
+            gatherRelativeCenter:  CGPoint(x:  0.184, y:  0.225),
+            resolveRelativeCenter: CGPoint(x:  0.292, y:  0.333),
             scatterRotation: -18 * .pi / 180,
-            gatherRotation:  -12 * .pi / 180,
-            resolveRotation:  -6 * .pi / 180
+            gatherRotation:  -12 * .pi / 180
         ),
         TileConfig(
-            color: UIColor(hex: "#FFD85C"), isCenter: false,
-            startRelativeCenter:   CGPoint(x:  0.499, y: -0.150),
+            imageName: "yellow",
             scatterRelativeCenter: CGPoint(x:  0.499, y: -0.035),
-            gatherRelativeCenter:  CGPoint(x:  0.486, y:  0.123),
-            resolveRelativeCenter: CGPoint(x:  0.501, y:  0.377),
+            gatherRelativeCenter:  CGPoint(x:  0.500, y:  0.149),
+            resolveRelativeCenter: CGPoint(x:  0.500, y:  0.333),
             scatterRotation:  12 * .pi / 180,
-            gatherRotation:    8 * .pi / 180,
-            resolveRotation:   5 * .pi / 180
+            gatherRotation:    8 * .pi / 180
         ),
         TileConfig(
-            color: UIColor(hex: "#F27CA5"), isCenter: false,
-            startRelativeCenter:   CGPoint(x:  1.20,  y:  0.094),
+            imageName: "pink",
             scatterRelativeCenter: CGPoint(x:  0.916, y:  0.094),
-            gatherRelativeCenter:  CGPoint(x:  0.812, y:  0.191),
-            resolveRelativeCenter: CGPoint(x:  0.674, y:  0.377),
+            gatherRelativeCenter:  CGPoint(x:  0.812, y:  0.214),
+            resolveRelativeCenter: CGPoint(x:  0.708, y:  0.333),
             scatterRotation:  22 * .pi / 180,
-            gatherRotation:   11 * .pi / 180,
-            resolveRotation:   7 * .pi / 180
+            gatherRotation:   11 * .pi / 180
         ),
         TileConfig(
-            color: UIColor(hex: "#A8D8FF"), isCenter: false,
-            startRelativeCenter:   CGPoint(x: -0.20,  y:  0.434),
+            imageName: "light_blue",
             scatterRelativeCenter: CGPoint(x: -0.025, y:  0.434),
-            gatherRelativeCenter:  CGPoint(x:  0.130, y:  0.412),
-            resolveRelativeCenter: CGPoint(x:  0.323, y:  0.456),
+            gatherRelativeCenter:  CGPoint(x:  0.134, y:  0.442),
+            resolveRelativeCenter: CGPoint(x:  0.292, y:  0.450),
             scatterRotation: -25 * .pi / 180,
-            gatherRotation:  -16 * .pi / 180,
-            resolveRotation:  -7 * .pi / 180
+            gatherRotation:  -16 * .pi / 180
         ),
         TileConfig(
-            color: UIColor(hex: "#5ECAC6"), isCenter: true,
-            startRelativeCenter:   CGPoint(x:  0.503, y: -0.150),
+            imageName: "teal",
             scatterRelativeCenter: CGPoint(x:  0.503, y:  0.237),
-            gatherRelativeCenter:  CGPoint(x:  0.504, y:  0.326),
-            resolveRelativeCenter: CGPoint(x:  0.501, y:  0.459),
+            gatherRelativeCenter:  CGPoint(x:  0.500, y:  0.344),
+            resolveRelativeCenter: CGPoint(x:  0.500, y:  0.450),
             scatterRotation:   8 * .pi / 180,
-            gatherRotation:    4 * .pi / 180,
-            resolveRotation:   4 * .pi / 180
+            gatherRotation:    4 * .pi / 180
         ),
         TileConfig(
-            color: UIColor(hex: "#A879E8"), isCenter: false,
-            startRelativeCenter:   CGPoint(x:  1.20,  y:  0.423),
+            imageName: "purple",
             scatterRelativeCenter: CGPoint(x:  1.017, y:  0.423),
-            gatherRelativeCenter:  CGPoint(x:  0.868, y:  0.400),
-            resolveRelativeCenter: CGPoint(x:  0.679, y:  0.456),
+            gatherRelativeCenter:  CGPoint(x:  0.862, y:  0.437),
+            resolveRelativeCenter: CGPoint(x:  0.708, y:  0.450),
             scatterRotation:  18 * .pi / 180,
-            gatherRotation:   10 * .pi / 180,
-            resolveRotation:   6 * .pi / 180
+            gatherRotation:   10 * .pi / 180
         ),
         TileConfig(
-            color: UIColor(hex: "#A9DB54"), isCenter: false,
-            startRelativeCenter:   CGPoint(x: -0.20,  y:  0.847),
+            imageName: "lime",
             scatterRelativeCenter: CGPoint(x:  0.076, y:  0.847),
-            gatherRelativeCenter:  CGPoint(x:  0.201, y:  0.696),
-            resolveRelativeCenter: CGPoint(x:  0.328, y:  0.541),
+            gatherRelativeCenter:  CGPoint(x:  0.184, y:  0.707),
+            resolveRelativeCenter: CGPoint(x:  0.292, y:  0.567),
             scatterRotation: -15 * .pi / 180,
-            gatherRotation:  -10 * .pi / 180,
-            resolveRotation:  -5 * .pi / 180
+            gatherRotation:  -10 * .pi / 180
         ),
         TileConfig(
-            color: UIColor(hex: "#A77149"), isCenter: false,
-            startRelativeCenter:   CGPoint(x:  0.499, y:  1.150),
+            imageName: "brown",
             scatterRelativeCenter: CGPoint(x:  0.499, y:  0.986),
-            gatherRelativeCenter:  CGPoint(x:  0.496, y:  0.774),
-            resolveRelativeCenter: CGPoint(x:  0.501, y:  0.541),
+            gatherRelativeCenter:  CGPoint(x:  0.500, y:  0.777),
+            resolveRelativeCenter: CGPoint(x:  0.500, y:  0.567),
             scatterRotation:  -8 * .pi / 180,
-            gatherRotation:   -5 * .pi / 180,
-            resolveRotation:  -3 * .pi / 180
+            gatherRotation:   -5 * .pi / 180
         ),
         TileConfig(
-            color: UIColor(hex: "#2D4277"), isCenter: false,
-            startRelativeCenter:   CGPoint(x:  1.20,  y:  0.883),
+            imageName: "navy",
             scatterRelativeCenter: CGPoint(x:  0.941, y:  0.883),
-            gatherRelativeCenter:  CGPoint(x:  0.812, y:  0.703),
-            resolveRelativeCenter: CGPoint(x:  0.674, y:  0.541),
+            gatherRelativeCenter:  CGPoint(x:  0.825, y:  0.725),
+            resolveRelativeCenter: CGPoint(x:  0.708, y:  0.567),
             scatterRotation:  14 * .pi / 180,
-            gatherRotation:    8 * .pi / 180,
-            resolveRotation:   5 * .pi / 180
+            gatherRotation:    8 * .pi / 180
         ),
     ]
 
@@ -146,10 +119,6 @@ final class SplashViewController: BaseViewController {
 
     private let backgroundGradientLayer = CAGradientLayer()
     private var tileViews: [UIView] = []
-    private let iconShellView = UIView()
-    private let brandStackView = UIStackView()
-    private let titleLabel = UILabel()
-    private let subtitleLabel = UILabel()
 
     // MARK: - Properties
 
@@ -166,13 +135,15 @@ final class SplashViewController: BaseViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         backgroundGradientLayer.frame = view.bounds
+        if !hasStartedAnimation {
+            positionTilesAtStart()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         guard !hasStartedAnimation else { return }
         hasStartedAnimation = true
-        positionTilesAtStart()
         startAnimation()
     }
 
@@ -181,24 +152,9 @@ final class SplashViewController: BaseViewController {
     override func setupViews() {
         setupBackground()
         setupTiles()
-        setupIconShell()
-        setupBrand()
     }
 
-    override func setupConstraints() {
-        iconShellView.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.width.height.equalTo(Constants.shellSize)
-            make.centerY.equalToSuperview().multipliedBy(0.918)
-        }
-
-        brandStackView.snp.makeConstraints { make in
-            make.top.equalTo(iconShellView.snp.bottom).offset(28)
-            make.centerX.equalToSuperview()
-            make.leading.greaterThanOrEqualToSuperview().inset(28)
-            make.trailing.lessThanOrEqualToSuperview().inset(28)
-        }
-    }
+    override func setupConstraints() {}
 
     private func setupBackground() {
         backgroundGradientLayer.type = .radial
@@ -215,71 +171,10 @@ final class SplashViewController: BaseViewController {
 
     private func setupTiles() {
         for config in Self.tileConfigs {
-            let size = config.isCenter ? Constants.tileCenterSize : Constants.tileSize
-            let radius = config.isCenter ? Constants.tileCenterCornerRadius : Constants.tileCornerRadius
-            let tile = makeTileView(color: config.color, size: size, cornerRadius: radius)
-            tile.alpha = 0
+            let tile = makeTileView(imageName: config.imageName, size: Constants.tileSize)
             view.addSubview(tile)
             tileViews.append(tile)
         }
-    }
-
-    private func setupIconShell() {
-        iconShellView.backgroundColor = .clear
-        iconShellView.clipsToBounds = false
-        iconShellView.alpha = 0
-        iconShellView.layer.shadowColor = UIColor(hex: "#D8CCE9").cgColor
-        iconShellView.layer.shadowOpacity = 0.20
-        iconShellView.layer.shadowOffset = CGSize(width: 0, height: 18)
-        iconShellView.layer.shadowRadius = 24
-        iconShellView.layer.shadowPath = UIBezierPath(
-            roundedRect: CGRect(origin: .zero, size: CGSize(width: Constants.shellSize, height: Constants.shellSize)),
-            cornerRadius: Constants.shellCornerRadius
-        ).cgPath
-
-        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
-        blurView.layer.cornerRadius = Constants.shellCornerRadius
-        blurView.clipsToBounds = true
-        blurView.layer.borderWidth = 1
-        blurView.layer.borderColor = UIColor(hex: "#E9E4EF").cgColor
-
-        let whiteOverlay = UIView()
-        whiteOverlay.backgroundColor = UIColor.white.withAlphaComponent(0.80)
-        whiteOverlay.isUserInteractionEnabled = false
-        blurView.contentView.addSubview(whiteOverlay)
-        whiteOverlay.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        iconShellView.addSubview(blurView)
-        blurView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        view.addSubview(iconShellView)
-    }
-
-    private func setupBrand() {
-        brandStackView.axis = .vertical
-        brandStackView.alignment = .center
-        brandStackView.spacing = 10
-        brandStackView.alpha = 0
-        brandStackView.transform = CGAffineTransform(translationX: 0, y: 12)
-
-        titleLabel.text = "담아,"
-        titleLabel.font = UIFont(name: "Pretendard-SemiBold", size: 34) ?? UIFont.systemFont(ofSize: 34, weight: .semibold)
-        titleLabel.textColor = UIColor(hex: "#2A2233")
-        titleLabel.textAlignment = .center
-
-        subtitleLabel.text = "당신만의 색으로 가득 채워보세요"
-        subtitleLabel.font = UIFont(name: "Pretendard-Regular", size: 15) ?? UIFont.systemFont(ofSize: 15)
-        subtitleLabel.textColor = UIColor(hex: "#6F677C")
-        subtitleLabel.textAlignment = .center
-        subtitleLabel.numberOfLines = 0
-
-        brandStackView.addArrangedSubview(titleLabel)
-        brandStackView.addArrangedSubview(subtitleLabel)
-        view.addSubview(brandStackView)
     }
 
     // MARK: - Tile Positioning
@@ -289,10 +184,11 @@ final class SplashViewController: BaseViewController {
         for (index, tile) in tileViews.enumerated() {
             let config = Self.tileConfigs[index]
             tile.center = CGPoint(
-                x: config.startRelativeCenter.x * size.width,
-                y: config.startRelativeCenter.y * size.height
+                x: config.scatterRelativeCenter.x * size.width,
+                y: config.scatterRelativeCenter.y * size.height
             )
             tile.transform = CGAffineTransform(rotationAngle: config.scatterRotation)
+            tile.alpha = 0.85
         }
     }
 
@@ -302,24 +198,6 @@ final class SplashViewController: BaseViewController {
         let size = view.bounds.size
         let completion = onAnimationComplete
 
-        for (index, tile) in tileViews.enumerated() {
-            let config = Self.tileConfigs[index]
-            let target = CGPoint(
-                x: config.scatterRelativeCenter.x * size.width,
-                y: config.scatterRelativeCenter.y * size.height
-            )
-            UIView.animate(
-                withDuration: Constants.flyInDuration,
-                delay: Double(index) * Constants.flyInStagger,
-                usingSpringWithDamping: 0.72,
-                initialSpringVelocity: 0.5,
-                options: []
-            ) {
-                tile.alpha = 0.85
-                tile.center = target
-            }
-        }
-
         DispatchQueue.main.asyncAfter(deadline: .now() + Constants.gatherStartDelay) { [weak self] in
             self?.animateGather(screenSize: size)
         }
@@ -328,8 +206,8 @@ final class SplashViewController: BaseViewController {
             self?.animateResolve(screenSize: size)
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + Constants.brandStartDelay) { [weak self] in
-            self?.animateBrand()
+        DispatchQueue.main.asyncAfter(deadline: .now() + Constants.floatStartDelay) { [weak self] in
+            self?.startFloatingAnimation()
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + Constants.completionDelay) {
@@ -347,8 +225,8 @@ final class SplashViewController: BaseViewController {
             UIView.animate(
                 withDuration: Constants.gatherDuration,
                 delay: Double(index) * Constants.gatherStagger,
-                usingSpringWithDamping: 0.80,
-                initialSpringVelocity: 0.3,
+                usingSpringWithDamping: 0.62,
+                initialSpringVelocity: 0.6,
                 options: []
             ) {
                 tile.center = target
@@ -364,72 +242,44 @@ final class SplashViewController: BaseViewController {
                 x: config.resolveRelativeCenter.x * screenSize.width,
                 y: config.resolveRelativeCenter.y * screenSize.height
             )
-            let scale = config.isCenter ? Constants.resolveScaleCenter : Constants.resolveScale
             UIView.animate(
                 withDuration: Constants.resolveDuration,
                 delay: Double(index) * Constants.resolveStagger,
-                usingSpringWithDamping: 0.70,
-                initialSpringVelocity: 0.5,
+                usingSpringWithDamping: 0.58,
+                initialSpringVelocity: 0.7,
                 options: []
             ) {
                 tile.center = target
-                tile.transform = CGAffineTransform(rotationAngle: config.resolveRotation)
-                    .scaledBy(x: scale, y: scale)
+                tile.transform = .identity
             }
         }
     }
 
-    private func animateBrand() {
-        UIView.animate(
-            withDuration: Constants.brandDuration,
-            delay: 0,
-            options: [.curveEaseOut]
-        ) { [weak self] in
-            self?.iconShellView.alpha = 1
-        }
-
-        UIView.animate(
-            withDuration: Constants.brandDuration,
-            delay: 0.15,
-            usingSpringWithDamping: 0.85,
-            initialSpringVelocity: 0,
-            options: []
-        ) { [weak self] in
-            self?.brandStackView.alpha = 1
-            self?.brandStackView.transform = .identity
+    private func startFloatingAnimation() {
+        for (index, tile) in tileViews.enumerated() {
+            let delay = Double(index) * 0.06
+            let animation = CABasicAnimation(keyPath: "position.y")
+            animation.byValue = -Constants.floatAmplitude
+            animation.duration = Constants.floatDuration
+            animation.autoreverses = true
+            animation.repeatCount = .infinity
+            animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+            animation.beginTime = CACurrentMediaTime() + delay
+            tile.layer.add(animation, forKey: "float")
         }
     }
 
     // MARK: - Helper
 
-    private func makeTileView(color: UIColor, size: CGFloat, cornerRadius: CGFloat) -> UIView {
-        let shadowContainer = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
-        shadowContainer.backgroundColor = .clear
-        shadowContainer.layer.shadowColor = color.cgColor
-        shadowContainer.layer.shadowOpacity = 0.25
-        shadowContainer.layer.shadowOffset = CGSize(width: 0, height: 10)
-        shadowContainer.layer.shadowRadius = 9
-        shadowContainer.layer.shadowPath = UIBezierPath(
-            roundedRect: CGRect(x: 0, y: 0, width: size, height: size),
-            cornerRadius: cornerRadius
-        ).cgPath
+    private func makeTileView(imageName: String, size: CGFloat) -> UIView {
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
+        container.backgroundColor = .clear
 
-        let inner = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
-        inner.backgroundColor = color
-        inner.layer.cornerRadius = cornerRadius
-        inner.clipsToBounds = true
+        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: size, height: size))
+        imageView.image = UIImage(named: imageName)
+        imageView.contentMode = .scaleAspectFit
 
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.frame = CGRect(x: 0, y: 0, width: size, height: size)
-        gradientLayer.colors = [
-            UIColor.white.withAlphaComponent(0.33).cgColor,
-            UIColor.black.withAlphaComponent(0.13).cgColor
-        ]
-        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
-        gradientLayer.endPoint = CGPoint(x: 1, y: 1)
-        inner.layer.addSublayer(gradientLayer)
-
-        shadowContainer.addSubview(inner)
-        return shadowContainer
+        container.addSubview(imageView)
+        return container
     }
 }
