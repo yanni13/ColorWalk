@@ -627,7 +627,7 @@ final class CollectionViewController: BaseViewController {
         let container = UIView(frame: CGRect(origin: .zero, size: cardSize))
 
         let cardView = InstagramShareCardView()
-        cardView.configure(slots: currentSlots, missionHex: currentMissionHex, dateText: currentShareDateText)
+        cardView.configure(slots: currentSlots, missionHex: currentMissionHex, dateText: currentShareDateText, layout: currentGridLayout)
         container.addSubview(cardView)
         cardView.snp.makeConstraints { make in
             make.edges.equalToSuperview()

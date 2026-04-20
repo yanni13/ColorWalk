@@ -34,6 +34,7 @@ final class InstagramShareCardView: UIView {
     }()
 
     private var gridImageViews: [UIImageView] = []
+    private var currentLayout: GridLayoutType = .threeByThree
 
     // MARK: - UI: Info
 
@@ -130,7 +131,6 @@ final class InstagramShareCardView: UIView {
         clipsToBounds = true
 
         addSubview(gridContainer)
-        setupGridCells()
 
         colorRowStack.addArrangedSubview(colorDot)
         colorRowStack.addArrangedSubview(hexLabel)
@@ -148,31 +148,84 @@ final class InstagramShareCardView: UIView {
         addSubview(infoContentStack)
     }
 
-    private func setupGridCells() {
-        let outerStack = UIStackView()
-        outerStack.axis = .vertical
-        outerStack.spacing = Constants.cellGap
-        outerStack.distribution = .fillEqually
+    private func setupGridCells(for layout: GridLayoutType) {
+        switch layout {
+        case .twoByTwo:
+            buildEqualGrid(rows: 2, cols: 2)
+        case .threeByThree:
+            buildEqualGrid(rows: 3, cols: 3)
+        case .twoByThree:
+            buildTwoThreeGrid()
+        case .filmStrip:
+            buildFilmStripGrid()
+        }
+    }
 
-        for _ in 0..<3 {
-            let rowStack = UIStackView()
-            rowStack.axis = .horizontal
-            rowStack.spacing = Constants.cellGap
-            rowStack.distribution = .fillEqually
-
-            for _ in 0..<3 {
-                let imageView = UIImageView()
-                imageView.contentMode = .scaleAspectFill
-                imageView.clipsToBounds = true
-                imageView.backgroundColor = UIColor.App.bgSecondary
-                gridImageViews.append(imageView)
-                rowStack.addArrangedSubview(imageView)
+    private func buildEqualGrid(rows: Int, cols: Int) {
+        let outerStack = makeGridStack(axis: .vertical)
+        for _ in 0..<rows {
+            let rowStack = makeGridStack(axis: .horizontal)
+            for _ in 0..<cols {
+                let cell = makeGridCell()
+                gridImageViews.append(cell)
+                rowStack.addArrangedSubview(cell)
             }
             outerStack.addArrangedSubview(rowStack)
         }
+        pinGridStack(outerStack)
+    }
 
-        gridContainer.addSubview(outerStack)
-        outerStack.snp.makeConstraints { make in
+    private func buildTwoThreeGrid() {
+        let outerStack = makeGridStack(axis: .horizontal)
+
+        let leftStack = makeGridStack(axis: .vertical)
+        for _ in 0..<2 {
+            let cell = makeGridCell()
+            gridImageViews.append(cell)
+            leftStack.addArrangedSubview(cell)
+        }
+
+        let rightStack = makeGridStack(axis: .vertical)
+        for _ in 0..<3 {
+            let cell = makeGridCell()
+            gridImageViews.append(cell)
+            rightStack.addArrangedSubview(cell)
+        }
+
+        outerStack.addArrangedSubview(leftStack)
+        outerStack.addArrangedSubview(rightStack)
+        pinGridStack(outerStack)
+    }
+
+    private func buildFilmStripGrid() {
+        let stack = makeGridStack(axis: .vertical)
+        for _ in 0..<3 {
+            let cell = makeGridCell()
+            gridImageViews.append(cell)
+            stack.addArrangedSubview(cell)
+        }
+        pinGridStack(stack)
+    }
+
+    private func makeGridStack(axis: NSLayoutConstraint.Axis) -> UIStackView {
+        let stack = UIStackView()
+        stack.axis = axis
+        stack.spacing = Constants.cellGap
+        stack.distribution = .fillEqually
+        return stack
+    }
+
+    private func makeGridCell() -> UIImageView {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.backgroundColor = UIColor.App.bgSecondary
+        return imageView
+    }
+
+    private func pinGridStack(_ stack: UIView) {
+        gridContainer.addSubview(stack)
+        stack.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
@@ -207,7 +260,7 @@ final class InstagramShareCardView: UIView {
 
     // MARK: - Configure
 
-    func configure(slots: [SlotDisplayInfo], missionHex: String, dateText: String) {
+    func configure(slots: [SlotDisplayInfo], missionHex: String, dateText: String, layout: GridLayoutType) {
         let missionColor = UIColor(hex: missionHex)
 
         colorDot.backgroundColor = missionColor
@@ -221,10 +274,21 @@ final class InstagramShareCardView: UIView {
         badgeView.backgroundColor = missionColor.withAlphaComponent(Constants.badgeBgAlpha)
         badgeLabel.textColor = missionColor
 
+        let capturedCount = slots.filter { $0.isCaptured }.count
+        badgeLabel.text = "\(capturedCount)/\(layout.slotCount)"
+
+        rebuildGrid(for: layout)
         loadGridImages(from: slots)
     }
 
     // MARK: - Private
+
+    private func rebuildGrid(for layout: GridLayoutType) {
+        gridContainer.subviews.forEach { $0.removeFromSuperview() }
+        gridImageViews.removeAll()
+        currentLayout = layout
+        setupGridCells(for: layout)
+    }
 
     private func loadGridImages(from slots: [SlotDisplayInfo]) {
         let size = CGSize(width: Constants.thumbnailSize, height: Constants.thumbnailSize)
