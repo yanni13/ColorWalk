@@ -24,6 +24,9 @@ final class HomeCoordinator: Coordinator {
             guard !cards.isEmpty, index < cards.count else { return }
             self.showDetail(cards: cards, startIndex: index)
         }
+        vc.onStickerVaultTap = { [weak self] in
+            self?.showStickerVault()
+        }
         navigationController.setViewControllers([vc], animated: false)
     }
 
@@ -35,6 +38,12 @@ final class HomeCoordinator: Coordinator {
         viewModel.onBack = { [weak self] in
             self?.navigationController.popViewController(animated: true)
         }
+        navigationController.pushViewController(vc, animated: true)
+    }
+
+    private func showStickerVault() {
+        let viewModel = StickerVaultViewModel()
+        let vc = StickerVaultViewController(viewModel: viewModel)
         navigationController.pushViewController(vc, animated: true)
     }
 }

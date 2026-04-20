@@ -8,7 +8,7 @@ final class RealmManager {
     static let shared = RealmManager()
 
     private enum Constants {
-        static let schemaVersion: UInt64 = 3
+        static let schemaVersion: UInt64 = 4
     }
 
     private init() {
@@ -214,10 +214,28 @@ final class RealmManager {
     // MARK: - Photo Helper
 
     func findMissionColor(for photo: Photo) -> String? {
-        // 해당 사진이 연결된 ColorSlot 찾기
         let slots = realm.objects(ColorSlot.self).filter("linkedPhoto == %@", photo)
         guard let slot = slots.first,
               let mission = slot.parentMission.first else { return nil }
         return mission.recommendedHex
+    }
+
+    // MARK: - Sticker
+
+    func saveSticker(_ sticker: Sticker) {
+        write { realm in
+            realm.add(sticker)
+        }
+    }
+
+    func deleteSticker(_ sticker: Sticker) {
+        write { realm in
+            guard !sticker.isInvalidated else { return }
+            realm.delete(sticker)
+        }
+    }
+
+    func fetchAllStickers() -> [Sticker] {
+        Array(realm.objects(Sticker.self).sorted(byKeyPath: "createdAt", ascending: false))
     }
 }

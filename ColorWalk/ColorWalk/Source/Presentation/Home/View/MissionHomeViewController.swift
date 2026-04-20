@@ -22,8 +22,18 @@ final class MissionHomeViewController: BaseViewController {
 
     var allCards: [ColorCard] { cards }
     var onCardTap: ((Int) -> Void)?
+    var onStickerVaultTap: (() -> Void)?
 
     // MARK: - UI: Header
+
+    private let stickerVaultButton: UIButton = {
+        let b = UIButton(type: .system)
+        let config = UIImage.SymbolConfiguration(pointSize: 18, weight: .medium)
+        b.setImage(UIImage(systemName: "sparkles", withConfiguration: config), for: .normal)
+        b.tintColor = UIColor(hex: "#191F28")
+        b.accessibilityLabel = "스티커 보관함"
+        return b
+    }()
 
     private let titleLabel: UILabel = {
         let l = UILabel()
@@ -418,6 +428,7 @@ final class MissionHomeViewController: BaseViewController {
 
         view.addSubview(headerRow)
         headerRow.addSubview(titleStack)
+        headerRow.addSubview(stickerVaultButton)
 
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
@@ -461,6 +472,10 @@ final class MissionHomeViewController: BaseViewController {
         }
         titleStack.snp.makeConstraints { make in
             make.leading.centerY.equalToSuperview()
+        }
+        stickerVaultButton.snp.makeConstraints { make in
+            make.trailing.centerY.equalToSuperview()
+            make.width.height.equalTo(44)
         }
 
         scrollView.snp.makeConstraints { make in
@@ -581,6 +596,12 @@ final class MissionHomeViewController: BaseViewController {
     // MARK: - Bind
 
     override func bind() {
+        stickerVaultButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                self?.onStickerVaultTap?()
+            })
+            .disposed(by: disposeBag)
+
         // 카드뷰 탭 시 상세 모달 표시
         let cardTap = UITapGestureRecognizer()
         cardView.addGestureRecognizer(cardTap)

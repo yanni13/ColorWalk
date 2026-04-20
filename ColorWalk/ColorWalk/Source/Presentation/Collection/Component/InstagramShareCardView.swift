@@ -274,8 +274,7 @@ final class InstagramShareCardView: UIView {
         badgeView.backgroundColor = missionColor.withAlphaComponent(Constants.badgeBgAlpha)
         badgeLabel.textColor = missionColor
 
-        let capturedCount = slots.filter { $0.isCaptured }.count
-        badgeLabel.text = "\(capturedCount)/\(layout.slotCount)"
+        badgeLabel.text = "\(layout.slotCount)/\(layout.slotCount)"
 
         rebuildGrid(for: layout)
         loadGridImages(from: slots)
