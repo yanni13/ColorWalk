@@ -238,4 +238,12 @@ final class RealmManager {
     func fetchAllStickers() -> [Sticker] {
         Array(realm.objects(Sticker.self).sorted(byKeyPath: "createdAt", ascending: false))
     }
+
+    func updateStickerName(_ sticker: Sticker, name: String) {
+        write { realm in
+            guard !sticker.isInvalidated,
+                  let live = realm.object(ofType: Sticker.self, forPrimaryKey: sticker.id) else { return }
+            live.colorName = name
+        }
+    }
 }

@@ -2,6 +2,7 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import LinkPresentation
 
 final class StickerVaultViewController: BaseViewController {
 
@@ -10,13 +11,14 @@ final class StickerVaultViewController: BaseViewController {
     private let viewModel: StickerVaultViewModel
     private let viewWillAppearSubject = PublishSubject<Void>()
     private let deleteStickerSubject = PublishSubject<Sticker>()
+    private let renameStickerSubject = PublishSubject<(Sticker, String)>()
 
     private enum Constants {
         static let columns: CGFloat = 2
         static let horizontalInset: CGFloat = 20
         static let interItemSpacing: CGFloat = 12
         static let cellImageHeight: CGFloat = 160
-        static let cellInfoHeight: CGFloat = 44
+        static let cellInfoHeight: CGFloat = 56
         static let headerHeight: CGFloat = 52
         static let emptyIconSize: CGFloat = 48
         static let accentPink = UIColor(hex: "#FF7EB3")
@@ -71,31 +73,6 @@ final class StickerVaultViewController: BaseViewController {
         l.font = UIFont(name: "Pretendard-Regular", size: 13) ?? .systemFont(ofSize: 13)
         l.textColor = UIColor(hex: "#6B7684")
         return l
-    }()
-
-    private let sortLabel: UILabel = {
-        let l = UILabel()
-        l.text = "최신순"
-        l.font = UIFont(name: "Pretendard-Medium", size: 13) ?? .systemFont(ofSize: 13, weight: .medium)
-        l.textColor = UIColor(hex: "#6B7684")
-        return l
-    }()
-
-    private let sortChevron: UIImageView = {
-        let iv = UIImageView()
-        iv.image = UIImage(systemName: "chevron.down")?
-            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 10, weight: .medium))
-        iv.tintColor = UIColor(hex: "#6B7684")
-        iv.contentMode = .scaleAspectFit
-        return iv
-    }()
-
-    private lazy var sortStack: UIStackView = {
-        let s = UIStackView(arrangedSubviews: [sortLabel, sortChevron])
-        s.axis = .horizontal
-        s.spacing = 4
-        s.alignment = .center
-        return s
     }()
 
     private let countBarView = UIView()
@@ -161,7 +138,6 @@ final class StickerVaultViewController: BaseViewController {
         headerView.addSubview(editButton)
 
         countBarView.addSubview(countLabel)
-        countBarView.addSubview(sortStack)
 
         emptyStateView.addSubview(emptyIconView)
         emptyStateView.addSubview(emptyLabel)
@@ -214,12 +190,6 @@ final class StickerVaultViewController: BaseViewController {
         countLabel.snp.makeConstraints { make in
             make.leading.centerY.equalToSuperview()
         }
-        sortStack.snp.makeConstraints { make in
-            make.trailing.centerY.equalToSuperview()
-        }
-        sortChevron.snp.makeConstraints { make in
-            make.width.height.equalTo(14)
-        }
 
         gridView.snp.makeConstraints { make in
             make.top.equalTo(countBarView.snp.bottom).offset(12)
@@ -244,7 +214,8 @@ final class StickerVaultViewController: BaseViewController {
     override func bind() {
         let input = StickerVaultViewModel.Input(
             viewWillAppear: viewWillAppearSubject.asObservable(),
-            deleteSticker: deleteStickerSubject.asObservable()
+            deleteSticker: deleteStickerSubject.asObservable(),
+            renameSticker: renameStickerSubject.asObservable()
         )
         let output = viewModel.transform(input: input)
 
@@ -328,7 +299,7 @@ final class StickerVaultViewController: BaseViewController {
                     }
                 }
 
-                addLongPressGesture(to: cell, sticker: sticker)
+                addTapGesture(to: cell, sticker: sticker)
                 previousCell = cell
                 stickerCells.append(cell)
                 _ = colIndex
@@ -378,6 +349,7 @@ final class StickerVaultViewController: BaseViewController {
         nameLabel.text = sticker.colorName
         nameLabel.font = UIFont(name: "Pretendard-SemiBold", size: 13) ?? .systemFont(ofSize: 13, weight: .semibold)
         nameLabel.textColor = UIColor(hex: "#191F28")
+        nameLabel.numberOfLines = 2
 
         let dateLabel = UILabel()
         dateLabel.text = formatDate(sticker.createdAt)
@@ -397,16 +369,63 @@ final class StickerVaultViewController: BaseViewController {
         return card
     }
 
-    private func addLongPressGesture(to view: UIView, sticker: Sticker) {
-        let longPress = UILongPressGestureRecognizer()
-        longPress.rx.event
-            .filter { $0.state == .began }
+    private func addTapGesture(to view: UIView, sticker: Sticker) {
+        let tap = UITapGestureRecognizer()
+        tap.rx.event
             .subscribe(onNext: { [weak self] _ in
-                self?.confirmDelete(sticker: sticker)
+                self?.presentActionSheet(for: sticker)
             })
             .disposed(by: disposeBag)
-        view.addGestureRecognizer(longPress)
+        view.addGestureRecognizer(tap)
         view.isUserInteractionEnabled = true
+    }
+
+    private func presentActionSheet(for sticker: Sticker) {
+        let sheet = StickerActionSheetViewController(sticker: sticker)
+        sheet.onRename = { [weak self] in
+            self?.presentRenameAlert(for: sticker)
+        }
+        sheet.onCopy = { [weak self] in
+            self?.copySticker(sticker)
+        }
+        sheet.onShare = { [weak self] in
+            self?.shareSticker(sticker)
+        }
+        sheet.onDelete = { [weak self] in
+            self?.confirmDelete(sticker: sticker)
+        }
+        present(sheet, animated: false)
+    }
+
+    private func presentRenameAlert(for sticker: Sticker) {
+        let alert = UIAlertController(title: "이름 변경", message: nil, preferredStyle: .alert)
+        alert.addTextField { tf in
+            tf.text = sticker.colorName
+            tf.placeholder = "스티커 이름"
+            tf.clearButtonMode = .whileEditing
+        }
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+        alert.addAction(UIAlertAction(title: "변경", style: .default) { [weak self] _ in
+            guard let name = alert.textFields?.first?.text, !name.isEmpty else { return }
+            self?.renameStickerSubject.onNext((sticker, name))
+        })
+        present(alert, animated: true)
+    }
+
+    private func copySticker(_ sticker: Sticker) {
+        let url = StickerManager.shared.stickerURL(for: sticker.imagePath)
+        guard let data = try? Data(contentsOf: url),
+              let image = UIImage(data: data) else { return }
+        UIPasteboard.general.image = image
+    }
+
+    private func shareSticker(_ sticker: Sticker) {
+        let url = StickerManager.shared.stickerURL(for: sticker.imagePath)
+        guard let data = try? Data(contentsOf: url),
+              let image = UIImage(data: data) else { return }
+        let itemSource = StickerShareItemSource(image: image, name: sticker.colorName)
+        let activity = UIActivityViewController(activityItems: [itemSource], applicationActivities: nil)
+        present(activity, animated: true)
     }
 
     private func confirmDelete(sticker: Sticker) {
@@ -429,6 +448,50 @@ final class StickerVaultViewController: BaseViewController {
         formatter.locale = Locale(identifier: "ko_KR")
         formatter.dateFormat = "M월 d일"
         return formatter.string(from: date)
+    }
+}
+
+// MARK: - StickerShareItemSource
+
+private final class StickerShareItemSource: NSObject, UIActivityItemSource {
+
+    private let image: UIImage
+    private let name: String
+
+    init(image: UIImage, name: String) {
+        self.image = image
+        self.name = name
+    }
+
+    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
+        image
+    }
+
+    func activityViewController(
+        _ activityViewController: UIActivityViewController,
+        itemForActivityType activityType: UIActivity.ActivityType?
+    ) -> Any? {
+        image
+    }
+
+    func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
+        let metadata = LPLinkMetadata()
+        metadata.title = name
+        metadata.imageProvider = NSItemProvider(object: image)
+        if let icon = appIcon() {
+            metadata.iconProvider = NSItemProvider(object: icon)
+        }
+        return metadata
+    }
+
+    private func appIcon() -> UIImage? {
+        guard
+            let icons = Bundle.main.infoDictionary?["CFBundleIcons"] as? [String: Any],
+            let primary = icons["CFBundlePrimaryIcon"] as? [String: Any],
+            let files = primary["CFBundleIconFiles"] as? [String],
+            let lastName = files.last
+        else { return nil }
+        return UIImage(named: lastName)
     }
 }
 

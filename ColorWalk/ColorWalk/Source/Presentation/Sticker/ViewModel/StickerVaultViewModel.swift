@@ -9,6 +9,7 @@ final class StickerVaultViewModel: ViewModelType {
     struct Input {
         let viewWillAppear: Observable<Void>
         let deleteSticker: Observable<Sticker>
+        let renameSticker: Observable<(Sticker, String)>
     }
 
     struct Output {
@@ -33,8 +34,14 @@ final class StickerVaultViewModel: ViewModelType {
         input.deleteSticker
             .subscribe(onNext: { [weak stickersRelay] sticker in
                 StickerManager.shared.delete(sticker)
-                let updated = StickerManager.shared.fetchAll()
-                stickersRelay?.accept(updated)
+                stickersRelay?.accept(StickerManager.shared.fetchAll())
+            })
+            .disposed(by: disposeBag)
+
+        input.renameSticker
+            .subscribe(onNext: { [weak stickersRelay] sticker, newName in
+                StickerManager.shared.updateName(newName, for: sticker)
+                stickersRelay?.accept(StickerManager.shared.fetchAll())
             })
             .disposed(by: disposeBag)
 

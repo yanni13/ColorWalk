@@ -53,4 +53,8 @@ final class StickerManager {
     func fetchAll() -> [Sticker] {
         RealmManager.shared.fetchAllStickers()
     }
+
+    func updateName(_ newName: String, for sticker: Sticker) {
+        RealmManager.shared.updateStickerName(sticker, name: newName)
+    }
 }
