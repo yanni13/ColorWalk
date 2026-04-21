@@ -84,6 +84,7 @@ enum L10n {
     }
     static var collectionMissionColor: String { String(localized: "collection.mission.color") }
     static var collectionShareTitle: String { String(localized: "collection.share.title") }
+    static var collectionShareToast: String { String(localized: "collection.share.toast") }
 
     // MARK: - CollectionEdit
 

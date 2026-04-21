@@ -1881,6 +1881,46 @@
         }
       }
     },
+    "collection.share.toast": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You've shared your unique gaze!✨"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "당신만의 시선을 공유했어요!✨"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分享了属于你的独特视角！✨"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分享了屬於你的獨特視角！✨"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分享了屬於你的獨特視角！✨"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "あなただけの視線をシェアしました！✨"
+          }
+        }
+      }
+    },
     "collection.share.title": {
       "localizations": {
         "en": {

@@ -651,7 +651,46 @@ final class CollectionViewController: BaseViewController {
             popover.sourceView = shareIconButton
         }
 
+        activityVC.completionWithItemsHandler = { [weak self] _, completed, _, _ in
+            guard let self, completed else { return }
+            self.showShareToast()
+        }
+
         present(activityVC, animated: true)
+    }
+
+    private func showShareToast() {
+        let toast = UIView()
+        toast.backgroundColor = UIColor(hex: "#1A1A1A").withAlphaComponent(0.88)
+        toast.layer.cornerRadius = 20
+        view.addSubview(toast)
+
+        let label = UILabel()
+        label.text = L10n.collectionShareToast
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 14) ?? .systemFont(ofSize: 14, weight: .semibold)
+        label.textColor = .white
+        toast.addSubview(label)
+
+        label.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 12, left: 20, bottom: 12, right: 20))
+        }
+        toast.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
+        }
+
+        toast.alpha = 0
+        toast.transform = CGAffineTransform(translationX: 0, y: 8)
+
+        UIView.animate(withDuration: 0.3) {
+            toast.alpha = 1
+            toast.transform = .identity
+        }
+        UIView.animate(withDuration: 0.3, delay: 1.8) {
+            toast.alpha = 0
+        } completion: { _ in
+            toast.removeFromSuperview()
+        }
     }
 }
 
