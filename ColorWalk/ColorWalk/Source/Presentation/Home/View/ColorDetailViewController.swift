@@ -1005,6 +1005,11 @@ final class ColorDetailViewController: BaseViewController {
 
     private func startVisionExtraction(at point: CGPoint) {
         guard !isExtracting else { return }
+        guard let image = backgroundImageView.image,
+              let targetImagePoint = imagePoint(for: point, in: image) else {
+            showExtractionFailToast()
+            return
+        }
         isExtracting = true
 
         let haptic = UIImpactFeedbackGenerator(style: .medium)
@@ -1019,21 +1024,16 @@ final class ColorDetailViewController: BaseViewController {
             self.statusPillView.alpha = 1
         }
 
-        guard let image = backgroundImageView.image else {
-            cancelExtractionAnimation()
-            return
-        }
-
         Task.detached(priority: .userInitiated) { [weak self] in
             guard let self else { return }
             do {
-                let extracted = try await self.extractSubject(from: image)
+                let extracted = try await self.extractSubject(from: image, at: targetImagePoint)
                 await MainActor.run {
                     self.finishExtraction(with: extracted)
                 }
             } catch {
                 await MainActor.run {
-                    self.cancelExtractionAnimation()
+                    self.failExtraction()
                 }
             }
         }
@@ -1047,6 +1047,11 @@ final class ColorDetailViewController: BaseViewController {
             self.touchRippleView.alpha = 0
             self.statusPillView.alpha = 0
         }
+    }
+
+    private func failExtraction() {
+        cancelExtractionAnimation()
+        showExtractionFailToast()
     }
 
     private func finishExtraction(with extractedImage: UIImage) {
@@ -1067,7 +1072,7 @@ final class ColorDetailViewController: BaseViewController {
         }
     }
 
-    private func extractSubject(from image: UIImage) async throws -> UIImage {
+    private func extractSubject(from image: UIImage, at imagePoint: CGPoint) async throws -> UIImage {
         // Normalize orientation so that gallery photos (EXIF-rotated) render at the correct aspect ratio
         let format = UIGraphicsImageRendererFormat()
         format.scale = 1.0
@@ -1089,8 +1094,18 @@ final class ColorDetailViewController: BaseViewController {
         guard !allInstances.isEmpty else {
             throw ExtractionError.noSubjectFound
         }
+        let normalizedPoint = CGPoint(
+            x: imagePoint.x / oriented.size.width,
+            y: imagePoint.y / oriented.size.height
+        )
+        guard let selectedInstance = instanceIdentifier(
+            in: result.instanceMask,
+            atNormalizedImagePoint: normalizedPoint
+        ), allInstances.contains(selectedInstance) else {
+            throw ExtractionError.noSubjectFound
+        }
         let maskBuffer = try result.generateScaledMaskForImage(
-            forInstances: allInstances,
+            forInstances: IndexSet(integer: selectedInstance),
             from: handler
         )
         let maskImage = CIImage(cvPixelBuffer: maskBuffer)
@@ -1103,6 +1118,57 @@ final class ColorDetailViewController: BaseViewController {
             throw ExtractionError.renderFailed
         }
         return UIImage(cgImage: cgImage)
+    }
+
+    private func imagePoint(for viewPoint: CGPoint, in image: UIImage) -> CGPoint? {
+        let point = view.convert(viewPoint, to: backgroundImageView)
+        let imageSize = image.size
+        guard imageSize.width > 0, imageSize.height > 0 else { return nil }
+
+        let bounds = backgroundImageView.bounds
+        let scale = min(bounds.width / imageSize.width, bounds.height / imageSize.height)
+        let fittedSize = CGSize(width: imageSize.width * scale, height: imageSize.height * scale)
+        let imageRect = CGRect(
+            x: (bounds.width - fittedSize.width) / 2,
+            y: (bounds.height - fittedSize.height) / 2,
+            width: fittedSize.width,
+            height: fittedSize.height
+        )
+        guard imageRect.contains(point) else { return nil }
+
+        return CGPoint(
+            x: ((point.x - imageRect.minX) / imageRect.width) * imageSize.width,
+            y: ((point.y - imageRect.minY) / imageRect.height) * imageSize.height
+        )
+    }
+
+    private func instanceIdentifier(
+        in pixelBuffer: CVPixelBuffer,
+        atNormalizedImagePoint point: CGPoint
+    ) -> Int? {
+        guard (0...1).contains(point.x), (0...1).contains(point.y) else { return nil }
+
+        CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
+        defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }
+
+        guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else { return nil }
+        let width = CVPixelBufferGetWidth(pixelBuffer)
+        let height = CVPixelBufferGetHeight(pixelBuffer)
+        let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
+        let x = min(max(Int(point.x * CGFloat(width)), 0), width - 1)
+        let y = min(max(Int(point.y * CGFloat(height)), 0), height - 1)
+        let rowAddress = baseAddress.advanced(by: y * bytesPerRow)
+
+        switch CVPixelBufferGetPixelFormatType(pixelBuffer) {
+        case kCVPixelFormatType_OneComponent8:
+            return Int(rowAddress.assumingMemoryBound(to: UInt8.self)[x])
+        case kCVPixelFormatType_OneComponent16Half:
+            return Int(rowAddress.assumingMemoryBound(to: UInt16.self)[x])
+        case kCVPixelFormatType_OneComponent32Float:
+            return Int(rowAddress.assumingMemoryBound(to: Float.self)[x].rounded())
+        default:
+            return Int(rowAddress.assumingMemoryBound(to: UInt8.self)[x])
+        }
     }
 
     private func showStickerSheet(image: UIImage, colorName: String, hexColor: String) {
@@ -1137,6 +1203,44 @@ final class ColorDetailViewController: BaseViewController {
         toastTitleLabel.text = "스티커가 복사되었습니다"
         toastSubtitleLabel.text = "다른 앱에서 붙여넣기 할 수 있어요"
         presentToast()
+    }
+
+    private func showExtractionFailToast() {
+        showToastBar(message: "피사체 분리에 실패했습니다.")
+    }
+
+    private func showToastBar(message: String) {
+        let toast = UIView()
+        toast.backgroundColor = UIColor(hex: "#1A1A1A").withAlphaComponent(0.88)
+        toast.layer.cornerRadius = 20
+        view.addSubview(toast)
+
+        let label = UILabel()
+        label.text = message
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 14) ?? .systemFont(ofSize: 14, weight: .semibold)
+        label.textColor = .white
+        label.textAlignment = .center
+        toast.addSubview(label)
+
+        label.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 12, left: 20, bottom: 12, right: 20))
+        }
+        toast.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(80)
+        }
+
+        toast.alpha = 0
+        toast.transform = CGAffineTransform(translationX: 0, y: 10)
+        UIView.animate(withDuration: 0.3) {
+            toast.alpha = 1
+            toast.transform = .identity
+        }
+        UIView.animate(withDuration: 0.3, delay: 2.0) {
+            toast.alpha = 0
+        } completion: { _ in
+            toast.removeFromSuperview()
+        }
     }
 
     private func presentToast() {

@@ -41,6 +41,7 @@ final class CameraViewModel: NSObject {
     private let sessionQueue = DispatchQueue(label: "camera.session")
     private let renderQueue  = DispatchQueue(label: "camera.render")
     private var currentInput: AVCaptureDeviceInput?
+    private var currentCameraPosition: AVCaptureDevice.Position = .back
 
     // MARK: Outputs
     let previewImage  = PublishRelay<UIImage?>()
@@ -107,6 +108,7 @@ final class CameraViewModel: NSObject {
             }
             self.session.addInput(input)
             self.currentInput = input
+            self.currentCameraPosition = device.position
             self.configureFocusForCurrentDevice()
 
             self.videoOutput.videoSettings = [
@@ -117,9 +119,7 @@ final class CameraViewModel: NSObject {
             if self.session.canAddOutput(self.videoOutput) {
                 self.session.addOutput(self.videoOutput)
             }
-            if let conn = self.videoOutput.connection(with: .video) {
-                conn.videoOrientation = .portrait
-            }
+            self.configureVideoConnection()
             self.session.commitConfiguration()
             self.session.startRunning()
         }
@@ -152,12 +152,21 @@ final class CameraViewModel: NSObject {
             if self.session.canAddInput(newInput) {
                 self.session.addInput(newInput)
                 self.currentInput = newInput
+                self.currentCameraPosition = dev.position
                 self.configureFocusForCurrentDevice()
             }
-            if let conn = self.videoOutput.connection(with: .video) {
-                conn.videoOrientation = .portrait
-            }
+            self.configureVideoConnection()
             self.session.commitConfiguration()
+        }
+    }
+
+    private func configureVideoConnection() {
+        guard let connection = videoOutput.connection(with: .video) else { return }
+        connection.videoOrientation = .portrait
+
+        if connection.isVideoMirroringSupported {
+            connection.automaticallyAdjustsVideoMirroring = false
+            connection.isVideoMirrored = (currentCameraPosition == .front)
         }
     }
 
@@ -397,3 +406,4 @@ extension CameraViewModel: AVCaptureVideoDataOutputSampleBufferDelegate {
         }
     }
 }
+
