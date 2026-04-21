@@ -55,8 +55,9 @@ final class ColorCardStore {
 
                 // 슬롯 인덱스 결정: 0이면 첫 번째 빈 슬롯 찾기
                 let slotIndex = (card.missionCurrent > 0) ? (card.missionCurrent - 1) : cards.value.count
+                let maxSlotCount = GridLayoutStore.shared.selectedLayout.value.slotCount
 
-                if slotIndex < 9 {
+                if slotIndex < maxSlotCount {
                     repository.savePhoto(photo, toSlotIndex: slotIndex, missionId: today)
                 } else {
                     repository.savePhotoOnly(photo)
@@ -121,7 +122,7 @@ final class ColorCardStore {
                 captureDate: formatter.string(from: photo.createdAt),
                 matchPercentage: Int(photo.matchRate),
                 missionCurrent: 0, // 표시용으로는 0이어도 무관하나 필요시 로직 추가
-                missionTotal: 9,
+                missionTotal: GridLayoutStore.shared.selectedLayout.value.slotCount,
                 latitude: photo.latitude,
                 longitude: photo.longitude
             )

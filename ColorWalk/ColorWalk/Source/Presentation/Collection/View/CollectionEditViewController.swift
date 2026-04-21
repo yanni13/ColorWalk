@@ -8,7 +8,9 @@ final class CollectionEditViewController: BaseViewController {
     // MARK: - Constants
 
     private enum Constants {
-        static let maxSelection: Int = 9
+        static var maxSelection: Int {
+            return GridLayoutStore.shared.selectedLayout.value.slotCount
+        }
         static let columnCount: CGFloat = 3
         static let cellGap: CGFloat = 2
         static let navHeight: CGFloat = 60

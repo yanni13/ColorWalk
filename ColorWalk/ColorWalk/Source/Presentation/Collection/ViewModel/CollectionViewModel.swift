@@ -117,11 +117,13 @@ final class CollectionViewModel: ViewModelType {
     }
 
     private func makeMissionMetaTextDriver(missionData: Observable<(Date, DailyMission?)>) -> Driver<String> {
-        missionData
-            .map { (_, mission) -> String in
+        Observable.combineLatest(missionData, GridLayoutStore.shared.selectedLayout.asObservable())
+            .map { (missionData, layout) -> String in
+                let (_, mission) = missionData
                 guard let mission else { return "" }
-                let captured = mission.slots.filter { $0.linkedPhoto != nil }.count
-                let total = mission.slots.count
+                let total = layout.slotCount
+                let captured = min(mission.slots.filter { $0.linkedPhoto != nil }.count, total)
+                
                 if captured == total && total > 0 {
                     return L10n.missionCompleteStatus(total: total)
                 }
@@ -131,13 +133,17 @@ final class CollectionViewModel: ViewModelType {
     }
 
     private func makeMissionStateDriver(missionData: Observable<(Date, DailyMission?)>) -> Driver<MissionState> {
-        missionData
-            .map { (_, mission) -> MissionState in
+        Observable.combineLatest(missionData, GridLayoutStore.shared.selectedLayout.asObservable())
+            .map { (missionData, layout) -> MissionState in
+                let (_, mission) = missionData
                 guard let mission else { return .noMission }
+
+                let maxSlotCount = layout.slotCount
 
                 let capturedSlots = Array(mission.slots)
                     .sorted { $0.index < $1.index }
                     .filter { $0.linkedPhoto != nil }
+                    .prefix(maxSlotCount) // 레이아웃 슬롯 수만큼 제한
                     .enumerated()
                     .map { index, slot -> SlotDisplayInfo in
                         SlotDisplayInfo(
@@ -148,14 +154,14 @@ final class CollectionViewModel: ViewModelType {
                         )
                     }
 
-                let emptySlots = (capturedSlots.count..<9).map { index -> SlotDisplayInfo in
+                let emptySlots = (capturedSlots.count..<maxSlotCount).map { index -> SlotDisplayInfo in
                     SlotDisplayInfo(index: index, imagePath: nil, capturedHex: nil, isCaptured: false)
                 }
 
                 let displaySlots = capturedSlots + emptySlots
                 let capturedCount = capturedSlots.count
 
-                return capturedCount == 9
+                return capturedCount == maxSlotCount
                     ? .completed(slots: displaySlots)
                     : .inProgress(capturedCount: capturedCount, slots: displaySlots)
             }

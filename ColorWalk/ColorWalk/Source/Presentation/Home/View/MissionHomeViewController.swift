@@ -595,6 +595,13 @@ final class MissionHomeViewController: BaseViewController {
     // MARK: - Bind
 
     override func bind() {
+        GridLayoutStore.shared.selectedLayout
+            .skip(1)
+            .subscribe(onNext: { [weak self] _ in
+                self?.refreshCountLabels()
+            })
+            .disposed(by: disposeBag)
+
         stickerVaultButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 self?.onStickerVaultTap?()
@@ -722,11 +729,7 @@ final class MissionHomeViewController: BaseViewController {
     // MARK: - Helper
 
     private var currentGridSlotCount: Int {
-        guard let raw = UserDefaults.standard.string(forKey: AppConstants.UserDefaultsKey.gridLayout),
-              let layout = GridLayoutType(rawValue: raw) else {
-            return GridLayoutType.threeByThree.slotCount
-        }
-        return layout.slotCount
+        return GridLayoutStore.shared.selectedLayout.value.slotCount
     }
 
     private func refreshCountLabels() {

@@ -280,7 +280,7 @@ final class GalleryColorViewController: UIViewController {
                 captureDate: Self.currentDateString(),
                 matchPercentage: match,
                 missionCurrent: 0,
-                missionTotal: 9,
+                missionTotal: GridLayoutStore.shared.selectedLayout.value.slotCount,
                 latitude: self.latitude,
                 longitude: self.longitude
             )

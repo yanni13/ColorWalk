@@ -221,13 +221,9 @@ final class CollectionViewController: BaseViewController {
 
     // MARK: - Dropdown State
 
-    private var currentGridLayout: GridLayoutType = {
-        guard let raw = UserDefaults.standard.string(forKey: AppConstants.UserDefaultsKey.gridLayout),
-              let saved = GridLayoutType(rawValue: raw) else {
-            return .threeByThree
-        }
-        return saved
-    }()
+    private var currentGridLayout: GridLayoutType {
+        return GridLayoutStore.shared.selectedLayout.value
+    }
     private weak var dropdownView: GridLayoutDropdownView?
     private weak var dropdownDismissOverlay: UIView?
 
@@ -582,8 +578,7 @@ final class CollectionViewController: BaseViewController {
     }
 
     private func applyGridLayout(_ layout: GridLayoutType) {
-        currentGridLayout = layout
-        UserDefaults.standard.set(layout.rawValue, forKey: AppConstants.UserDefaultsKey.gridLayout)
+        GridLayoutStore.shared.updateLayout(layout)
         photoGridView.setLayout(layout)
         photoGridView.snp.remakeConstraints { make in
             make.height.equalTo(photoGridView.snp.width).multipliedBy(layout.aspectRatioMultiplier)

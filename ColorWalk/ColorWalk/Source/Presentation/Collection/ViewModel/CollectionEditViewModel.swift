@@ -16,7 +16,9 @@ final class CollectionEditViewModel: ViewModelType {
     // MARK: - Constants
 
     private enum Constants {
-        static let maxSelection: Int = 9
+        static var maxSelection: Int {
+            return GridLayoutStore.shared.selectedLayout.value.slotCount
+        }
     }
 
     // MARK: - Input / Output
