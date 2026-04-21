@@ -389,7 +389,6 @@ final class MissionHomeViewController: BaseViewController {
 
     @objc private func appDidEnterForeground() {
         ColorCardStore.shared.checkDailyReset()
-        updateBannerVisibility()
         updateLocationLabelVisibility()
     }
 

@@ -9,6 +9,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 import CoreLocation
+import Vision
 
 final class GalleryColorViewController: UIViewController {
 
@@ -23,6 +24,12 @@ final class GalleryColorViewController: UIViewController {
 
     private var tapIndicator: UIView?
     private var popupOverlay: UIView?
+    private var isExtracting = false
+
+    private enum Constants {
+        static let navBarHeight: CGFloat = 56
+        static let buttonSize: CGFloat = 44
+    }
 
     // MARK: - UI
     private let imageView: UIImageView = {
@@ -53,6 +60,25 @@ final class GalleryColorViewController: UIViewController {
         l.textColor = .white
         l.textAlignment = .center
         return l
+    }()
+
+    private let extractButton: UIButton = {
+        let b = UIButton(type: .system)
+        b.setImage(
+            UIImage(systemName: "sparkles")?
+                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)),
+            for: .normal
+        )
+        b.tintColor = .white
+        b.accessibilityLabel = "피사체 분리"
+        return b
+    }()
+
+    private let loadingIndicator: UIActivityIndicatorView = {
+        let v = UIActivityIndicatorView(style: .medium)
+        v.color = .white
+        v.hidesWhenStopped = true
+        return v
     }()
 
     private let hintLabel: UILabel = {
@@ -95,6 +121,8 @@ final class GalleryColorViewController: UIViewController {
         view.addSubview(navBar)
         navBar.addSubview(backButton)
         navBar.addSubview(navTitleLabel)
+        navBar.addSubview(extractButton)
+        navBar.addSubview(loadingIndicator)
 
         view.addSubview(hintLabel)
 
@@ -103,29 +131,46 @@ final class GalleryColorViewController: UIViewController {
     }
 
     private func setupConstraints() {
-        imageView.snp.makeConstraints { $0.edges.equalToSuperview() }
-
-        navBar.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide)
-            $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(56)
+        imageView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
-        backButton.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(20)
-            $0.centerY.equalToSuperview()
-            $0.width.height.equalTo(24)
-        }
-        navTitleLabel.snp.makeConstraints { $0.center.equalToSuperview() }
 
-        hintLabel.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(36)
+        navBar.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(Constants.navBarHeight)
+        }
+        backButton.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(20)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(Constants.buttonSize)
+        }
+        navTitleLabel.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        extractButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(20)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(Constants.buttonSize)
+        }
+        loadingIndicator.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(30)
+            make.centerY.equalToSuperview()
+        }
+
+        hintLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(36)
         }
     }
 
     private func bind() {
         backButton.rx.tap
             .subscribe(onNext: { [weak self] in self?.dismiss(animated: true) })
+            .disposed(by: disposeBag)
+
+        extractButton.rx.tap
+            .subscribe(onNext: { [weak self] in self?.handleExtractTap() })
             .disposed(by: disposeBag)
     }
 
@@ -182,9 +227,9 @@ final class GalleryColorViewController: UIViewController {
         let popup = GalleryColorPopupView()
         popup.configure(color: color, hex: hex, match: match)
         overlay.addSubview(popup)
-        popup.snp.makeConstraints {
-            $0.center.equalToSuperview()
-            $0.width.equalTo(320)
+        popup.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.equalTo(320)
         }
         popup.isUserInteractionEnabled = true
 
@@ -198,7 +243,6 @@ final class GalleryColorViewController: UIViewController {
             }
         }
 
-        // Spring animation
         overlay.alpha = 0
         popup.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
         UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 0.72, initialSpringVelocity: 0) {
@@ -298,14 +342,156 @@ final class GalleryColorViewController: UIViewController {
         }
     }
 
-    // TODO: DateFormatterManager로 이동 필요
+    // MARK: - Subject Extraction
+
+    private func handleExtractTap() {
+        guard !isExtracting else { return }
+        isExtracting = true
+        extractButton.isHidden = true
+        loadingIndicator.startAnimating()
+
+        let haptic = UIImpactFeedbackGenerator(style: .medium)
+        haptic.impactOccurred()
+
+        Task.detached(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+            do {
+                let extracted = try await self.extractSubject(from: self.image)
+                await MainActor.run {
+                    self.finishExtraction(with: extracted)
+                }
+            } catch {
+                await MainActor.run {
+                    self.cancelExtraction()
+                }
+            }
+        }
+    }
+
+    private func finishExtraction(with extractedImage: UIImage) {
+        isExtracting = false
+        extractButton.isHidden = false
+        loadingIndicator.stopAnimating()
+
+        let haptic = UINotificationFeedbackGenerator()
+        haptic.notificationOccurred(.success)
+
+        let sheet = StickerExtractSheetViewController(
+            stickerImage: extractedImage,
+            colorName: missionName,
+            hexColor: missionHex
+        )
+        sheet.onSave = { [weak self] in
+            guard let self else { return }
+            _ = StickerManager.shared.save(image: extractedImage, colorName: self.missionName, hex: self.missionHex)
+            self.showStickerSavedToast()
+        }
+        sheet.onCopy = {
+            UIPasteboard.general.image = extractedImage
+        }
+        sheet.onShare = { [weak self] in
+            guard let self else { return }
+            let activity = UIActivityViewController(activityItems: [extractedImage], applicationActivities: nil)
+            self.present(activity, animated: true)
+        }
+        present(sheet, animated: false)
+    }
+
+    private func cancelExtraction() {
+        isExtracting = false
+        extractButton.isHidden = false
+        loadingIndicator.stopAnimating()
+
+        let haptic = UINotificationFeedbackGenerator()
+        haptic.notificationOccurred(.error)
+        showExtractionFailToast()
+    }
+
+    private func extractSubject(from image: UIImage) async throws -> UIImage {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1.0
+        let oriented = UIGraphicsImageRenderer(size: image.size, format: format).image { _ in
+            image.draw(in: CGRect(origin: .zero, size: image.size))
+        }
+        guard let cgImage = oriented.cgImage else {
+            throw GalleryExtractionError.invalidImage
+        }
+        let ciImage = CIImage(cgImage: cgImage)
+        let downsampled = ciImage.transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.5))
+        let request = VNGenerateForegroundInstanceMaskRequest()
+        let handler = VNImageRequestHandler(ciImage: downsampled)
+        try handler.perform([request])
+        guard let result = request.results?.first else {
+            throw GalleryExtractionError.noSubjectFound
+        }
+        let allInstances = result.allInstances
+        guard !allInstances.isEmpty else {
+            throw GalleryExtractionError.noSubjectFound
+        }
+        let maskBuffer = try result.generateScaledMaskForImage(
+            forInstances: allInstances,
+            from: handler
+        )
+        let maskImage = CIImage(cvPixelBuffer: maskBuffer)
+        let masked = downsampled.applyingFilter("CIBlendWithMask", parameters: [
+            kCIInputMaskImageKey: maskImage,
+            kCIInputBackgroundImageKey: CIImage.empty()
+        ])
+        let context = CIContext(options: [.useSoftwareRenderer: false])
+        guard let resultCGImage = context.createCGImage(masked, from: masked.extent) else {
+            throw GalleryExtractionError.renderFailed
+        }
+        return UIImage(cgImage: resultCGImage)
+    }
+
+    private func showStickerSavedToast() {
+        showToast(message: "스티커 보관함에 저장되었습니다")
+    }
+
+    private func showExtractionFailToast() {
+        showToast(message: "피사체를 찾을 수 없습니다")
+    }
+
+    private func showToast(message: String) {
+        let toast = UIView()
+        toast.backgroundColor = UIColor(hex: "#1A1A1A").withAlphaComponent(0.85)
+        toast.layer.cornerRadius = 20
+        view.addSubview(toast)
+
+        let label = UILabel()
+        label.text = message
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 14)
+        label.textColor = .white
+        toast.addSubview(label)
+        label.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 12, left: 20, bottom: 12, right: 20))
+        }
+        toast.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(80)
+        }
+        toast.alpha = 0
+        toast.transform = CGAffineTransform(translationX: 0, y: 10)
+
+        UIView.animate(withDuration: 0.3) {
+            toast.alpha = 1
+            toast.transform = .identity
+        }
+        UIView.animate(withDuration: 0.3, delay: 2.0) {
+            toast.alpha = 0
+        } completion: { _ in
+            toast.removeFromSuperview()
+        }
+    }
+
+    // MARK: - Helpers
+
     private static func currentDateString() -> String {
         let fmt = DateFormatter()
         fmt.dateFormat = "yyyy.MM.dd"
         return fmt.string(from: Date())
     }
 
-    // MARK: - Color Helpers
     private func colorAt(point: CGPoint, in imageView: UIImageView) -> UIColor? {
         guard let image = imageView.image,
               let cgImage = image.cgImage else { return nil }
@@ -313,7 +499,6 @@ final class GalleryColorViewController: UIViewController {
         let imageSize = CGSize(width: cgImage.width, height: cgImage.height)
         let viewSize = imageView.bounds.size
 
-        // scaleAspectFit: scale to fit, centered
         let scaleX = viewSize.width / imageSize.width
         let scaleY = viewSize.height / imageSize.height
         let scale = min(scaleX, scaleY)
@@ -357,4 +542,12 @@ final class GalleryColorViewController: UIViewController {
         let dist = sqrt(pow(dr - mr, 2) + pow(dg - mg, 2) + pow(db - mb, 2))
         return max(0, min(100, Int((1 - dist / sqrt(3)) * 100)))
     }
+}
+
+// MARK: - GalleryExtractionError
+
+private enum GalleryExtractionError: Error {
+    case invalidImage
+    case noSubjectFound
+    case renderFailed
 }

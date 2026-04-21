@@ -62,7 +62,7 @@ final class ColorDetailViewController: BaseViewController {
 
     private let backgroundImageView: UIImageView = {
         let iv = UIImageView()
-        iv.contentMode = .scaleAspectFill
+        iv.contentMode = .scaleAspectFit
         iv.clipsToBounds = true
         iv.isUserInteractionEnabled = true
         return iv
@@ -1211,7 +1211,7 @@ final class ColorDetailViewController: BaseViewController {
         let slideOffset: CGFloat = direction == .left ? view.bounds.width : -view.bounds.width
 
         let newImageView = UIImageView(frame: view.bounds)
-        newImageView.contentMode = .scaleAspectFill
+        newImageView.contentMode = .scaleAspectFit
         newImageView.clipsToBounds = true
         if let img = card.capturedImage {
             newImageView.image = img

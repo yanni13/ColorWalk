@@ -32,6 +32,13 @@
 			remoteGlobalIDString = D82CC5182F73D0E700211DB3;
 			remoteInfo = ColorWalkWidgetExtension;
 		};
+		D8BB31F12F97448C005AB195 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D82CC0682F710D1B00211DB3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D82CC06F2F710D1B00211DB3;
+			remoteInfo = ColorWalk;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -68,6 +75,7 @@
 		D82CC51D2F73D0E800211DB3 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		D85CE9D12F74C2B6002DB279 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
 		D89DEDAD2F796E2100DCC565 /* GEMINI.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = GEMINI.md; sourceTree = "<group>"; };
+		D8BB31ED2F97448C005AB195 /* ColorWalkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ColorWalkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -112,6 +120,11 @@
 			path = ColorWalkWidget;
 			sourceTree = "<group>";
 		};
+		D8BB31EE2F97448C005AB195 /* ColorWalkTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ColorWalkTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -138,6 +151,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D8BB31EA2F97448C005AB195 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -150,6 +170,7 @@
 				D82CC0882F710D6100211DB3 /* .gitignore */,
 				D82CC0722F710D1B00211DB3 /* ColorWalk */,
 				D82CC51F2F73D0E800211DB3 /* ColorWalkWidget */,
+				D8BB31EE2F97448C005AB195 /* ColorWalkTests */,
 				D82CC51A2F73D0E700211DB3 /* Frameworks */,
 				D82CC0712F710D1B00211DB3 /* Products */,
 			);
@@ -160,6 +181,7 @@
 			children = (
 				D82CC0702F710D1B00211DB3 /* ColorWalk.app */,
 				D82CC5192F73D0E700211DB3 /* ColorWalkWidgetExtension.appex */,
+				D8BB31ED2F97448C005AB195 /* ColorWalkTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -231,6 +253,29 @@
 			productReference = D82CC5192F73D0E700211DB3 /* ColorWalkWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		D8BB31EC2F97448C005AB195 /* ColorWalkTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D8BB31F52F97448C005AB195 /* Build configuration list for PBXNativeTarget "ColorWalkTests" */;
+			buildPhases = (
+				D8BB31E92F97448C005AB195 /* Sources */,
+				D8BB31EA2F97448C005AB195 /* Frameworks */,
+				D8BB31EB2F97448C005AB195 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D8BB31F22F97448C005AB195 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D8BB31EE2F97448C005AB195 /* ColorWalkTests */,
+			);
+			name = ColorWalkTests;
+			packageProductDependencies = (
+			);
+			productName = ColorWalkTests;
+			productReference = D8BB31ED2F97448C005AB195 /* ColorWalkTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -246,6 +291,10 @@
 					};
 					D82CC5182F73D0E700211DB3 = {
 						CreatedOnToolsVersion = 26.0;
+					};
+					D8BB31EC2F97448C005AB195 = {
+						CreatedOnToolsVersion = 26.0;
+						TestTargetID = D82CC06F2F710D1B00211DB3;
 					};
 				};
 			};
@@ -277,6 +326,7 @@
 			targets = (
 				D82CC06F2F710D1B00211DB3 /* ColorWalk */,
 				D82CC5182F73D0E700211DB3 /* ColorWalkWidgetExtension */,
+				D8BB31EC2F97448C005AB195 /* ColorWalkTests */,
 			);
 		};
 /* End PBXProject section */
@@ -294,6 +344,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D82CC5172F73D0E700211DB3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D8BB31EB2F97448C005AB195 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -343,6 +400,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D8BB31E92F97448C005AB195 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -350,6 +414,11 @@
 			isa = PBXTargetDependency;
 			target = D82CC5182F73D0E700211DB3 /* ColorWalkWidgetExtension */;
 			targetProxy = D82CC52D2F73D0E900211DB3 /* PBXContainerItemProxy */;
+		};
+		D8BB31F22F97448C005AB195 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D82CC06F2F710D1B00211DB3 /* ColorWalk */;
+			targetProxy = D8BB31F12F97448C005AB195 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -630,6 +699,48 @@
 			};
 			name = Release;
 		};
+		D8BB31F32F97448C005AB195 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W5Z68U98HJ;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yanni13.ColorWalkTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ColorWalk.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ColorWalk";
+			};
+			name = Debug;
+		};
+		D8BB31F42F97448C005AB195 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W5Z68U98HJ;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yanni13.ColorWalkTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ColorWalk.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ColorWalk";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -656,6 +767,15 @@
 			buildConfigurations = (
 				D82CC5312F73D0E900211DB3 /* Debug */,
 				D82CC5322F73D0E900211DB3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D8BB31F52F97448C005AB195 /* Build configuration list for PBXNativeTarget "ColorWalkTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D8BB31F32F97448C005AB195 /* Debug */,
+				D8BB31F42F97448C005AB195 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
