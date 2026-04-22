@@ -218,25 +218,25 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Collect your color."
+            "value": "It's not too late! Try it now. 🎨"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "당신의 색상을 담아보세요."
+            "value": "늦었지만 지금이라도 해보세요! 🎨"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "收集您的颜色。"
+            "value": "还不晚！现在试试吧。🎨"
           }
         },
         "zh-Hant-HK": {
           "stringUnit": {
             "state": "translated",
-            "value": "收集您的顏色。"
+            "value": "還不晚！現在試試吧。🎨"
           }
         },
         "zh-Hant": {

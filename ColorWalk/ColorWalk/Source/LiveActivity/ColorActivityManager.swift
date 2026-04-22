@@ -15,6 +15,10 @@ final class ColorActivityManager {
     private var sessionTimerEnd: Date?
     private(set) var isTimedSessionActive: Bool = false
 
+    private enum Constants {
+        static let expiredBannerDisplayDuration: TimeInterval = 5
+    }
+
     private init() {}
 
     // MARK: - Start (카메라 수동 사용 - 타이머 없음)
@@ -73,7 +77,7 @@ final class ColorActivityManager {
         do {
             currentActivity = try Activity.request(
                 attributes: attrs,
-                content: .init(state: state, staleDate: timerEnd),
+                content: .init(state: state, staleDate: nil),
                 pushType: nil
             )
         } catch {
@@ -92,7 +96,7 @@ final class ColorActivityManager {
         let isExpired = sessionTimerEnd != nil && Date() >= sessionTimerEnd!
         let state = ColorPickerAttributes.ContentState(matchPercent: match, timerEnd: sessionTimerEnd, isExpired: isExpired)
         
-        Task { await activity.update(.init(state: state, staleDate: sessionTimerEnd)) }
+        Task { await activity.update(.init(state: state, staleDate: nil)) }
     }
 
     // MARK: - Stop
@@ -108,10 +112,20 @@ final class ColorActivityManager {
 
     // MARK: - Private
 
+    private func expireActivity() {
+        guard let activity = currentActivity else { return }
+        isTimedSessionActive = false
+        let state = ColorPickerAttributes.ContentState(matchPercent: 0, timerEnd: nil, isExpired: true)
+        Task { await activity.update(.init(state: state, staleDate: nil)) }
+    }
+
     private func scheduleExpiry(after duration: TimeInterval) {
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
             guard let self else { return }
-            self.stop()
+            self.expireActivity()
+            DispatchQueue.main.asyncAfter(deadline: .now() + Constants.expiredBannerDisplayDuration) { [weak self] in
+                self?.stop()
+            }
         }
     }
 }
