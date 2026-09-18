@@ -19,7 +19,7 @@
 		D82CC62B2F74339300211DB3 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = D82CC6292F74336000211DB3 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		D8B767D82F88DF0C003BF264 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = D8B767D72F88DF0C003BF264 /* FirebaseAnalyticsCore */; };
 		D8B767DA2F88DF0C003BF264 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = D8B767D92F88DF0C003BF264 /* FirebaseCrashlytics */; };
-		D8F13B9D305851A300C76F7C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D8F13B9C305851A300C76F7C /* GoogleService-Info.plist */; };
+		D8F13B9F305AD8B500C76F7C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D8F13B9E305AD8B500C76F7C /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,7 +71,7 @@
 		D82CC51B2F73D0E700211DB3 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		D82CC51D2F73D0E800211DB3 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		D8BB31ED2F97448C005AB195 /* ColorWalkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ColorWalkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D8F13B9C305851A300C76F7C /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		D8F13B9E305AD8B500C76F7C /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -89,6 +89,13 @@
 			);
 			target = D82CC5182F73D0E700211DB3 /* ColorWalkWidgetExtension */;
 		};
+		D8FF00012F73D0E900211DB3 /* Exceptions for "ColorWalkWidget" folder in "ColorWalkWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D82CC5182F73D0E700211DB3 /* ColorWalkWidgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -103,6 +110,9 @@
 		};
 		D82CC51F2F73D0E800211DB3 /* ColorWalkWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D8FF00012F73D0E900211DB3 /* Exceptions for "ColorWalkWidget" folder in "ColorWalkWidgetExtension" target */,
+			);
 			path = ColorWalkWidget;
 			sourceTree = "<group>";
 		};
@@ -150,13 +160,13 @@
 		D82CC0672F710D1B00211DB3 = {
 			isa = PBXGroup;
 			children = (
-				D8F13B9C305851A300C76F7C /* GoogleService-Info.plist */,
 				D82CC0882F710D6100211DB3 /* .gitignore */,
 				D82CC0722F710D1B00211DB3 /* ColorWalk */,
 				D82CC51F2F73D0E800211DB3 /* ColorWalkWidget */,
 				D8BB31EE2F97448C005AB195 /* ColorWalkTests */,
 				D82CC51A2F73D0E700211DB3 /* Frameworks */,
 				D82CC0712F710D1B00211DB3 /* Products */,
+				D8F13B9E305AD8B500C76F7C /* GoogleService-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -321,7 +331,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D82CC0892F710D6100211DB3 /* .gitignore in Resources */,
-				D8F13B9D305851A300C76F7C /* GoogleService-Info.plist in Resources */,
+				D8F13B9F305AD8B500C76F7C /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -431,7 +441,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.1;
+				MARKETING_VERSION = 1.5.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yanni13.ColorWalk;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -473,7 +483,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.1;
+				MARKETING_VERSION = 1.5.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yanni13.ColorWalk;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -620,10 +630,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = W5Z68U98HJ;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
-				INFOPLIST_KEY_CFBundleDisplayName = "담아,";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ColorWalkWidget/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -655,10 +663,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = W5Z68U98HJ;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
-				INFOPLIST_KEY_CFBundleDisplayName = "담아,";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ColorWalkWidget/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
