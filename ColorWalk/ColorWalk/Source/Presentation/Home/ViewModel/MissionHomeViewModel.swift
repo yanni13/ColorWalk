@@ -160,7 +160,8 @@ final class MissionHomeViewModel: ViewModelType {
             .map { weatherData in
                 MissionGenerator.generate(weatherSymbol: weatherData.symbolName, weatherText: L10n.missionWeatherInfoFormat(weatherData.displayText), shuffled: false)
             }
-            .bind(to: missionSubject)
+            // bind(to:)는 take(1)의 completed까지 전달해 missionSubject를 종료시키므로 onNext만 전달
+            .subscribe(onNext: { missionSubject.onNext($0) })
             .disposed(by: disposeBag)
 
         shuffleOrChange
@@ -168,7 +169,7 @@ final class MissionHomeViewModel: ViewModelType {
             .map { weatherData in
                 MissionGenerator.generate(weatherSymbol: weatherData.symbolName, weatherText: L10n.missionWeatherInfoFormat(weatherData.displayText), shuffled: true)
             }
-            .bind(to: missionSubject)
+            .subscribe(onNext: { missionSubject.onNext($0) })
             .disposed(by: disposeBag)
 
         let missionObservable = missionSubject.asObservable().share(replay: 1)

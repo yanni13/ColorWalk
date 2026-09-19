@@ -610,6 +610,7 @@ final class MissionHomeViewController: BaseViewController {
 
         // 카드뷰 탭 시 상세 모달 표시
         let cardTap = UITapGestureRecognizer()
+        cardTap.delegate = self
         cardView.addGestureRecognizer(cardTap)
         cardTap.rx.event
             .subscribe(onNext: { [weak self] _ in
@@ -983,4 +984,15 @@ extension MissionHomeViewController: CLLocationManagerDelegate {
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {}
+}
+
+// MARK: - UIGestureRecognizerDelegate
+
+extension MissionHomeViewController: UIGestureRecognizerDelegate {
+    // cardView에 올려진 shuffle/editName 버튼 위를 탭했을 때는
+    // cardView의 탭 제스처가 터치를 가로채 버튼 액션이 씹히지 않도록 제외 처리
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        guard let touchedView = touch.view else { return true }
+        return !(touchedView.isDescendant(of: shuffleButton) || touchedView.isDescendant(of: editNameButton))
+    }
 }

@@ -62,25 +62,25 @@ final class MissionGenerator {
         let theme = WeatherTheme.from(symbolName: weatherSymbol)
         let hour = Calendar.current.component(.hour, from: Date())
 
-        guard let candidates = themes[theme] else {
-            return ColorMission.placeholder
-        }
-
-        let candidate: ColorCandidate
+        let hex: String
         let themePrefix: String
+        let colorName: String
 
         if shuffled {
-            guard let random = candidates.randomElement() else { return ColorMission.placeholder }
-            candidate = random
-            themePrefix = candidate.nameTemplates.randomElement() ?? ""
+            // 새로고침 시에는 날씨 테마 후보에 묶이지 않고 완전 무작위 색상을 생성
+            hex = randomHexColor()
+            colorName = nearestColorName(forHex: hex)
+            let allNameTemplates = themes.values.flatMap { $0.flatMap(\.nameTemplates) }
+            themePrefix = allNameTemplates.randomElement() ?? ""
         } else {
+            guard let candidates = themes[theme] else { return ColorMission.placeholder }
             let dayOfYear = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 1
-            candidate = candidates[(dayOfYear - 1) % candidates.count]
+            let candidate = candidates[(dayOfYear - 1) % candidates.count]
+            hex = candidate.hex
             themePrefix = candidate.nameTemplates[(dayOfYear - 1) % candidate.nameTemplates.count]
+            colorName = getColorName(for: candidate.hex)
         }
 
-        let colorName = getColorName(for: candidate.hex)
-        
         var timePrefix = ""
         if (17...20).contains(hour) { timePrefix = L10n.missionThemeSunset }
         else if (5...8).contains(hour) { timePrefix = L10n.missionThemeDawn }
@@ -110,11 +110,45 @@ final class MissionGenerator {
 
         return ColorMission(
             name: finalName,
-            hexColor: candidate.hex,
-            color: UIColor(hex: candidate.hex),
+            hexColor: hex,
+            color: UIColor(hex: hex),
             weatherInfo: weatherText,
             progress: 0.0
         )
+    }
+
+    /// 완전 무작위 HEX 컬러 생성 (RGB 각 채널 0~255)
+    private static func randomHexColor() -> String {
+        let r = Int.random(in: 0...255)
+        let g = Int.random(in: 0...255)
+        let b = Int.random(in: 0...255)
+        return String(format: "#%02X%02X%02X", r, g, b)
+    }
+
+    /// 사전 정의 후보가 아닌 임의의 HEX 색상에 대해 HSB 기반으로 가장 가까운 색상 이름을 부여
+    private static func nearestColorName(forHex hex: String) -> String {
+        var hue: CGFloat = 0, saturation: CGFloat = 0, brightness: CGFloat = 0, alpha: CGFloat = 0
+        UIColor(hex: hex).getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+        let hueDegrees = hue * 360
+
+        if saturation < 0.15 {
+            if brightness > 0.85 { return L10n.missionColorLightGray }
+            if brightness > 0.35 { return L10n.missionColorGray }
+            return L10n.missionColorSlate
+        }
+
+        switch hueDegrees {
+        case 0..<15, 345..<360: return L10n.missionColorRed
+        case 15..<45: return L10n.missionColorOrange
+        case 45..<70: return L10n.missionColorYellow
+        case 70..<170: return brightness < 0.35 ? L10n.missionColorDarkGreen : L10n.missionColorGreen
+        case 170..<200: return L10n.missionColorSky
+        case 200..<255: return brightness < 0.35 ? L10n.missionColorNavy : L10n.missionColorBlue
+        case 255..<290: return L10n.missionColorIndigo
+        case 290..<320: return L10n.missionColorPurple
+        case 320..<345: return L10n.missionColorPink
+        default: return L10n.missionColorDefault
+        }
     }
 
     private static func getColorName(for hex: String) -> String {
