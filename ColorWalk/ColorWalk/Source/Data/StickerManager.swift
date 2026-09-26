@@ -26,7 +26,7 @@ final class StickerManager {
         let fileName = UUID().uuidString + ".png"
         let fileURL = stickersDirectory.appendingPathComponent(fileName)
         do {
-            try data.write(to: fileURL)
+            try data.write(to: fileURL, options: [.atomic, .completeFileProtectionUnlessOpen])
         } catch {
             print("[StickerManager] 파일 저장 실패: \(error)")
             return nil

@@ -104,13 +104,22 @@ final class WidgetDataWriter {
             forSecurityApplicationGroupIdentifier: Constants.appGroupID
         ) else { return }
 
-        let dirURL = containerURL.appendingPathComponent(Constants.imageDirName)
+        var dirURL = containerURL.appendingPathComponent(Constants.imageDirName)
         try? FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: true)
+        excludeFromBackup(&dirURL)
 
         // 5. JPEG 압축 및 저장
+        // 위젯이 잠금 화면에서도 읽어야 하므로 보호 클래스는 기본값(completeUntilFirstUserAuthentication) 유지
         let fileURL = dirURL.appendingPathComponent(fileName)
         guard let data = resizedImage.jpegData(compressionQuality: 0.8) else { return }
         try? data.write(to: fileURL)
+    }
+
+    /// 썸네일은 원본에서 언제든 재생성 가능한 캐시이므로 iCloud 백업에서 제외
+    private func excludeFromBackup(_ url: inout URL) {
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = true
+        try? url.setResourceValues(values)
     }
 
     private func colorName(for hex: String) -> String {

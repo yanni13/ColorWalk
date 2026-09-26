@@ -8,15 +8,44 @@ final class RealmManager {
     static let shared = RealmManager()
 
     private enum Constants {
-        static let schemaVersion: UInt64 = 4
+        static let schemaVersion: UInt64 = 6
+        static let objectIdKeyedClasses = ["Photo", "Sticker", "ColorSlot", "User"]
     }
 
     private init() {
         let config = Realm.Configuration(
             schemaVersion: Constants.schemaVersion,
-            migrationBlock: { _, _ in }
+            migrationBlock: { migration, oldSchemaVersion in
+                if oldSchemaVersion == 5 {
+                    Self.dedupePrimaryKeys(migration)
+                }
+            }
         )
         Realm.Configuration.defaultConfiguration = config
+    }
+
+    /// v5에서는 primary key 제약이 없었으므로, 키를 다시 걸기 전에 중복 값을 정리
+    private static func dedupePrimaryKeys(_ migration: Migration) {
+        var seenDates = Set<String>()
+        migration.enumerateObjects(ofType: "DailyMission") { old, new in
+            guard let new, let date = old?["dateIdentifier"] as? String else { return }
+            if !seenDates.insert(date).inserted {
+                migration.delete(new)
+            }
+        }
+
+        for className in Constants.objectIdKeyedClasses {
+            var seenIds = Set<ObjectId>()
+            migration.enumerateObjects(ofType: className) { old, new in
+                guard let new else { return }
+                let id = old?["id"] as? ObjectId
+                if id == nil || !seenIds.insert(id!).inserted {
+                    let newId = ObjectId.generate()
+                    seenIds.insert(newId)
+                    new["id"] = newId
+                }
+            }
+        }
     }
 
     private var mainRealm: Realm? {

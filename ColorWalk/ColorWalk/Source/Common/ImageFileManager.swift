@@ -38,7 +38,8 @@ final class ImageFileManager {
         let url = getDocumentsDirectory().appendingPathComponent(fileName)
         
         do {
-            try data.write(to: url)
+            // 원본은 앱 화면에서만 읽으므로(위젯은 App Group 썸네일 사용) 잠금 상태에서는 새로 열 수 없게 보호
+            try data.write(to: url, options: [.atomic, .completeFileProtectionUnlessOpen])
             return fileName
         } catch {
             return nil
