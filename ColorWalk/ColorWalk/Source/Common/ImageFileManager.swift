@@ -40,6 +40,13 @@ final class ImageFileManager {
         do {
             // 원본은 앱 화면에서만 읽으므로(위젯은 App Group 썸네일 사용) 잠금 상태에서는 새로 열 수 없게 보호
             try data.write(to: url, options: [.atomic, .completeFileProtectionUnlessOpen])
+            FileProtectionInspector.printReport()
+#if DEBUG
+print(
+    "[FileProtection] \(url.lastPathComponent): " +
+    FileProtectionInspector.protection(of: url)
+)
+#endif
             return fileName
         } catch {
             return nil
@@ -81,5 +88,63 @@ final class ImageFileManager {
 
     private func getDocumentsDirectory() -> URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
+    
+    /// 기존 Documents 사진 파일에 보호 속성을 적용하고 검증
+    func migrateExistingImages() -> (total: Int, succeeded: Int, failed: [String]) {
+        let fileManager = FileManager.default
+        let directory = getDocumentsDirectory()
+
+        let files: [URL]
+
+        do {
+            files = try fileManager.contentsOfDirectory(
+                at: directory,
+                includingPropertiesForKeys: [.isRegularFileKey]
+            ).filter { url in
+                let values = try? url.resourceValues(forKeys: [.isRegularFileKey])
+                return values?.isRegularFile == true
+                    && ["jpg", "jpeg", "png"].contains(url.pathExtension.lowercased())
+            }
+        } catch {
+            print("[Migration] 디렉터리 조회 실패: \(error)")
+            return (0, 0, ["디렉터리 조회 실패: \(error.localizedDescription)"])
+        }
+
+        var succeeded = 0
+        var failed: [String] = []
+
+        for url in files {
+            do {
+                // 기존 파일에 보호 속성 적용
+                try fileManager.setAttributes(
+                    [.protectionKey: FileProtectionType.completeUnlessOpen],
+                    ofItemAtPath: url.path
+                )
+
+                // 실제 속성을 다시 조회해 검증
+                let attributes = try fileManager.attributesOfItem(atPath: url.path)
+
+                guard let protection = attributes[.protectionKey] as? FileProtectionType,
+                      protection == .completeUnlessOpen else {
+                    failed.append("\(url.lastPathComponent): 보호 속성 불일치")
+                    continue
+                }
+
+                succeeded += 1
+            } catch {
+                failed.append("\(url.lastPathComponent): \(error.localizedDescription)")
+            }
+        }
+
+        print("""
+        [Migration] 기존 사진 보호 속성 점검
+        전체: \(files.count)
+        성공: \(succeeded)
+        실패: \(failed.count)
+        실패 목록: \(failed)
+        """)
+
+        return (files.count, succeeded, failed)
     }
 }

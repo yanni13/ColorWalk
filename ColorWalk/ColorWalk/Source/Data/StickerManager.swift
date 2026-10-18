@@ -27,6 +27,13 @@ final class StickerManager {
         let fileURL = stickersDirectory.appendingPathComponent(fileName)
         do {
             try data.write(to: fileURL, options: [.atomic, .completeFileProtectionUnlessOpen])
+            FileProtectionInspector.printReport()
+#if DEBUG
+print(
+    "[FileProtection] \(fileURL.lastPathComponent): " +
+    FileProtectionInspector.protection(of: fileURL)
+)
+#endif
         } catch {
             print("[StickerManager] 파일 저장 실패: \(error)")
             return nil
